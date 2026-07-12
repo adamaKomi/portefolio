@@ -12,7 +12,7 @@ import { Contact } from "@/features/contact";
 import { Footer } from "@/features/footer";
 import { SectionRail } from "@/features/section-rail";
 import { Providers } from "./providers";
-import { ScrollProgress, BackToTop } from "@/shared/ui";
+import { ScrollProgress, BackToTop, SectionDivider } from "@/shared/ui";
 
 export default function Home() {
   return (
@@ -24,13 +24,21 @@ export default function Home() {
         <main className="flex-1">
           <Hero />
           <About />
+          <SectionDivider />
           <Philosophy />
+          <SectionDivider />
           <Expertise />
+          <SectionDivider />
           <Projects />
+          <SectionDivider />
           <Journey />
+          <SectionDivider />
           <Testimonials />
+          <SectionDivider />
           <Uses />
+          <SectionDivider />
           <Blog />
+          <SectionDivider />
           <Contact />
         </main>
         <Footer />

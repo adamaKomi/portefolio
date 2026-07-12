@@ -21,6 +21,7 @@ import {
 import { fadeUp, staggerContainer, viewportOnce } from "@/shared/animations";
 import { useT } from "@/shared/i18n";
 import { cn } from "@/lib/utils";
+import { TechConstellation } from "./tech-constellation";
 
 interface SkillDomain {
   nameKey: string;
@@ -117,6 +118,19 @@ export function Expertise() {
             {t("expertise.footer").replace("27", String(totalSkills)).replace("6", String(domains.length))}
           </span>
         </motion.div>
+
+        {/* Interactive tech constellation */}
+        <div className="mt-14">
+          <div className="mb-6 flex items-center justify-between gap-4">
+            <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary">
+              {"// constellation"}
+            </span>
+            <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+              {t("expertise.stackCount")}
+            </span>
+          </div>
+          <TechConstellation />
+        </div>
 
         {/* Tech marquee (merged from Technologies) */}
         <div className="mt-14">

@@ -907,3 +907,27 @@ Stage Summary:
 - Styling amélioré: tabular-nums sur les compteurs, glow sur BackToTop, parallax subtil sur hero
 - Portfolio reste stable: 10 sections, bilingue, 0 erreur, lint clean
 - Server démarré avec NODE_OPTIONS="--max-old-space-size=384" pour stabilité OOM
+
+---
+Task ID: REVIEW-4
+Agent: main (Cron Web Dev Review Round 4)
+Task: QA + new features (section dividers, copy-to-clipboard, tech constellation)
+
+Work Log:
+- Lecture du worklog: état stable (10 sections, bilingue, 384MB heap, counter animé, BackToTop, 404, parallax hero)
+- QA SSR: HTTP 200, 292KB, 10 sections, 0 erreur, lint exit 0
+- Nouvelles features ajoutées:
+  1. **SectionDivider** (`src/shared/ui/section-divider.tsx`): diviseur animé entre sections — ligne gradient qui se dessine (scaleX 0→1, 1.2s ease), point émeraude pulsant au centre, sweep lumineux qui traverse. 8 dividers ajoutés entre les 10 sections dans page.tsx pour rythme visuel premium.
+  2. **Copy-to-clipboard sur code blocks** (`content-renderer.tsx`): bouton Copy dans le header du CodeBlock du blog. Apparaît on hover (opacity 0→100), clic → copie le code dans le clipboard, icône devient Check verte pendant 2s. `group/code` pour le hover state. aria-label dynamique.
+  3. **TechConstellation** (`src/features/expertise/components/tech-constellation.tsx`): réseau interactif animé en canvas de 14 tech nodes (Next.js, React, TypeScript, Spring Boot, NestJS, Node.js, Python, PostgreSQL, Redis, MongoDB, Docker, React Native, WebSockets, Java). Nodes drift lentement, connections apparaissent entre nodes proches (distance < 140px), mouse attraction (rayon 120px). Couleurs par catégorie (backend=emerald, frontend=amber, mobile=teal, infra=muted). Légende overlay en bas. DPR-aware, requestAnimationFrame, damping. Ajouté dans la section Expertise entre les domaines et le marquee.
+- Vérifications:
+  * bun run lint → exit 0
+  * SSR: 300KB (up from 292KB), 10 sections, 0 "Application error"
+  * SectionDivider présent (1 match), TechConstellation présent (1 match "constellation")
+  * Aucune erreur de compilation
+
+Stage Summary:
+- 3 nouvelles features: SectionDivider animés (8 entre sections), copy-to-clipboard sur code blocks blog, TechConstellation canvas interactif (14 nodes, connections dynamiques, mouse attraction)
+- Styling amélioré: rythme visuel entre sections, code blocks plus interactifs, visualisation réseau premium dans Expertise
+- Portfolio reste stable: 10 sections, bilingue, 0 erreur, lint clean
+- Server démarré avec NODE_OPTIONS="--max-old-space-size=384" pour stabilité OOM

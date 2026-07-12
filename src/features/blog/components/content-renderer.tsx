@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Check } from "lucide-react";
+import { Check, Copy } from "lucide-react";
 import type { ContentBlock } from "../data/posts";
 
 /* ----------------------------------------------------------
@@ -88,9 +88,20 @@ function ListBlock({ items }: { items: string[] }) {
 
 function CodeBlock({ code, language }: { code: string; language: string }) {
   const lines = React.useMemo(() => code.replace(/\n$/, "").split("\n"), [code]);
+  const [copied, setCopied] = React.useState(false);
+
+  const handleCopy = React.useCallback(async () => {
+    try {
+      await navigator.clipboard.writeText(code);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 2000);
+    } catch {
+      /* clipboard not available */
+    }
+  }, [code]);
 
   return (
-    <div className="overflow-hidden rounded-xl border border-border/60 bg-card/60 shadow-sm">
+    <div className="group/code overflow-hidden rounded-xl border border-border/60 bg-card/60 shadow-sm">
       {/* ---------- Header (faux éditeur) ---------- */}
       <div className="flex items-center justify-between gap-3 border-b border-border/50 bg-background/40 px-4 py-2.5">
         <div className="flex items-center gap-2" aria-hidden>
@@ -98,9 +109,23 @@ function CodeBlock({ code, language }: { code: string; language: string }) {
           <span className="h-3 w-3 rounded-full bg-accent/60" />
           <span className="h-3 w-3 rounded-full bg-primary/60" />
         </div>
-        <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
-          {language}
-        </span>
+        <div className="flex items-center gap-2">
+          <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+            {language}
+          </span>
+          <button
+            type="button"
+            onClick={handleCopy}
+            aria-label={copied ? "Copied" : "Copy code"}
+            className="flex h-6 w-6 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          >
+            {copied ? (
+              <Check className="h-3.5 w-3.5 text-primary" />
+            ) : (
+              <Copy className="h-3.5 w-3.5 opacity-0 transition-opacity group-hover/code:opacity-100" />
+            )}
+          </button>
+        </div>
       </div>
 
       {/* ---------- Body ---------- */}
