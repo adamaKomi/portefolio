@@ -111,6 +111,36 @@ export function Hero() {
                 </Link>
               ))}
             </motion.div>
+
+            {/* Now building — live status pill */}
+            <motion.div
+              variants={fadeUp}
+              className="group/now relative inline-flex items-center gap-3 rounded-xl border border-border/60 bg-card/30 backdrop-blur-sm px-3.5 py-2.5 overflow-hidden"
+            >
+              <div
+                aria-hidden
+                className="absolute inset-0 opacity-0 group-hover/now:opacity-100 transition-opacity duration-500"
+                style={{
+                  background:
+                    "radial-gradient(circle at 0% 50%, oklch(0.78 0.17 162 / 0.1), transparent 70%)",
+                }}
+              />
+              <span className="relative flex items-center gap-1.5">
+                <span className="relative flex h-1.5 w-1.5">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-75" />
+                  <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-accent" />
+                </span>
+                <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+                  Now
+                </span>
+              </span>
+              <span className="relative h-3.5 w-px bg-border" />
+              <span className="relative text-sm text-foreground/90">
+                Building{" "}
+                <span className="font-semibold text-primary">PayLith</span>
+                <span className="text-muted-foreground"> — SaaS de facturation</span>
+              </span>
+            </motion.div>
           </motion.div>
 
           {/* Right: terminal + floating cards */}

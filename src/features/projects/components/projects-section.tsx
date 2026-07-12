@@ -101,15 +101,15 @@ export function Projects() {
         />
 
         {/* Bento grid header strip */}
-        <div className="mb-6 flex items-center gap-3">
-          <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+        <div className="mb-12 flex items-center gap-4">
+          <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground whitespace-nowrap">
             {"// 03 projets sélectionnés"}
           </span>
-          <div className="h-px flex-1 bg-gradient-to-r from-border to-transparent" />
+          <div className="h-px flex-1 bg-gradient-to-r from-border via-border/40 to-transparent" />
         </div>
 
         {/* Bento grid */}
-        <div className="grid grid-cols-1 gap-5 md:gap-6 lg:grid-cols-3 lg:auto-rows-[minmax(300px,1fr)]">
+        <div className="grid grid-cols-1 gap-5 md:gap-6 lg:grid-cols-3 lg:auto-rows-[minmax(320px,1fr)]">
           <Reveal delay={0.05} className="lg:col-span-2 lg:row-span-2 h-full">
             <ProjectCard project={payLith} onOpen={openProject} className="h-full" />
           </Reveal>

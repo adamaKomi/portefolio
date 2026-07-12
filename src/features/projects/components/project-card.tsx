@@ -227,13 +227,13 @@ export function ProjectCard({ project, onOpen, className }: ProjectCardProps) {
           {visibleTech.map((t) => (
             <span
               key={t}
-              className="rounded-md border border-border/60 bg-card/30 px-2 py-0.5 font-mono text-[10px] text-muted-foreground"
+              className="rounded-md border border-border/60 bg-card/30 px-2 py-0.5 font-mono text-[10px] text-foreground/75"
             >
               {t}
             </span>
           ))}
           {extraTechCount > 0 && (
-            <span className="rounded-md border border-border/60 bg-card/30 px-2 py-0.5 font-mono text-[10px] text-muted-foreground">
+            <span className="rounded-md border border-primary/30 bg-primary/10 px-2 py-0.5 font-mono text-[10px] font-medium text-primary">
               +{extraTechCount}
             </span>
           )}

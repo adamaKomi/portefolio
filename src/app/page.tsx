@@ -6,7 +6,9 @@ import { Skills } from "@/features/skills";
 import { Technologies } from "@/features/technologies";
 import { Projects } from "@/features/projects";
 import { Experience } from "@/features/experience";
+import { Testimonials } from "@/features/testimonials";
 import { Education } from "@/features/education";
+import { Blog } from "@/features/blog";
 import { WhatImLookingFor } from "@/features/what-im-looking-for";
 import { Contact } from "@/features/contact";
 import { Footer } from "@/features/footer";
@@ -27,7 +29,9 @@ export default function Home() {
           <Technologies />
           <Projects />
           <Experience />
+          <Testimonials />
           <Education />
+          <Blog />
           <WhatImLookingFor />
           <Contact />
         </main>

@@ -149,7 +149,7 @@ export function ContactForm() {
                     className={cn(
                       "h-11 rounded-xl bg-card/40 border-border",
                       "placeholder:text-muted-foreground/60",
-                      "focus:border-primary/50 focus-visible:ring-primary/20 focus-visible:ring-2",
+                      "focus:border-primary focus-visible:ring-primary/25 focus-visible:ring-2 focus:shadow-[0_0_0_4px_oklch(0.78_0.17_162/0.08)]",
                       "transition-colors"
                     )}
                   />
@@ -176,7 +176,7 @@ export function ContactForm() {
                     className={cn(
                       "h-11 rounded-xl bg-card/40 border-border",
                       "placeholder:text-muted-foreground/60",
-                      "focus:border-primary/50 focus-visible:ring-primary/20 focus-visible:ring-2",
+                      "focus:border-primary focus-visible:ring-primary/25 focus-visible:ring-2 focus:shadow-[0_0_0_4px_oklch(0.78_0.17_162/0.08)]",
                       "transition-colors"
                     )}
                   />
@@ -208,7 +208,7 @@ export function ContactForm() {
                     className={cn(
                       "h-11 rounded-xl bg-card/40 border-border",
                       "placeholder:text-muted-foreground/60",
-                      "focus:border-primary/50 focus-visible:ring-primary/20 focus-visible:ring-2",
+                      "focus:border-primary focus-visible:ring-primary/25 focus-visible:ring-2 focus:shadow-[0_0_0_4px_oklch(0.78_0.17_162/0.08)]",
                       "transition-colors"
                     )}
                   />
@@ -238,7 +238,7 @@ export function ContactForm() {
                       className={cn(
                         "h-11 w-full rounded-xl bg-card/40 border-border",
                         "placeholder:text-muted-foreground/60",
-                        "focus:border-primary/50 focus-visible:ring-primary/20 focus-visible:ring-2",
+                        "focus:border-primary focus-visible:ring-primary/25 focus-visible:ring-2 focus:shadow-[0_0_0_4px_oklch(0.78_0.17_162/0.08)]",
                         "transition-colors data-[placeholder]:text-muted-foreground/60"
                       )}
                     >
@@ -284,7 +284,7 @@ export function ContactForm() {
                   className={cn(
                     "min-h-[132px] resize-y rounded-xl bg-card/40 border-border",
                     "placeholder:text-muted-foreground/60",
-                    "focus:border-primary/50 focus-visible:ring-primary/20 focus-visible:ring-2",
+                    "focus:border-primary focus-visible:ring-primary/25 focus-visible:ring-2 focus:shadow-[0_0_0_4px_oklch(0.78_0.17_162/0.08)]",
                     "transition-colors premium-scroll"
                   )}
                 />

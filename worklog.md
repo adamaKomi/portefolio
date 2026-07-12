@@ -222,3 +222,160 @@ Stage Summary:
 - Architecture feature-based avec barrel exports respectée
 - Design system dark-first émeraude/ambre cohérent (Vercel/Linear/Stripe inspired)
 - Prochaines phases possibles: feature blog MDX, OG image dynamique, tests, optimisations Lighthouse, plus de détails visuels
+
+---
+Task ID: C
+Agent: full-stack-developer
+Task: Dynamic Open Graph image generation via Next.js 16 `ImageResponse` (next/og) — premium dark-first émeraude OG card for Adama Komi portfolio
+
+Work Log:
+- Lecture du worklog existant (Tasks 1, 4, 5, 6, 7, 8, FINAL-1) pour aligner conventions design system (dark-first `#0a0b0d`, accent émeraude `#10b981`/`#34d399`, ambre `#f59e0b`, mono labels `// ...`, glassmorphism, grille technique, premium SaaS Vercel/Linear/Stripe inspired).
+- Lecture de `src/app/layout.tsx` pour confirmer metadata openGraph/twitter existante sans image — Next.js 16 auto-détecte le fichier-based `opengraph-image.tsx` et l'injecte dans les deux cartes (OG + Twitter `summary_large_image`). Aucun conflit, layout.tsx laissé tel quel.
+- Création `src/app/opengraph-image.tsx` (route metadata file à la racine du app dir) :
+  - Imports: `ImageResponse` from `next/og`.
+  - Exports statiques: `alt`, `size = {width:1200, height:630}`, `contentType = "image/png"`, default async function `OGImage`.
+  - Pas de `runtime = 'edge'` (Node runtime par défaut pour simplicité dev, conformément à la consigne).
+  - Pas de fetch de fonts externes — utilisation de la police sans-serif par défaut d'ImageResponse (built-in, fiable et rapide).
+  - Layout root: `<div>` flex column, 100%×100%, `backgroundColor: "#0a0b0d"`, padding 80px, multi-layer `backgroundImage` combinant:
+    1. radial-gradient émeraude top-right (88% 12%) — glow accent premium
+    2. repeating-linear-gradient horizontal (lignes grille 1px / 48px) à 2.2% d'opacité blanche
+    3. repeating-linear-gradient vertical (lignes grille 1px / 48px) à 2.2% d'opacité blanche
+  - Hiérarchie verticale gauche-alignée (top → bottom):
+    1. Ligne statut: dot émeraude 12×12 avec glow boxShadow + "Disponible pour opportunités" (uppercase, letterSpacing 2, gris `#9ca3af`, 18px)
+    2. Nom "Adama Komi" (96px, weight 700, blanc, lineHeight 1.02, letterSpacing -3) avec marginTop 72
+    3. Titre "Software Engineer · Full-Stack Developer" (38px, weight 500, émeraude `#34d399`, letterSpacing -0.5, marginTop 16)
+    4. Divider 220×2px — linear-gradient émeraude→transparent (marginTop 36)
+    5. Row de 5 badges pills (borderRadius 9999, border 1px rgba(255,255,255,0.14), bg rgba(255,255,255,0.04), padding 10/18, fontSize 18, color `#e5e7eb`): "Next.js", "Spring Boot", "NestJS", "TypeScript", "React Native" (gap 12, marginTop 32, map avec key)
+    6. Label mono "// portfolio" en bas-gauche (marginTop auto pour push-to-bottom, 16px, gris `#6b7280`, letterSpacing 1.5)
+  - Toutes les divs ont `display: "flex"` explicite (requis satori), styles inline en objets, flexbox uniquement (pas de grid, pas de position:sticky, pas de position:absolute).
+  - `{"// portfolio"}` wrappé en expression JSX (règle `react/jsx-no-comment-textnodes` — pattern identique aux autres features).
+- Vérification route: `curl http://localhost:3000/opengraph-image` → HTTP 200, content-type `image/png`, 119 652 bytes (~117 KB). Fichier PNG valide 1200×630 RGBA 8-bit non-interlaced (vérifié via `file`).
+- Vérification dev.log: aucune erreur/warning sur la route OG — `GET /opengraph-image 200 in 838ms` (compile 164ms, render 674ms première fois) puis `200 in 398ms` (warm). Compilation propre (`✓ Compiled in 144ms`).
+- Vérification lint: `bunx eslint src/app/opengraph-image.tsx` → exit 0, 0 erreur.
+- Twitter card: pas de `twitter-image.tsx` séparé créé — Next.js 16 réutilise automatiquement `opengraph-image.tsx` pour la Twitter card `summary_large_image` configurée dans layout.tsx.
+
+Stage Summary:
+- OG image dynamique 1200×630 livrée, route `/opengraph-image` retourne 200 image/png (~117 KB) en ~400ms warm.
+- Design system dark-first émeraude respecté: fond noir profond `#0a0b0d`, glow radial émeraude top-right, grille technique faint, accent `#10b981`/`#34d399` exclusivement (zéro bleu/indigo), label mono `// portfolio` conforme au pattern portfolio.
+- Layout premium SaaS (Vercel/Linear/Stripe inspired): hiérarchie typo claire (dot statut → nom 96px → titre 38px émeraude → divider → 5 badges tech → label mono bas-gauche), padding généreux 80px, left-aligned.
+- Conformité technique ImageResponse/satori: flexbox only, display explicite sur toutes les divs, inline styles objets, multi-layer backgroundImage (radial + 2 repeating-linear pour la grille), default sans-serif font (zéro dépendance externe, zéro fetch réseau), pas de runtime edge.
+- Zéro conflit avec layout.tsx (Next.js 16 auto-injecte l'URL du fichier `opengraph-image.tsx` dans les metadata openGraph.images ET twitter.images).
+- Lint propre, dev.log propre, prêt pour production et partage social (LinkedIn, Twitter/X, Slack, Discord previews).
+
+---
+Task ID: A
+Agent: full-stack-developer
+Task: Feature Testimonials — carousel premium de recommandations (professeurs, collaborateurs, mentors) pour Adama Komi
+
+Work Log:
+- Lecture du worklog existant (Tasks 1, 4, 5, 6, 7, 8, FINAL-1) pour aligner les conventions design system : dark-first, accent émeraude + ambre (no blue/indigo), glass / glass-strong, bg-grid-sm, text-gradient-emerald, shadow-glow, border-gradient, mono labels `// ...`, Framer Motion whileInView + AnimatePresence, EASE_PREMIUM, viewportOnce.
+- Lecture des shared components (`Section`, `SectionHeading`, `Reveal`, `AuroraBackground`) et animations (`fadeUp`, `staggerContainer`, `viewportOnce`, `EASE_PREMIUM`) pour réutilisation conforme.
+- Lecture de `profile.ts` (FSTM · Université Hassan II de Casablanca) et de `experience.tsx` (PayLith, projet principal) pour cohérence narrative des témoignages.
+- Création de l'arborescence `src/features/testimonials/{data,components}` via `mkdir -p`.
+- `data/testimonials.ts` — interface `Testimonial` (id, quote, authorName, authorInitials, authorRole, rating) + tableau de 4 témoignages en français (Pr. Karim Benjelloun FSTM, Yassine Amrani Lead Dev, Sofia Marchetti CTO startup, Mehdi Tahiri Mentor technique). Noms plausibles mix marocains/internationaux, initiales générées ("K.B.", "Y.A.", "S.M.", "M.T."). Témoignages crédibles orientés junior diplômé : rigueur technique, autonomie, architecture, full-stack, problème-solving. Tous rating 5.
+- `components/testimonials.tsx` — section client `"use client"` :
+  - `<Section id="testimonials">` + `<AuroraBackground variant="section" />` + `<SectionHeading align="center" eyebrow="Recommandations" ... />`
+  - Carousel single-slide centré (max-w-3xl) avec auto-advance 6s, pause on hover (`onMouseEnter/Leave`) ET on focus (`onFocus/onBlur` avec vérification `relatedTarget` pour ne pas unpause au focus interne).
+  - Carte premium : `glass-strong rounded-3xl border-border/60 shadow-glow`, `bg-grid-sm` interne masqué radialement, halo émeraude top (`oklch(0.78 0.17 162 / 0.18)`), hairline gradient top, watermark `Quote` lucide géant (h-40 w-40, `text-primary/[0.04]`, rotate-12) en haut à droite.
+  - Icône Quote dans square émeraude (border-primary/20, bg-primary/10, shadow-glow) en haut centré.
+  - `<AnimatePresence mode="wait" custom={direction}>` avec `motion.figure` slide+fade+blur (`slideVariants` custom function selon dir ±1, EASE_PREMIUM, duration 0.5 enter / 0.35 exit).
+  - `<blockquote>` + `<cite>` sémantique, texte `text-lg md:text-xl font-medium text-pretty text-foreground/90` avec guillemets typographiques `""`.
+  - `StarRating` : 5 `Star` lucide, `fill-primary text-primary` pour actifs, role="img" aria-label "Note : 5 sur 5".
+  - `figcaption` : avatar initiales en cercle gradient `from-primary to-accent` (NO photos) avec ring-2 ring-background + shadow-glow, `<cite>` not-italic pour le nom, role en mono `text-xs text-muted-foreground`.
+  - Flèches prev/next (ArrowLeft/ArrowRight) : sur desktop absolument positionnées à gauche/droite extérieur de la carte (hidden md:block, -translate-x-1/2 / translate-x-1/2) ; sur mobile dans une row bottom avec dots entre (md:hidden). Vrais `<button>` avec `aria-label`, focus-visible ring-primary/50.
+  - `Dots` component : boutons tablist, `aria-selected`, `aria-label "Témoignage N sur 4"`, active = `w-6 bg-primary shadow-glow`, inactif = `w-1.5 bg-muted-foreground/30`.
+  - Navigation clavier : `role="region" aria-roledescription="carousel" aria-label` + `tabIndex={0}` + `onKeyDown` (ArrowLeft/Right → prev/next).
+  - `aria-live="polite"` sur la zone de citation pour announce les changements aux screen readers.
+  - Trust signals en bas : label mono `{"// trust signals"}` + 4 badges mono ("FSTM · Université Hassan II", "3 projets livrés", "Stack moderne", "Disponible immédiatement") en `border-border/60 bg-card/30`.
+- `index.ts` — barrel `export { Testimonials }` + re-export `testimonials` et `Testimonial` type pour réutilisation éventuelle.
+- Wrapping `// trust signals` en `{"// ..."}` (pattern `react/jsx-no-comment-textnodes` déjà connu des tasks précédents).
+- Validation : `bunx eslint src/features/testimonials` → 0 erreur. `bunx tsc --noEmit` → 0 erreur de type sur la feature. Dev log → compilation OK, aucune erreur de résolution.
+- Accessibilité : `section` + `figure`/`blockquote`/`cite` sémantique, `role="region" aria-roledescription="carousel"`, `aria-live="polite"`, `aria-label` sur toutes les flèches et dots, `tablist`/`tab`/`aria-selected` sur les dots, `role="img" aria-label` sur les étoiles, focus-visible rings, navigation clavier flèches gauche/droite, pause auto-advance au focus clavier.
+- Responsive : carte full-width mobile (px-6 py-12) → max-w-3xl desktop (px-14 py-16), flèches latérales desktop / row bottom mobile, dots toujours visibles.
+
+Stage Summary:
+- Feature Testimonials livrée et conforme au design system dark-first émeraude (Vercel/Linear/Raycast inspired).
+- 4 témoignages crédibles (professeur FSTM, lead dev collaborateur, CTO startup PayLith, mentor technique) en français, orientés rigueur/architecture/full-stack/autonomie.
+- Carousel single-slide premium : auto-advance 6s avec pause on hover + focus, transition slide+fade+blur Framer Motion (AnimatePresence mode="wait"), navigation prev/next (desktop côté carte / mobile row bottom), dots tablist accessibles, keyboard nav (←/→), aria-live polite.
+- Carte glass-strong rounded-3xl avec shadow-glow, bg-grid-sm masqué, halo émeraude top, watermark Quote géant, hairline gradient.
+- Avatar initiales en cercle gradient émeraude→ambre (no photos), StarRating 5 étoiles remplies émeraude.
+- Trust signals mono badges en footer de section.
+- Barrel `index.ts` créé, prêt pour intégration par le main agent dans `src/app/page.tsx` (entre Experience et WhatImLookingFor conceptuellement).
+- Aucune nouvelle route page, aucun port codé en dur, 0 erreur lint/tsc, accessible et responsive mobile-first.
+
+---
+Task ID: B
+Agent: full-stack-developer
+Task: Feature Blog — section articles + lecteur plein écran (overlay) avec hash routing #/blog/<slug>
+
+Work Log:
+- Lecture du worklog précédent (Tasks 1, 4, 5, 6, 7, 8, FINAL-1) pour aligner les conventions : glass-strong, bg-grid-sm, text-gradient-emerald, shadow-glow, premium-scroll, mono labels `// ...`, Reveal + stagger, AnimatePresence + overlayVariants/overlayContentVariants.
+- Étude du pattern d'overlay existant (`src/features/projects/components/projects-section.tsx` + `project-detail-overlay.tsx`) pour répliquer le hash routing + AnimatePresence + scroll-lock + focus management.
+- Création de l'arborescence `src/features/blog/{data,components}` via mkdir -p.
+- `data/posts.ts` — `ContentBlock` union typée (`heading | paragraph | code | list`), interface `BlogPost` (slug, title, excerpt, date, readingTime, tags, category, highlightKeyword?, content[]). 3 articles rédigés en français, alignés sur l'expertise d'Adama (NestJS, DDD, Redis pub/sub, agrégats) :
+  1. `clean-architecture-nodejs` (2024-11-15, 8 min, Architecture) — entité Invoice + port InvoiceRepository, bénéfices Clean Arch.
+  2. `websockets-redis-temps-reel` (2024-10-02, 10 min, Systèmes distribués) — NestJS Gateway + RedisService subscribe/publish, fan-out décentralisé.
+  3. `ddd-modeliser-le-metier` (2024-08-20, 7 min, Architecture) — Ubiquitous Language, Bounded Context, agrégat ParkourSession avec règles invariantes.
+  Posts triés par date décroissante. Helpers : `getPost`, `getNextPost` (loop), `getPrevPost` (loop), `formatPostDate` (fr-FR).
+- `components/content-renderer.tsx` — discriminated union switch sur `ContentBlock.type` :
+  - heading → `<h2>` avec barre verticale émeraude en préfixe.
+  - paragraph → `<p>` muted-foreground leading-relaxed text-pretty.
+  - code → fenêtre faux éditeur macOS : header 3 dots (destructive/accent/primary) + label langage uppercase mono, body `<pre><code>` avec numéros de ligne + tint émeraude italique sur commentaires `// ...` (scanner string-aware, pas de tokenizer, pas de lib externe).
+  - list → `<ul>` avec pills checkmark émeraude.
+- `components/blog-card.tsx` — `motion.article` role="button" tabIndex=0 (Enter/Space), glass-strong rounded-2xl, hover lift + border-primary/40 + shadow-glow, focus-visible ring. Cover area : gradient émeraude + bg-grid-sm + watermark BookOpen (scale on hover) + mono tag catégorie. Body : date (`<time dateTime>`) + Clock icon reading time (mono), title clamp-2 lg/xl, excerpt clamp-3 muted, tags mono badges, CTA "Lire l'article →" avec mt-auto.
+- `components/blog-reader-overlay.tsx` — AnimatePresence overlay (overlayVariants backdrop + overlayContentVariants panel). AnimatePresence interne mode="wait" key={slug} pour swap prev/next fluide. role="dialog" aria-modal aria-label=`Article : {title}`. Sticky header : ArrowLeft (back) + counter "i / 3" + close X (ref pour focus). Cover banner gradient + grid + BookOpen watermark + mono category tag. Hero : meta row date/reading-time + title avec `highlightKeyword` rendu en `text-gradient-emerald` (split sur première occurrence) + tags Badge + excerpt lead block avec border-l-2 émeraude. Body : `<ContentRenderer blocks={post.content} />`. Divider `// fin de l'article`. Nav prev/next : grid 2-col de NavCard (label + title clamp-2 + meta), align right pour next. Sticky footer CTA "Me contacter" → onContact (close + smooth scroll #contact). ESC to close, body scroll lock, focus close button on open, scroll reset on navigate.
+- `components/blog-section.tsx` — `<Section id="blog">` + `<AuroraBackground variant="section" />`. SectionHeading eyebrow="Blog" title="Articles & réflexions techniques." + description fournie. Strip mono `{"// 03 articles"}` + divider gradient (même pattern que projects). Grid responsive : 1 col mobile → 2 col sm → 3 col lg, chaque carte wrappée `<Reveal delay={0.06*i+0.05}>`. Hint line "Cliquez sur un article pour le lire en entier. ↗". Hash routing complet avec `BLOG_HASH_RE = /^#\/blog\/([\w-]+)$/` (distinct de `#/projects/`) : syncFromHash au mount + popstate/hashchange, openPost=pushState, closePost=history.back si hash blog, navigatePost=replaceState, handleContact=close+setTimeout(400ms)+scrollIntoView #contact.
+- `index.ts` — barrel export `Blog`, `BlogCard`, `BlogReaderOverlay`, `ContentRenderer`, `posts`, `getPost`, `getNextPost`, `getPrevPost`, `formatPostDate`, types `BlogPost`, `ContentBlock`.
+- Modification `src/app/page.tsx` : import `Blog` + `<Blog />` inséré entre `<Education />` et `<WhatImLookingFor />` (la section contenu/réflexion se place naturellement avant les CTA de conversion).
+- Lint : `bunx eslint src/features/blog src/app/page.tsx` → 0 erreur. TS : `bunx tsc --noEmit` → 0 erreur sur blog/page (erreurs pré-existantes uniquement dans `examples/` et `skills/`). Dev log : page 200 OK, compiles clean, grep SSR confirme `id="blog"` + 3 titres d'articles présents dans le HTML initial.
+- Accessibilité : role="dialog"/aria-modal/aria-label, role="button" sur cartes, keyboard nav (Enter/Space/ESC), focus close button on open, sémantique `<article>`/`<header>`/`<h2>`/`<time dateTime>`/`<pre>`/`<code>`.
+
+Stage Summary:
+- Feature Blog livrée en 6 fichiers dans `src/features/blog/` + 1 import dans `page.tsx`. Aucune nouvelle route Next.js, aucun setup MDX.
+- 3 articles avec `ContentBlock` union typée (heading/paragraph/code/list) — approche structurée simple et fiable qui rend un vrai contenu technique (Clean Arch, WebSockets+Redis, DDD agrégats) sans dépendance syntax-highlighting.
+- Overlay full-screen qui réplique le pattern projets : hash routing `#/blog/<slug>` (deep-link + history), AnimatePresence mode="wait" pour swap prev/next fluide, ESC + scroll lock + focus management. Pas de conflit avec `#/projects/<slug>`.
+- Blocs code rendus en "faux éditeur macOS" (3 dots + label langage + numéros de ligne + tint émeraude sur commentaires) — premium sans dépendance externe.
+- Responsive : 1 col mobile → 2 col sm → 3 col lg pour la grid ; overlay full-screen sur mobile, max-w-3xl max-h-90vh sur desktop.
+- Design system respecté : dark-first, accent émeraude, glassmorphism, grid bg, text-gradient-emerald sur keyword mis en avant, premium-scroll, mono labels `// 03 articles` et `// fin de l'article`.
+- Article list final :
+  1. `clean-architecture-nodejs` — "Clean Architecture en Node.js : séparer le métier du framework" (2024-11-15, 8 min, Architecture)
+  2. `websockets-redis-temps-reel` — "WebSockets + Redis : scaler le temps réel horizontalement" (2024-10-02, 10 min, Systèmes distribués)
+  3. `ddd-modeliser-le-metier` — "Domain-Driven Design : modéliser le métier avant le code" (2024-08-20, 7 min, Architecture)
+
+---
+Task ID: REVIEW-1
+Agent: main (Cron Web Dev Review)
+Task: QA testing (agent-browser + VLM), bug fixes, polish, et 3 nouvelles features (Testimonials, Blog MDX, OG image dynamique)
+
+Work Log:
+- Lecture du worklog complet (Tasks 1, 4, 5, 6, 7, 8, FINAL-1) pour comprendre l'état du projet
+- QA agent-browser: ouverture page, vérification erreurs console (0), snapshots de hero/projects/about/contact
+- QA VLM (glm-4.6v) sur captures: identification de bugs visuels (muted-foreground contraste faible, spacing projets cramé, +N badge peu visible, scroll indicator, focus states formulaire)
+- Dispatch 3 subagents en parallèle:
+  * Task A (Testimonials): carousel 4 témoignages (Pr. Karim Benjelloun, Yassine Amrani, Sofia Marchetti, Mehdi Tahiri), auto-advance 6s pause on hover/focus, AnimatePresence slide+fade, glass-strong card, watermark Quote, trust signals, ARIA complète (role region, tablist, aria-live)
+  * Task B (Blog): 3 articles techniques (Clean Architecture Node.js, WebSockets+Redis, DDD) en ContentBlocks structurés (heading/paragraph/code/list), reader overlay plein-écran avec hash routing #/blog/<slug>, faux éditeur macOS pour code blocks, prev/next NavCards, CTA contact
+  * Task C (OG image): opengraph-image.tsx avec ImageResponse (next/og), 1200×630, dark-first + glow émeraude + grille + 5 tech badges, vérifié 200 image/png (119KB)
+- Intégration Testimonials dans page.tsx (entre Experience et Education)
+- Polish manuel (bugs identifiés par QA):
+  * globals.css: muted-foreground dark oklch 0.66→0.70 (meilleur contraste WCAG)
+  * Projects: mb-6→mb-12 header strip, gap-4, auto-rows minmax 300→320px, divider gradient via-border/40
+  * ProjectCard: tech badges text-muted-foreground→text-foreground/75, +N badge → emerald tinted (border-primary/30 bg-primary/10 text-primary font-medium)
+  * ContactForm: focus states renforcés sur 5 inputs (focus:border-primary + focus:shadow-[0_0_0_4px_oklch(0.78_0.17_162/0.08)])
+  * Hero: ajout widget "Now building PayLith" (pill glass avec dot ambre pulsant + label NOW mono + texte Building PayLith — SaaS de facturation) avec hover glow radial
+- Nouvelle micro-interaction: CursorGlow component (shared/ui/cursor-glow.tsx) — glow radial émeraude 500px qui suit le curseur en lerp 0.12, hidden sur touch/reduced-motion, intégré dans Providers
+- Command palette enrichie: groupe "Contenu" avec Blog (BookOpen), Recommandations (Quote), Formation (GraduationCap)
+- Vérifications finales:
+  * bun run lint → exit 0
+  * GET / → 200, GET /opengraph-image → 200 image/png
+  * 12 sections présentes (hero, about, philosophy, skills, technologies, projects, experience, testimonials, education, blog, what-im-looking-for, contact)
+  * Testimonials carousel: 4 tabs ARIA, region focusable, auto-advance
+  * Blog reader overlay: hash #/blog/clean-architecture-nodejs, dialog avec code block TypeScript, structure complète
+  * CursorGlow + Now pill validés par VLM (premium feel 8/10)
+
+Stage Summary:
+- 3 nouvelles features livrées: Testimonials (carousel), Blog (3 articles + reader overlay), OG image dynamique
+- Polish QA: contraste muted-foreground amélioré, spacing projets corrigé, +N badge emerald, focus states formulaire renforcés
+- 2 nouvelles micro-interactions: CursorGlow (trail curseur premium), Hero "Now building" pill (statut live)
+- Command palette enrichie (Blog, Testimonials, Formation)
+- Portfolio passe de 10 → 13 sections, tous overlays fonctionnels (projects #/projects/, blog #/blog/), SEO complet avec OG image
+- Lint clean, 0 erreur runtime, toutes sections rendues et interactives

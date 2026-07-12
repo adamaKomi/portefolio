@@ -17,6 +17,8 @@ import {
   Linkedin,
   Moon,
   Sun,
+  Quote,
+  BookOpen,
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { navSections, profile, socials } from "@/shared/constants/profile";
@@ -140,6 +142,27 @@ function CommandPaletteDialog({
                     icon={<FolderGit2 className="h-4 w-4" />}
                   >
                     Voir tous les projets
+                  </CommandItem>
+                </CommandGroup>
+
+                <CommandGroup title="Contenu">
+                  <CommandItem
+                    onSelect={() => runNav("blog")}
+                    icon={<BookOpen className="h-4 w-4" />}
+                  >
+                    Blog technique
+                  </CommandItem>
+                  <CommandItem
+                    onSelect={() => runNav("testimonials")}
+                    icon={<Quote className="h-4 w-4" />}
+                  >
+                    Recommandations
+                  </CommandItem>
+                  <CommandItem
+                    onSelect={() => runNav("education")}
+                    icon={<GraduationCap className="h-4 w-4" />}
+                  >
+                    Formation
                   </CommandItem>
                 </CommandGroup>
 
