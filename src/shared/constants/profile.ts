@@ -35,6 +35,26 @@ export const navSections = [
   { id: "contact", label: "Contact" },
 ] as const;
 
+/**
+ * Sections affichées dans le rail latéral (indicateur de progression vertical).
+ * Inclut toutes les sections majeures de la page, dans l'ordre d'apparition.
+ */
+export const railSections = [
+  { id: "hero", label: "Hero", index: "01" },
+  { id: "about", label: "À propos", index: "02" },
+  { id: "philosophy", label: "Philosophie", index: "03" },
+  { id: "skills", label: "Compétences", index: "04" },
+  { id: "technologies", label: "Stack", index: "05" },
+  { id: "projects", label: "Projets", index: "06" },
+  { id: "experience", label: "Parcours", index: "07" },
+  { id: "testimonials", label: "Recommandations", index: "08" },
+  { id: "education", label: "Formation", index: "09" },
+  { id: "uses", label: "Uses", index: "10" },
+  { id: "blog", label: "Blog", index: "11" },
+  { id: "what-im-looking-for", label: "Opportunités", index: "12" },
+  { id: "contact", label: "Contact", index: "13" },
+] as const;
+
 export const stats = [
   { value: "5+", label: "Ans de pratique", sub: "Projets académiques & personnels" },
   { value: "3", label: "Projets majeurs", sub: "SaaS, temps réel, mobile" },

@@ -10,7 +10,7 @@ export function ThemeToggle() {
   const [mounted, setMounted] = React.useState(false);
   React.useEffect(() => setMounted(true), []);
 
-  const isDark = theme === "dark";
+  const isDark = mounted ? theme === "dark" : true;
 
   return (
     <Button
@@ -19,6 +19,7 @@ export function ThemeToggle() {
       onClick={() => setTheme(isDark ? "light" : "dark")}
       className="h-9 w-9 rounded-lg relative overflow-hidden"
       aria-label={isDark ? "Activer le thème clair" : "Activer le thème sombre"}
+      suppressHydrationWarning
     >
       {mounted ? (
         <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />

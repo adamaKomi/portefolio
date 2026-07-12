@@ -3,14 +3,19 @@
 import * as React from "react";
 import { AnimatePresence, motion, type Variants } from "framer-motion";
 import {
+  AlertTriangle,
   ArrowLeft,
   ArrowRight,
   ArrowUpRight,
   Boxes,
   Check,
+  CheckCircle2,
+  Clock,
   Mail,
   Smartphone,
+  Sparkles,
   Star,
+  TrendingUp,
   X,
   Zap,
 } from "lucide-react";
@@ -28,6 +33,8 @@ import {
   getProject,
   projects,
   type Project,
+  type ProjectMetric,
+  type ProjectTimelineItem,
 } from "../data/projects";
 
 interface ProjectDetailOverlayProps {
@@ -67,11 +74,26 @@ const contentVariants: Variants = {
   exit: { opacity: 0, y: -8, transition: { duration: 0.2 } },
 };
 
-function SectionLabel({ children }: { children: React.ReactNode }) {
+function SectionHeader({
+  children,
+  icon: Icon,
+}: {
+  children: React.ReactNode;
+  icon?: React.ElementType;
+}) {
   return (
-    <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-      {children}
-    </span>
+    <div className="flex items-center gap-2.5">
+      {Icon ? (
+        <Icon className="h-3.5 w-3.5 text-primary" aria-hidden />
+      ) : null}
+      <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+        {children}
+      </span>
+      <div
+        aria-hidden
+        className="h-px flex-1 bg-gradient-to-r from-border via-border/40 to-transparent"
+      />
+    </div>
   );
 }
 
@@ -231,6 +253,197 @@ interface OverlayContentProps {
   onClose: () => void;
 }
 
+/* ---------------- Case-study sections ---------------- */
+
+function MetricsSection({ metrics }: { metrics: ProjectMetric[] }) {
+  if (!metrics.length) return null;
+  return (
+    <section className="flex flex-col gap-4" aria-label="Métriques produit">
+      <SectionHeader icon={TrendingUp}>{"// métriques"}</SectionHeader>
+      <ul
+        role="list"
+        className="grid grid-cols-1 gap-3 sm:grid-cols-2"
+      >
+        {metrics.map((m) => (
+          <li
+            key={m.label}
+            className="group relative overflow-hidden rounded-xl border border-border/50 bg-card/40 p-4 backdrop-blur transition-colors duration-300 hover:border-primary/30"
+          >
+            <div
+              aria-hidden
+              className="pointer-events-none absolute -top-10 -right-8 h-24 w-24 rounded-full bg-primary/[0.06] blur-2xl transition-opacity duration-300 group-hover:opacity-100 opacity-60"
+            />
+            <p className="text-2xl font-semibold tracking-tight text-gradient-emerald md:text-3xl">
+              {m.value}
+            </p>
+            <p className="mt-1 text-sm font-medium text-foreground/90">
+              {m.label}
+            </p>
+            {m.hint ? (
+              <p className="mt-0.5 font-mono text-[11px] text-muted-foreground">
+                {m.hint}
+              </p>
+            ) : null}
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+function ChallengesSolutionsSection({
+  challenges,
+  solutions,
+}: {
+  challenges: string[];
+  solutions: string[];
+}) {
+  if (!challenges.length && !solutions.length) return null;
+  return (
+    <section
+      className="flex flex-col gap-4"
+      aria-label="Défis et solutions"
+    >
+      <SectionHeader icon={AlertTriangle}>{"// défis & solutions"}</SectionHeader>
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        {/* Challenges */}
+        <div className="flex flex-col gap-2.5">
+          <div className="flex items-center gap-2">
+            <AlertTriangle
+              className="h-4 w-4 text-accent"
+              aria-hidden
+            />
+            <span className="font-mono text-xs uppercase tracking-[0.15em] text-accent">
+              Défis
+            </span>
+          </div>
+          <ul role="list" className="flex flex-col gap-2.5">
+            {challenges.map((c, i) => (
+              <li
+                key={i}
+                className="rounded-lg border border-border/40 border-l-accent/60 bg-card/30 p-3"
+              >
+                <div className="flex items-start gap-2.5">
+                  <AlertTriangle
+                    className="mt-0.5 h-3.5 w-3.5 shrink-0 text-accent"
+                    aria-hidden
+                  />
+                  <span className="text-sm leading-relaxed text-foreground/85">
+                    {c}
+                  </span>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* Solutions */}
+        <div className="flex flex-col gap-2.5">
+          <div className="flex items-center gap-2">
+            <CheckCircle2
+              className="h-4 w-4 text-primary"
+              aria-hidden
+            />
+            <span className="font-mono text-xs uppercase tracking-[0.15em] text-primary">
+              Solutions
+            </span>
+          </div>
+          <ul role="list" className="flex flex-col gap-2.5">
+            {solutions.map((s, i) => (
+              <li
+                key={i}
+                className="rounded-lg border border-border/40 border-l-primary/60 bg-card/30 p-3"
+              >
+                <div className="flex items-start gap-2.5">
+                  <CheckCircle2
+                    className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary"
+                    aria-hidden
+                  />
+                  <span className="text-sm leading-relaxed text-foreground/85">
+                    {s}
+                  </span>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function TimelineSection({
+  timeline,
+}: {
+  timeline: ProjectTimelineItem[];
+}) {
+  if (!timeline.length) return null;
+  return (
+    <section className="flex flex-col gap-4" aria-label="Chronologie du projet">
+      <SectionHeader icon={Clock}>{"// chronologie"}</SectionHeader>
+      <ol
+        aria-label="Phases de construction"
+        className="relative space-y-5 pl-8 md:pl-10"
+      >
+        {/* Vertical gradient line */}
+        <span
+          aria-hidden
+          className="pointer-events-none absolute left-[7px] top-2 bottom-2 w-px -translate-x-1/2 bg-gradient-to-b from-primary/50 via-primary/20 to-transparent"
+        />
+        {timeline.map((item, i) => (
+          <li key={i} className="relative">
+            {/* Dot */}
+            <span
+              aria-hidden
+              className="absolute -left-8 top-1.5 md:-left-10"
+            >
+              <span className="relative flex h-3.5 w-3.5 items-center justify-center">
+                <span className="relative inline-flex h-3.5 w-3.5 rounded-full bg-primary ring-4 ring-background shadow-[0_0_12px_oklch(0.78_0.17_162/0.6)]" />
+              </span>
+            </span>
+            <div className="flex flex-col gap-1">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-sm font-medium text-foreground">
+                  {item.phase}
+                </span>
+                <span className="inline-flex items-center rounded-md border border-border/60 bg-card/40 px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                  {item.period}
+                </span>
+              </div>
+              <p className="text-sm leading-relaxed text-muted-foreground">
+                {item.detail}
+              </p>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </section>
+  );
+}
+
+function ImpactSection({ impact }: { impact: string }) {
+  if (!impact) return null;
+  return (
+    <section className="flex flex-col gap-4" aria-label="Impact du projet">
+      <SectionHeader icon={Sparkles}>{"// impact"}</SectionHeader>
+      <div className="relative overflow-hidden rounded-xl border border-primary/20 bg-primary/[0.04] p-5 md:p-6">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -top-12 -right-10 h-32 w-32 rounded-full bg-primary/[0.10] blur-3xl"
+        />
+        <div className="flex items-start gap-3">
+          <span className="mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-primary/30 bg-primary/10">
+            <Sparkles className="h-4 w-4 text-primary" aria-hidden />
+          </span>
+          <p className="text-base leading-relaxed text-pretty text-foreground/90 md:text-lg">
+            {impact}
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function OverlayContent({ project, onContact, onClose }: OverlayContentProps) {
   const CategoryIcon = categoryIcons[project.category] ?? Boxes;
 
@@ -318,7 +531,7 @@ function OverlayContent({ project, onContact, onClose }: OverlayContentProps) {
 
         {/* Overview */}
         <section className="flex flex-col gap-3">
-          <SectionLabel>{"// overview"}</SectionLabel>
+          <SectionHeader>{"// overview"}</SectionHeader>
           <p className="text-base font-medium leading-relaxed text-foreground md:text-lg">
             {project.shortDescription}
           </p>
@@ -327,9 +540,22 @@ function OverlayContent({ project, onContact, onClose }: OverlayContentProps) {
           </p>
         </section>
 
+        {/* Métriques (case study) */}
+        {project.metrics?.length ? (
+          <MetricsSection metrics={project.metrics} />
+        ) : null}
+
+        {/* Défis & solutions (case study) */}
+        {project.challenges?.length || project.solutions?.length ? (
+          <ChallengesSolutionsSection
+            challenges={project.challenges ?? []}
+            solutions={project.solutions ?? []}
+          />
+        ) : null}
+
         {/* Points clés */}
         <section className="flex flex-col gap-3">
-          <SectionLabel>{"// points clés"}</SectionLabel>
+          <SectionHeader>{"// points clés"}</SectionHeader>
           <ul className="grid gap-2.5 sm:grid-cols-2">
             {project.highlights.map((h) => (
               <li
@@ -349,7 +575,7 @@ function OverlayContent({ project, onContact, onClose }: OverlayContentProps) {
 
         {/* Architecture */}
         <section className="flex flex-col gap-3">
-          <SectionLabel>{"// architecture"}</SectionLabel>
+          <SectionHeader>{"// architecture"}</SectionHeader>
           <div className="overflow-hidden rounded-xl border border-border/50 bg-background/40">
             <div className="border-b border-border/40 px-4 py-2">
               <span className="font-mono text-xs text-muted-foreground">
@@ -364,9 +590,19 @@ function OverlayContent({ project, onContact, onClose }: OverlayContentProps) {
           </div>
         </section>
 
+        {/* Chronologie (case study) */}
+        {project.timeline?.length ? (
+          <TimelineSection timeline={project.timeline} />
+        ) : null}
+
+        {/* Impact (case study) */}
+        {project.impact ? (
+          <ImpactSection impact={project.impact} />
+        ) : null}
+
         {/* Stack technique */}
         <section className="flex flex-col gap-3">
-          <SectionLabel>{"// stack technique"}</SectionLabel>
+          <SectionHeader>{"// stack technique"}</SectionHeader>
           <div className="flex flex-wrap gap-2">
             {project.tech.map((t) => (
               <Badge
@@ -382,7 +618,7 @@ function OverlayContent({ project, onContact, onClose }: OverlayContentProps) {
 
         {/* Mon rôle */}
         <section className="flex flex-col gap-3">
-          <SectionLabel>{"// mon rôle"}</SectionLabel>
+          <SectionHeader>{"// mon rôle"}</SectionHeader>
           <p className="text-sm leading-relaxed text-muted-foreground md:text-base">
             {project.role}
           </p>

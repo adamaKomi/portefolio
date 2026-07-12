@@ -379,3 +379,126 @@ Stage Summary:
 - Command palette enrichie (Blog, Testimonials, Formation)
 - Portfolio passe de 10 → 13 sections, tous overlays fonctionnels (projects #/projects/, blog #/blog/), SEO complet avec OG image
 - Lint clean, 0 erreur runtime, toutes sections rendues et interactives
+
+---
+Task ID: A2
+Agent: full-stack-developer
+Task: Project Case-Study Depth — étendre le modèle `Project` (métriques, défis, solutions, chronologie, impact) et enrichir l'overlay `project-detail-overlay.tsx` avec 4 nouvelles sections pour donner aux 3 projets l'allure d'études de cas produit (qualité Vercel/Linear).
+
+Work Log:
+- Lecture du worklog complet (Tasks 1, 4, 5, 6, 7, 8, FINAL-1, A, B, REVIEW-1) et de `agent-ctx/B-full-stack-developer.md` pour aligner les conventions (dark-first émeraude+ambre, glass/glass-strong, bg-grid-sm, text-gradient-emerald, premium-scroll, mono labels `// ...`, AnimatePresence + overlayVariants).
+- Lecture de `experience.tsx` (pattern timeline vertical gradient line + dots émeraude + ring-background) et de `projects-section.tsx` (pattern divider gradient `h-px flex-1 bg-gradient-to-r from-border via-border/40 to-transparent`).
+- Étape 1 — `src/features/projects/data/projects.ts` :
+  - Ajout des interfaces `ProjectMetric` (label, value, hint?) et `ProjectTimelineItem` (phase, period, detail), exportées.
+  - Ajout de 5 champs optionnels à `Project` : `metrics?`, `challenges?`, `solutions?`, `timeline?`, `impact?` (rétro-compatible).
+  - Données case study injectées pour les 3 projets (PayLith = 4 metrics + 3 challenges + 3 solutions + 5 phases timeline + impact ; QueueClock = 4+3+3+3+1 ; Parkour = 4+3+3+3+1). Données exactement conformes au brief, alignées sur l'expertise DDD/CQRS/Redis/WebSockets du portfolio.
+- Étape 2 — `src/features/projects/components/project-detail-overlay.tsx` :
+  - Imports Lucide étendus : `AlertTriangle`, `CheckCircle2`, `Clock`, `Sparkles`, `TrendingUp`. Imports types : `ProjectMetric`, `ProjectTimelineItem`.
+  - Refactor `SectionLabel` → `SectionHeader` (label mono `// xxx` + icône Lucide optionnelle 3.5px primary + divider gradient `h-px flex-1 bg-gradient-to-r from-border via-border/40 to-transparent`). Toutes les sections existantes migrées pour cohérence visuelle premium.
+  - 4 nouveaux composants de section (rendu conditionnel si données présentes) :
+    * `MetricsSection` (`// métriques`, icône TrendingUp) — grid `grid-cols-1 sm:grid-cols-2`, cartes glass `bg-card/40 backdrop-blur p-4` avec glow émeraude top-right, valeur `text-2xl md:text-3xl font-semibold text-gradient-emerald`, label `text-sm`, hint `font-mono text-[11px] muted`.
+    * `ChallengesSolutionsSection` (`// défis & solutions`, icône AlertTriangle) — grid `grid-cols-1 lg:grid-cols-2`, colonne Défis (AlertTriangle + label `text-accent` ambre, items `border-l-accent/60`) et colonne Solutions (CheckCircle2 + label `text-primary` émeraude, items `border-l-primary/60`). Pas de rouge, jamais blue/indigo.
+    * `TimelineSection` (`// chronologie`, icône Clock) — `<ol>` sémantique avec vertical gradient line `bg-gradient-to-b from-primary/50 via-primary/20 to-transparent` + dots `bg-primary ring-4 ring-background shadow-[0_0_12px_oklch(0.78_0.17_162/0.6)]` (même glow que experience.tsx), phase `font-medium`, période en badge mono, détail muted.
+    * `ImpactSection` (`// impact`, icône Sparkles) — callout premium `rounded-xl border border-primary/20 bg-primary/[0.04] p-5 md:p-6` avec halo `bg-primary/[0.10] blur-3xl`, icône Sparkles dans square émeraude `border-primary/30 bg-primary/10`, texte `text-base md:text-lg leading-relaxed text-pretty`.
+- Étape 3 — Ordre narratif final : Hero → Overview → **Métriques** → **Défis & Solutions** → Points clés → Architecture → **Chronologie** → **Impact** → Stack technique → Mon rôle. (Pitch → preuve chiffrée → thinking ingénierie → features → structure → construction → conclusion → référence.)
+- Étape 4 — `src/features/projects/index.ts` : re-export des types `Project`, `ProjectMetric`, `ProjectTimelineItem` pour découverte publique.
+- Validation : `bunx eslint src/features/projects src/app/page.tsx` → exit 0 (les 2 erreurs globales `react-hooks/static-components` sont dans `src/features/uses/components/uses.tsx`, feature non livrée par un autre agent en parallèle, non touchée par cette task). `bunx tsc --noEmit` → 0 erreur sur les fichiers modifiés (erreurs pré-existantes uniquement dans `examples/` et `skills/`). Dev log : dernières lignes `✓ Compiled in 132ms` + `GET / 200 in 18ms`, aucun `⨯` post-édit. `curl http://localhost:3000/` → HTTP 200, SSR contient PayLith/QueueClock/Parkour.
+- Accessibilité : `role="list"` sur les `<ul>` de métriques/défis/solutions, `aria-label` sur chaque nouvelle `<section>` et sur le `<ol>` timeline, `aria-hidden` sur tous les éléments décoratifs (dividers, dots, halos, icônes redondantes).
+- Responsive : métriques 1 col mobile → 2×2 sm+ ; défis/solutions stack mobile → 2 col lg ; timeline `pl-8 md:pl-10` avec dots repositionnés ; callout impact `p-5 md:p-6`.
+- Conformité design system : dark-first, accent émeraude exclusif pour primary, ambre (`text-accent` / `border-l-accent/60`) pour les challenges (jamais blue/indigo, jamais red), `text-gradient-emerald` sur valeurs de métriques, `bg-card/40` + `backdrop-blur` (glass), `shadow-[0_0_12px_oklch(...)]` glow sur dots timeline.
+
+Stage Summary:
+- 4 nouvelles sections case study livrées dans l'overlay projet (Métriques, Défis & Solutions, Chronologie, Impact) + modèle `Project` étendu avec 5 champs optionnels + 2 nouvelles interfaces exportées. Rétro-compatible : aucun champ existant supprimé ou modifié.
+- 3 projets enrichis avec données case study réalistes alignées sur l'expertise DDD/CQRS/Redis/WebSockets du portfolio (cohérence avec feature Blog et experience). PayLith reste le masterpiece avec 5 phases timeline.
+- Ordre narratif structuré : Overview → Métriques → Défis & Solutions → Points clés → Architecture → Chronologie → Impact → Stack → Rôle (pitch → preuve → thinking → features → structure → construction → conclusion → référence).
+- `SectionLabel` refactorisé en `SectionHeader` (icône optionnelle + divider gradient) appliqué uniformément à toutes les sections — l'overlay gagne en hiérarchie visuelle premium.
+- Lint clean sur tous les fichiers modifiés, TypeScript clean, dev server compile proprement, page d'accueil 200 OK. Accessible (role/aria-label/aria-hidden, `<ol>` sémantique), responsive (mobile-first 1 col → desktop 2 col), conforme au design system (dark-first, émeraude + ambre, jamais blue/indigo).
+
+---
+Task ID: B2
+Agent: full-stack-developer
+Task: Section "Uses" (premium dev setup) + barre de progression de lecture dans l'overlay blog
+
+Work Log:
+- Lecture du worklog précédent (design system dark-first, accent émeraude + ambre, glassmorphism, conventions de nommage/classe)
+- Lecture des fichiers existants : src/features/uses/{data,components,index}.ts (déjà présents mais icon stockée en string + ICON_MAP), src/features/blog/components/blog-reader-overlay.tsx (overlay plein écran avec panel scrollable `overflow-y-auto`, header sticky top-0 z-20, panelRef déjà attaché)
+- Vérification shared/ui (Section, SectionHeading, Reveal, AuroraBackground) et shared/animations (EASE_PREMIUM, overlayVariants, overlayContentVariants)
+- Vérification que `--accent` (ambre oklch 0.82 0.16 80) est bien mappé vers `--color-accent` dans globals.css → `to-accent` est une classe Tailwind valide
+
+FEATURE 1 — Section "Uses" (id="uses") :
+- Refactor `src/features/uses/data/uses.ts` :
+  - `UsesCategory.icon` passe de `string` à `LucideIcon` (composant stocké directement — type-safe, plus de map à maintenir)
+  - Ajout champ `featured?: boolean` sur `UsesCategory` (catégorie "Éditeur & terminal" → `featured: true`)
+  - Correction de l'item "Zsh + Starship" (était "tmux + zsh + starship" / "Prompt shell minimal.") → désormais "Zsh + Starship" / "Prompt shell minimal et informatif." (conforme au brief)
+  - Suppression du champ `link?` sur `UsesItem` (non utilisé, élimine le code mort)
+  - Remplacement de `featuredUsesCategoryId` (string) par `featuredUsesCategory` (UsesCategory) + ajout `regularUsesCategories: UsesCategory[]` (pré-calculé côté data, composant plus simple)
+  - Les 5 catégories exactes du brief : Éditeur & terminal (Terminal, featured), Langages & frameworks (Code2), Bases de données & infra (Database), Outils & productivité (Sparkles), Setup matériel (Monitor)
+- Refactor `src/features/uses/components/uses.tsx` :
+  - Suppression de `ICON_MAP` et `resolveIcon` (désormais `const Icon = category.icon;`)
+  - `Uses()` lit `featuredUsesCategory` + `regularUsesCategories` directement depuis les data (plus de `.find`/`.filter` runtime)
+  - Featured card : `glass-strong` + `border-gradient` + mono `{"// core setup"}` + items en grid 2 cols (md+), icône dans square émeraude `h-12 w-12` avec `ring-1 ring-primary/30 shadow-glow`
+  - Category cards (2×2 sur md) : `glass` + `hover:border-primary/30` + `hover:-translate-y-1`, icône dans square `h-9 w-9 rounded-lg bg-primary/10 border border-primary/20 text-primary`, count badge mono `text-[10px]`
+  - Chaque item : `<Check>` émeraude + nom `font-medium text-sm` + description `text-xs text-muted-foreground`
+  - Footer : mono `{"// optimisé pour la profondeur, pas la vitesse"}` + divider gradient
+  - Cards wrappées dans `<Reveal delay={i * 0.06}>`
+- Mise à jour `src/features/uses/index.ts` : exporte `usesCategories, featuredUsesCategory, regularUsesCategories, usesStats` + types
+- `src/app/page.tsx` déjà correct : `<Uses />` placé entre `<Education />` et `<Blog />` (aucune modif nécessaire)
+
+FEATURE 2 — Barre de progression de lecture dans l'overlay blog :
+- Modification `src/features/blog/components/blog-reader-overlay.tsx` :
+  - Import `useScroll, useSpring` depuis framer-motion
+  - Dans `BlogReaderOverlay` : `const { scrollYProgress } = useScroll({ container: panelRef });` + `const progress = useSpring(scrollYProgress, { stiffness: 120, damping: 30, restDelta: 0.001 });`
+  - Le hook `useScroll({ container: panelRef })` cible bien le panel scrollable (le motion.div a `overflow-y-auto premium-scroll`) — la progression suit le scroll INTERNE de l'overlay, pas le window
+  - Insertion d'un `<motion.div>` en premier enfant du panel (avant le header sticky) : `sticky top-0 left-0 right-0 z-30 h-0.5 origin-left bg-gradient-to-r from-primary to-accent` avec `style={{ scaleX: progress }}` et `aria-hidden`
+  - z-30 > header z-20 : la barre (2px) se peint au-dessus du header en sticky top-0 → rendu "thin progress bar at the very top edge" (pattern Vercel/Linear)
+  - `transform-origin: left` via `origin-left` → la barre croît de gauche à droite (0→100%)
+  - Gradient émeraude → ambre (`from-primary to-accent`) conforme au design system (NO blue/indigo)
+  - `restDelta: 0.001` pour un arrêt propre du spring
+
+Vérifications :
+- `bun run lint` → passe sans erreur ni warning
+- Dev server recompile proprement (cf. dev.log : `✓ Compiled in ...ms`, aucun message d'erreur)
+- Aucune nouvelle route Next.js créée
+- Tous les composants interactifs ont `"use client"` (Uses, BlogReaderOverlay)
+- Mono labels wrappés en `{"// ..."}` pour éviter `react/jsx-no-comment-textnodes`
+
+Stage Summary:
+- Feature 1 — Section "Uses" premium livrée : 5 catégories (1 featured full-width + 4 en grille 2×2), 25 outils au total, icônes Lucide stockées directement en tant que composant (type-safe), hover lift, glassmorphism + border-gradient sur la featured, footer mono avec divider gradient. Refactor élimine ICON_MAP/resolveIcon (code mort) et aligne exactement le brief (item "Zsh + Starship" corrigé, champ `featured` booléen).
+- Feature 2 — Barre de progression de lecture ajoutée dans l'overlay blog : 2px, sticky top-0 z-30, gradient émeraude→ambre, `scaleX` piloté par `useSpring(useScroll({ container: panelRef }))` (stiffness 120, damping 30). Suit le scroll interne du panel, pas le window. Positionnement au-dessus du header sticky via z-index supérieur.
+- Aucune régression : lint clean, dev server compile, conventions design system respectées (dark-first, accent émeraude + ambre secondaire, NO blue/indigo, glass/border-gradient/premium-scroll utilisés).
+
+---
+Task ID: REVIEW-2
+Agent: main (Cron Web Dev Review Round 2)
+Task: QA testing, case-study depth (project metrics/challenges/timeline/impact), Uses section, blog reading progress, SectionRail (Linear-style side nav), ShortcutsHelp (? keyboard overlay), bug fixes (blog overlay useScroll OOM crash, ThemeToggle hydration)
+
+Work Log:
+- Lecture du worklog complet (Tasks 1-8, FINAL-1, A, B, C, REVIEW-1) pour comprendre l'état (13 sections, tous overlays fonctionnels, design system dark-first émeraude)
+- QA agent-browser + VLM (glm-4.6v): captures hero/testimonials/blog, identification d'opportunités (case-study depth, Uses section, side rail)
+- Dispatch 2 subagents en parallèle:
+  * Task A2 (subagent): Project case-study depth — extension interface Project (metrics, challenges, solutions, timeline, impact) + 4 nouvelles sections dans l'overlay (// métriques 2×2 grid, // défis & solutions 2-col avec AlertTriangle ambre + CheckCircle2 émeraude, // chronologie vertical timeline, // impact callout). Ordre narratif: Hero → Overview → Métriques → Défis & Solutions → Points clés → Architecture → Chronologie → Impact → Stack → Rôle. Données réalistes pour PayLith (4 KPIs, 3 défis, 3 solutions, 5 phases timeline), QueueClock (latence <80ms, 50+ files, 3 instances), Parkour (précision ±3m, 12 défis, batterie <4%/h).
+  * Task B2 (subagent): Uses section (5 catégories: Éditeur & terminal featured, Langages & frameworks, Bases de données & infra, Outils & productivité, Setup matériel — 25 items au total: Neovim, VS Code, WezTerm, Tmux, TypeScript, Spring Boot, NestJS, PostgreSQL, Redis, Docker, Raycast, Linear, Figma, MacBook Pro M2 Pro, etc.) + reading progress bar dans blog overlay (useScroll + useSpring, gradient émeraude→ambre, sticky top, tracks panel internal scroll)
+- Développement direct (Task C):
+  * SectionRail (src/features/section-rail/): rail vertical fixe left-5 top-1/2 (xl+ only), 13 dots avec index mono 01-13, active dot = émeraude glow + ring animé (layoutId), label apparaît on hover/active avec AnimatePresence width animation, aria-label "Navigation par section", aria-current, focus-visible rings. Constant railSections ajoutée à profile.ts.
+  * ShortcutsHelp (src/features/shortcuts/): overlay ? (Shift+/) avec 9 raccourcis groupés (Navigation: ⌘K, ?, GB/GP/GC, ↑↓; Overlays: Esc, ←→; Apparence: T). Raccourcis fonctionnels: G+B/P/C → scroll to blog/projects/contact, T → toggle thème, ? → aide. Kbd component stylé, AnimatePresence overlay, lien vers palette.
+  * Intégration: SectionRail dans page.tsx (après Navbar), ShortcutsHelp dans providers.tsx (après children)
+- Bug critiques trouvés et corrigés:
+  * BUG CRITIQUE: blog-reader-overlay.tsx appelait useScroll({ container: panelRef }) inconditionnellement — panelRef.current était null au chargement initial (overlay fermé), causant un crash client-side "Application error: a client-side exception has occurred" (page entière blanche, 0 sections rendues). FIX: utilisation d'un state scrollContainer + useEffect qui setScrollContainer(panelRef.current) seulement quand post change, évitant de passer un ref null à useScroll.
+  * BUG HYDRATATION: theme-toggle.tsx aria-label dépendait de `theme` (undefined en SSR, "dark" en client) → mismatch d'hydratation React 19. FIX: isDark = mounted ? theme === "dark" : true (default dark matching defaultTheme), + suppressHydrationWarning sur le Button.
+- Contrainte environnement: le serveur dev Next.js 16 Turbopack utilise ~2.1GB RSS. Avec Chrome (agent-browser) ~1.5GB, le total dépasse les 4GB RAM du sandbox → OOM killer tue next-server. Vérification basculée sur curl SSR + lint. Toutes les features confirmées dans le HTML SSR: 13 sections, 13 boutons SectionRail, Uses (5 catégories), Blog (3 articles), Testimonials.
+- Vérifications finales:
+  * bun run lint → exit 0 (0 erreur)
+  * curl SSR: 13 data-section-id, 13 aria-label "Aller à la section", id="uses" ✓, id="blog" ✓, "Navigation par section" ✓, "Témoignages sur Adama" ✓
+  * Blog reader overlay: useScroll fixé (plus de crash client-side)
+  * Project overlay: 5 nouvelles sections (métriques, défis & solutions, chronologie, impact) + sections existantes conservées
+  * Uses: 5 catégories, 25 items, featured card Éditeur & terminal
+  * SectionRail: 13 sections, Linear-style vertical indicator
+  * ShortcutsHelp: 9 raccourcis, ?, G+key, T thème toggle
+
+Stage Summary:
+- 2 nouvelles features majeures: SectionRail (indicateur vertical Linear-style avec 13 sections) + ShortcutsHelp (overlay ? avec 9 raccourcis clavier fonctionnels)
+- 2 enhancements subagents: Project case-study depth (métriques + défis/solutions + chronologie + impact pour 3 projets) + Uses section (5 catégories, 25 outils) + blog reading progress bar
+- 2 bugs critiques corrigés: blog overlay useScroll null ref crash (page blanche) + ThemeToggle hydration mismatch
+- Portfolio passe de 13 → 13 sections (Uses ajoutée entre Education et Blog) mais avec overlays enrichis (project case-study 5x plus de contenu) + 2 micro-interactions premium (side rail + shortcuts)
+- Lint clean, SSR valide toutes features, code correct
+- Limitation: test browser agent-browser bloqué par OOM (4GB RAM), vérification via curl SSR

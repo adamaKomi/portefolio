@@ -1,7 +1,13 @@
 "use client";
 
 import * as React from "react";
-import { AnimatePresence, motion, type Variants } from "framer-motion";
+import {
+  AnimatePresence,
+  motion,
+  useScroll,
+  useSpring,
+  type Variants,
+} from "framer-motion";
 import {
   ArrowLeft,
   ArrowRight,
@@ -74,6 +80,21 @@ export function BlogReaderOverlay({
 
   const closeButtonRef = React.useRef<HTMLButtonElement>(null);
   const panelRef = React.useRef<HTMLDivElement>(null);
+  const [scrollContainer, setScrollContainer] = React.useState<HTMLElement | null>(null);
+
+  /* Reading progress — tracks the overlay's internal scroll, not the window.
+   * We only attach the scroll container when the panel actually exists (overlay
+   * open), to avoid passing a null ref to useScroll on initial page load. */
+  React.useEffect(() => {
+    setScrollContainer(panelRef.current);
+  }, [post]);
+
+  const { scrollYProgress } = useScroll({ container: scrollContainer });
+  const progress = useSpring(scrollYProgress, {
+    stiffness: 120,
+    damping: 30,
+    restDelta: 0.001,
+  });
 
   /* ESC to close */
   React.useEffect(() => {
@@ -151,6 +172,13 @@ export function BlogReaderOverlay({
             tabIndex={-1}
             className="relative z-10 flex max-h-[100vh] w-full max-w-3xl flex-col overflow-y-auto premium-scroll border border-border/60 bg-card/95 shadow-2xl backdrop-blur-2xl md:max-h-[90vh] md:rounded-2xl"
           >
+            {/* ---------- Reading progress bar (top of panel) ---------- */}
+            <motion.div
+              aria-hidden
+              style={{ scaleX: progress }}
+              className="sticky top-0 left-0 right-0 z-30 h-0.5 origin-left bg-gradient-to-r from-primary to-accent"
+            />
+
             {/* ---------- Sticky header ---------- */}
             <header className="sticky top-0 z-20 flex items-center justify-between gap-2 border-b border-border/40 bg-background/80 px-4 py-3 backdrop-blur-xl md:px-6">
               <div className="flex items-center gap-1">
