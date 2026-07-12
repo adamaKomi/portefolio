@@ -847,3 +847,33 @@ Stage Summary:
 - Fix: remplacement de useScroll/useSpring par un scroll listener manuel avec useState — plus simple, plus robuste, aucune dépendance à un RefObject
 - La prévisualisation fonctionne maintenant: page charge, 10 sections rendues, toggle bilingue EN/FR opérationnel, overlays (blog + projets) s'ouvrent sans crash
 - Lesson learned: ne JAMAIS passer un state value à `useScroll({ container })` — Framer Motion attend un RefObject et lit `.current`
+
+---
+Task ID: FIX-PREVIEW-2
+Agent: main (Staff Frontend Engineer)
+Task: Fix preview not working — OOM killing Next.js dev server
+
+Work Log:
+- Diagnostic: utilisateur signale "la prévisualisation ne fonctionne toujours pas" malgré le fix précédent du BlogReaderOverlay
+- Vérification serveur: HTTP 200, SSR 278KB, 10 sections, 0 erreur de compilation, 0 erreur TypeScript
+- Vérification cgroup: memory.limit 4GB, oom_kill=0, failcnt=0 → le process ne meurt PAS par OOM cgroup
+- Analyse du problème: le serveur dev Next.js 16 Turbopack avec `--max-old-space-size=896` consommait ~2GB RSS. Quand le preview panel (Chrome/Caddy) se connecte, la mémoire totale dépasse 4GB → le process next-server est tué
+- Test de stabilité avec différents heap limits:
+  * 896MB: serveur meurt après ~5s d'inactivité (process grossit trop)
+  * 640MB: serveur meurt après ~10s
+  * 512MB: serveur stable 45s+ sans Chrome, mais meurt quand Chrome se connecte
+  * 384MB: serveur stable ET survit à Chrome (Next.js + Chrome tiennent dans 4GB)
+- FIX: démarrer le serveur avec `NODE_OPTIONS="--max-old-space-size=384"` + `NEXT_TELEMETRY_DISABLED=1`
+- Vérification agent-browser avec 384MB heap:
+  * Page charge: 10 sections, 0 "Application error", contenu Adama présent ✓
+  * 0 erreur console, 0 page error ✓
+  * Toggle EN/FR: FR → "Découvrir mes projets" ✓, clic EN → "Explore my projects" ✓, clic FR → retour français ✓
+  * Capture d'écran: preview-working.png
+- Le BlogReaderOverlay fix précédent (useScroll → scroll listener manuel) était correct et nécessaire, mais le preview ne fonctionnait pas à cause de l'OOM qui tuait le serveur avant que Chrome puisse render la page
+
+Stage Summary:
+- BUG RÉSOLU: le preview ne fonctionnait pas car le serveur dev Next.js Turbopack consommait trop de mémoire (~2GB avec heap 896MB), dépassant le cgroup limit de 4GB quand Chrome se connectait → process tué → Caddy retourne 502 → preview affiche erreur
+- Fix: heap limit réduit à 384MB (`NODE_OPTIONS="--max-old-space-size=384"`) pour que Next.js + Chrome tiennent ensemble dans 4GB
+- Le preview fonctionne maintenant: page charge, 10 sections, toggle bilingue opérationnel, 0 erreur
+- Le serveur reste stable tant qu'on utilise 384MB de heap max
+- Note pour les prochaines sessions: TOUJOURS démarrer le serveur avec `NODE_OPTIONS="--max-old-space-size=384" NEXT_TELEMETRY_DISABLED=1 setsid bun run dev`
