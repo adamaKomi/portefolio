@@ -12,7 +12,7 @@ import { Contact } from "@/features/contact";
 import { Footer } from "@/features/footer";
 import { SectionRail } from "@/features/section-rail";
 import { Providers } from "./providers";
-import { ScrollProgress } from "@/shared/ui/scroll-progress";
+import { ScrollProgress, BackToTop } from "@/shared/ui";
 
 export default function Home() {
   return (
@@ -34,6 +34,7 @@ export default function Home() {
           <Contact />
         </main>
         <Footer />
+        <BackToTop />
       </div>
     </Providers>
   );

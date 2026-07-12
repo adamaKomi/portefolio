@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { ArrowRight, ArrowUpRight, Sparkles, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { profile, socials } from "@/shared/constants/profile";
@@ -14,15 +14,29 @@ import { TerminalCard } from "./terminal-card";
 
 export function Hero() {
   const t = useT();
+  const sectionRef = React.useRef<HTMLElement>(null);
+
+  // Parallax: content moves up slightly and fades as you scroll past hero
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start start", "end start"],
+  });
+  const contentY = useTransform(scrollYProgress, [0, 1], [0, -80]);
+  const contentOpacity = useTransform(scrollYProgress, [0, 0.6, 1], [1, 0.5, 0]);
+
   return (
     <section
+      ref={sectionRef}
       id="hero"
       data-section-id="hero"
       className="relative min-h-[100svh] flex items-center overflow-hidden pt-28 pb-16"
     >
       <AuroraBackground variant="hero" />
 
-      <div className="relative mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
+      <motion.div
+        style={{ y: contentY, opacity: contentOpacity }}
+        className="relative mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8"
+      >
         <div className="grid lg:grid-cols-[1.15fr_0.85fr] gap-10 lg:gap-16 items-center">
           {/* Left: copy */}
           <motion.div
@@ -190,7 +204,7 @@ export function Hero() {
             />
           </div>
         </motion.div>
-      </div>
+      </motion.div>
     </section>
   );
 }

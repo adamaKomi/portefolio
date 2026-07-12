@@ -6,6 +6,7 @@ import { MapPin, Sparkles, Code2, Server, Cpu } from "lucide-react";
 import { Section, SectionHeading, Reveal, AuroraBackground } from "@/shared/ui";
 import { profile, stats } from "@/shared/constants/profile";
 import { fadeUp, staggerContainer, viewportOnce } from "@/shared/animations";
+import { useCountUp } from "@/shared/hooks/use-count-up";
 import { useT } from "@/shared/i18n";
 import { cn } from "@/lib/utils";
 
@@ -143,39 +144,51 @@ export function About() {
             className="grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-5"
           >
             {stats.map((_, idx) => (
-              <motion.div
-                key={idx}
-                variants={fadeUp}
-                className={cn(
-                  "group relative glass rounded-xl p-5 md:p-6 overflow-hidden",
-                  "transition-all duration-300 hover:-translate-y-1 hover:border-primary/30"
-                )}
-              >
-                {/* Hover glow */}
-                <div
-                  aria-hidden
-                  className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-                  style={{
-                    background:
-                      "radial-gradient(circle at top right, oklch(0.78 0.17 162 / 0.1), transparent 60%)",
-                  }}
-                />
-                <div className="relative flex flex-col gap-1">
-                  <span className="text-4xl md:text-5xl font-semibold tracking-tight text-gradient-emerald leading-none">
-                    {t(`about.stat${idx + 1}Value`)}
-                  </span>
-                  <span className="mt-2 text-sm font-medium text-foreground">
-                    {t(`about.stat${idx + 1}Label`)}
-                  </span>
-                  <span className="text-xs text-muted-foreground text-pretty">
-                    {t(`about.stat${idx + 1}Sub`)}
-                  </span>
-                </div>
-              </motion.div>
+              <StatCard key={idx} idx={idx} />
             ))}
           </motion.div>
         </div>
       </div>
     </Section>
+  );
+}
+
+function StatCard({ idx }: { idx: number }) {
+  const t = useT();
+  const value = t(`about.stat${idx + 1}Value`);
+  const { ref, display } = useCountUp(value, { delay: idx * 100 });
+
+  return (
+    <motion.div
+      variants={fadeUp}
+      className={cn(
+        "group relative glass rounded-xl p-5 md:p-6 overflow-hidden",
+        "transition-all duration-300 hover:-translate-y-1 hover:border-primary/30"
+      )}
+    >
+      {/* Hover glow */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+        style={{
+          background:
+            "radial-gradient(circle at top right, oklch(0.78 0.17 162 / 0.1), transparent 60%)",
+        }}
+      />
+      <div className="relative flex flex-col gap-1">
+        <span
+          ref={ref}
+          className="text-4xl md:text-5xl font-semibold tracking-tight text-gradient-emerald leading-none tabular-nums"
+        >
+          {display}
+        </span>
+        <span className="mt-2 text-sm font-medium text-foreground">
+          {t(`about.stat${idx + 1}Label`)}
+        </span>
+        <span className="text-xs text-muted-foreground text-pretty">
+          {t(`about.stat${idx + 1}Sub`)}
+        </span>
+      </div>
+    </motion.div>
   );
 }

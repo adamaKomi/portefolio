@@ -5,3 +5,4 @@ export { AuroraBackground } from "./aurora-background";
 export { ScrollProgress } from "./scroll-progress";
 export { Marquee } from "./marquee";
 export { CursorGlow } from "./cursor-glow";
+export { BackToTop } from "./back-to-top";

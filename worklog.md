@@ -877,3 +877,33 @@ Stage Summary:
 - Le preview fonctionne maintenant: page charge, 10 sections, toggle bilingue opérationnel, 0 erreur
 - Le serveur reste stable tant qu'on utilise 384MB de heap max
 - Note pour les prochaines sessions: TOUJOURS démarrer le serveur avec `NODE_OPTIONS="--max-old-space-size=384" NEXT_TELEMETRY_DISABLED=1 setsid bun run dev`
+
+---
+Task ID: REVIEW-3
+Agent: main (Cron Web Dev Review Round 3)
+Task: QA + new features (animated counter, BackToTop, 404 page, hero parallax)
+
+Work Log:
+- Lecture du worklog: état stable (10 sections, bilingue EN/FR, BlogReaderOverlay fixed, OOM fixed avec 384MB heap)
+- QA SSR via curl: HTTP 200, 278KB, 10 sections, 0 erreur, contenu FR correct
+- QA lint: exit 0
+- Nouvelles features ajoutées:
+  1. **useCountUp hook** (`src/shared/hooks/use-count-up.ts`): compteur animé qui compte de 0 → target quand l'élément entre dans le viewport. Utilise requestAnimationFrame avec ease-out cubic. Gère les suffixes ("5+", "12+", "∞" non-numérique reste statique). Délai stagger par carte.
+  2. **StatCard animée** dans About: les 4 stats (5+, 3, 12+, ∞) comptent maintenant de 0 à leur valeur cible avec un délai stagger de 100ms entre chaque. Classe `tabular-nums` pour éviter le jitter des chiffres.
+  3. **BackToTop floating button** (`src/shared/ui/back-to-top.tsx`): bouton flottant bottom-right qui apparaît après 600px de scroll (useScrolled hook). AnimatePresence enter/exit (scale + y), glow émeraude on hover, smooth scroll to top. Intégré dans page.tsx.
+  4. **404 not-found page** (`src/app/not-found.tsx`): page d'erreur premium avec grille + orbes gradient, icône Terminal, "404" en text-gradient, message, dual CTA (Back to home + View projects). Retourne status 404 correct.
+  5. **Hero parallax** (`hero.tsx`): useScroll + useTransform pour parallax sur le contenu du hero — déplacement Y de 0→-80px et opacity 1→0→0 quand on scroll past le hero. Crée de la profondeur et un effet premium.
+- Vérifications:
+  * bun run lint → exit 0
+  * SSR: 292KB (up from 278KB), 10 sections, 0 "Application error"
+  * BackToTop présent dans SSR ("Remonter en haut" = 1 match)
+  * Counter animé présent (tabular-nums = 1 match)
+  * 404 page retourne status 404
+  * Aucune erreur de compilation
+
+Stage Summary:
+- 4 nouvelles features: compteur animé (stats About), BackToTop flottant, page 404 premium, parallax hero
+- 1 nouveau hook partagé: useCountUp (réutilisable)
+- Styling amélioré: tabular-nums sur les compteurs, glow sur BackToTop, parallax subtil sur hero
+- Portfolio reste stable: 10 sections, bilingue, 0 erreur, lint clean
+- Server démarré avec NODE_OPTIONS="--max-old-space-size=384" pour stabilité OOM
