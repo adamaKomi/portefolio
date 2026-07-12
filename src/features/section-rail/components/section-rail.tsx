@@ -4,6 +4,7 @@ import * as React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { railSections } from "@/shared/constants/profile";
 import { useActiveSection } from "@/shared/hooks/use-section-observer";
+import { useT } from "@/shared/i18n";
 import { cn } from "@/lib/utils";
 
 /**
@@ -13,6 +14,7 @@ import { cn } from "@/lib/utils";
  */
 export function SectionRail() {
   const active = useActiveSection();
+  const t = useT();
   const [hovered, setHovered] = React.useState<string | null>(null);
 
   const handleClick = (id: string) => {
@@ -21,7 +23,7 @@ export function SectionRail() {
 
   return (
     <motion.nav
-      aria-label="Navigation par section"
+      aria-label={t("common.navigationBySection")}
       initial={{ opacity: 0, x: 12 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.6, delay: 0.8, ease: [0.16, 1, 0.3, 1] }}
@@ -40,7 +42,7 @@ export function SectionRail() {
                 onMouseLeave={() => setHovered(null)}
                 onFocus={() => setHovered(section.id)}
                 onBlur={() => setHovered(null)}
-                aria-label={`Aller à la section ${section.label}`}
+                aria-label={t("common.rail." + section.id) ? `${t("common.navigationBySection")}: ${t(section.labelKey)}` : section.label}
                 aria-current={isActive ? "true" : undefined}
                 className={cn(
                   "group flex items-center gap-3 rounded-full py-1.5 pl-1.5 pr-3 transition-colors",
@@ -100,7 +102,7 @@ export function SectionRail() {
                             : "text-foreground/70"
                         )}
                       >
-                        {section.label}
+                        {t(section.labelKey)}
                       </span>
                     </motion.span>
                   )}

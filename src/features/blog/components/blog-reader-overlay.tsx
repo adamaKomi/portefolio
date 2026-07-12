@@ -20,6 +20,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useT, useLanguage } from "@/shared/i18n";
 import {
   EASE_PREMIUM,
   overlayContentVariants,
@@ -76,7 +77,13 @@ export function BlogReaderOverlay({
   onNavigate,
   onContact,
 }: BlogReaderOverlayProps) {
+  const t = useT();
   const post = slug ? getPost(slug) : undefined;
+
+  // Titre traduit via i18n — fallback sur post.title pour le SSR.
+  const postTitle = post
+    ? t(`blog.${post.i18nKey}.title`) || post.title
+    : "";
 
   const closeButtonRef = React.useRef<HTMLButtonElement>(null);
   const panelRef = React.useRef<HTMLDivElement>(null);
@@ -153,7 +160,7 @@ export function BlogReaderOverlay({
           exit="exit"
           role="dialog"
           aria-modal="true"
-          aria-label={`Article : ${post.title}`}
+          aria-label={t("blog.readerTitle", { title: postTitle })}
         >
           {/* Backdrop */}
           <div
@@ -186,7 +193,7 @@ export function BlogReaderOverlay({
                   variant="ghost"
                   size="icon"
                   onClick={onClose}
-                  aria-label="Retour à la liste des articles"
+                  aria-label={t("blog.back")}
                   className="h-8 w-8 text-muted-foreground hover:text-foreground"
                 >
                   <ArrowLeft className="h-4 w-4" />
@@ -201,7 +208,7 @@ export function BlogReaderOverlay({
                 variant="ghost"
                 size="icon"
                 onClick={onClose}
-                aria-label="Fermer l'article"
+                aria-label={t("common.close")}
                 className="h-8 w-8 text-muted-foreground hover:text-foreground"
               >
                 <X className="h-4 w-4" />
@@ -250,6 +257,14 @@ function OverlayContent({
   onNavigate,
   onContact,
 }: OverlayContentProps) {
+  const t = useT();
+  const { locale } = useLanguage();
+
+  // Champs traduits via i18n (fallback sur les valeurs locales en SSR).
+  const title = t(`blog.${post.i18nKey}.title`) || post.title;
+  const excerpt = t(`blog.${post.i18nKey}.excerpt`) || post.excerpt;
+  const category = t(`blog.${post.i18nKey}.category`) || post.category;
+
   return (
     <>
       {/* ---------- Cover banner ---------- */}
@@ -286,7 +301,7 @@ function OverlayContent({
         <div className="absolute top-4 left-4 md:top-5 md:left-6">
           <span className="inline-flex items-center gap-1.5 rounded-md border border-border/50 bg-background/60 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground backdrop-blur">
             <BookOpen className="h-3 w-3 text-primary" />
-            {post.category}
+            {category}
           </span>
         </div>
       </div>
@@ -297,35 +312,35 @@ function OverlayContent({
         <section className="flex flex-col gap-4">
           {/* Meta row */}
           <div className="flex flex-wrap items-center gap-3 font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
-            <time dateTime={post.date}>{formatPostDate(post.date)}</time>
+            <time dateTime={post.date}>{formatPostDate(post.date, locale)}</time>
             <span aria-hidden className="text-border">·</span>
             <span className="inline-flex items-center gap-1">
               <Clock className="h-3 w-3" aria-hidden />
-              {post.readingTime} min de lecture
+              {t("blog.readingTime", { n: String(post.readingTime) })}
             </span>
           </div>
 
           {/* Title with highlight keyword */}
           <h2 className="text-2xl font-semibold tracking-tight text-balance md:text-4xl">
-            {renderHighlightedTitle(post.title, post.highlightKeyword)}
+            {renderHighlightedTitle(title, post.highlightKeyword)}
           </h2>
 
           {/* Tags */}
           <div className="flex flex-wrap items-center gap-2">
-            {post.tags.map((t) => (
+            {post.tags.map((tag) => (
               <Badge
-                key={t}
+                key={tag}
                 variant="outline"
                 className="bg-card/40 font-mono text-[10px] uppercase tracking-wider text-foreground/80"
               >
-                {t}
+                {tag}
               </Badge>
             ))}
           </div>
 
           {/* Excerpt (lead) */}
           <p className="border-l-2 border-primary/40 pl-4 text-base font-medium leading-relaxed text-foreground/90 text-pretty md:text-lg">
-            {post.excerpt}
+            {excerpt}
           </p>
         </section>
 
@@ -340,7 +355,7 @@ function OverlayContent({
         <div className="flex items-center gap-3 pt-2">
           <span className="h-px flex-1 bg-gradient-to-r from-border to-transparent" />
           <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-            {"// fin de l'article"}
+            {t("blog.endLabel")}
           </span>
           <span className="h-px flex-1 bg-gradient-to-l from-border to-transparent" />
         </div>
@@ -355,7 +370,7 @@ function OverlayContent({
         <div className="grid gap-3 sm:grid-cols-2">
           {prevPost && (
             <NavCard
-              label="Précédent"
+              label={t("blog.prevArticle")}
               post={prevPost}
               onClick={() => onNavigate(prevPost.slug)}
               icon={<ArrowLeft className="h-3.5 w-3.5" />}
@@ -363,7 +378,7 @@ function OverlayContent({
           )}
           {nextPost && (
             <NavCard
-              label="Suivant"
+              label={t("blog.nextArticle")}
               post={nextPost}
               onClick={() => onNavigate(nextPost.slug)}
               icon={<ArrowRight className="h-3.5 w-3.5" />}
@@ -389,7 +404,7 @@ function OverlayContent({
             className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90"
           >
             <Mail className="h-4 w-4" />
-            Me contacter
+            {t("common.contactMe")}
             <ArrowUpRight className="h-4 w-4" />
           </Button>
         </div>
@@ -413,11 +428,15 @@ function NavCard({
   icon: React.ReactNode;
   align?: "left" | "right";
 }) {
+  const t = useT();
+  const { locale } = useLanguage();
+  const title = t(`blog.${post.i18nKey}.title`) || post.title;
+
   return (
     <button
       type="button"
       onClick={onClick}
-      aria-label={`${label} : ${post.title}`}
+      aria-label={`${label} : ${title}`}
       className={cn(
         "group flex flex-col gap-1.5 rounded-xl border border-border/50 bg-card/30 p-4 text-left transition-all duration-200",
         "hover:border-primary/40 hover:bg-card/50 hover:-translate-y-0.5",
@@ -430,10 +449,10 @@ function NavCard({
         {label}
       </span>
       <span className="line-clamp-2 text-sm font-medium text-foreground/90 transition-colors group-hover:text-foreground">
-        {post.title}
+        {title}
       </span>
       <span className="font-mono text-[10px] text-muted-foreground">
-        {formatPostDate(post.date)} · {post.readingTime} min
+        {formatPostDate(post.date, locale)} · {t("blog.readingTime", { n: String(post.readingTime) })}
       </span>
     </button>
   );

@@ -26,10 +26,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Magnetic } from "@/shared/ui/magnetic";
+import { useT } from "@/shared/i18n";
 import { cn } from "@/lib/utils";
 
 import {
-  contactSchema,
+  makeContactSchema,
   budgetOptions,
   type ContactFormValues,
 } from "../schemas/contact-schema";
@@ -41,10 +42,25 @@ import {
  * - État de chargement, toasts sonner, gestion des erreurs champ par champ
  */
 export function ContactForm() {
+  const t = useT();
   const [submitted, setSubmitted] = React.useState(false);
 
+  // Schéma Zod localisé : les messages d'erreur sont traduits via i18n.
+  // Recalculé uniquement quand `t` change (i.e. quand la locale change).
+  const localizedSchema = React.useMemo(
+    () =>
+      makeContactSchema({
+        nameMin: t("contact.err.name"),
+        nameMax: t("contact.err.name"),
+        email: t("contact.err.email"),
+        messageMin: t("contact.err.message"),
+        messageMax: t("contact.err.message"),
+      }),
+    [t],
+  );
+
   const form = useForm<ContactFormValues>({
-    resolver: zodResolver(contactSchema),
+    resolver: zodResolver(localizedSchema),
     defaultValues: {
       name: "",
       email: "",
@@ -73,7 +89,7 @@ export function ContactForm() {
 
       // Succès
       if (res.ok) {
-        toast.success("Message envoyé ! Je vous réponds rapidement.");
+        toast.success(t("contact.success"));
         reset();
         setSubmitted(true);
         // Réautorise un nouvel envoi après un court délai.
@@ -104,18 +120,14 @@ export function ContactForm() {
           }
         }
         if (!hasFieldError) {
-          toast.error(
-            "Une erreur est survenue. Réessayez ou écrivez-moi directement."
-          );
+          toast.error(t("contact.error"));
         } else {
           toast.error("Certains champs nécessitent votre attention.");
         }
         return;
       }
 
-      toast.error(
-        "Une erreur est survenue. Réessayez ou écrivez-moi directement."
-      );
+      toast.error(t("contact.error"));
     } catch {
       toast.error(
         "Réseau indisponible. Réessayez ou écrivez-moi directement par email."
@@ -139,12 +151,12 @@ export function ContactForm() {
             render={({ field }) => (
               <FormItem className="gap-1.5">
                 <FormLabel className="font-mono text-[11px] uppercase tracking-[0.15em] text-muted-foreground">
-                  Nom <span className="text-primary">*</span>
+                  {t("contact.field.name")} <span className="text-primary">*</span>
                 </FormLabel>
                 <FormControl>
                   <Input
                     {...field}
-                    placeholder="Votre nom"
+                    placeholder={t("contact.field.namePlaceholder")}
                     autoComplete="name"
                     className={cn(
                       "h-11 rounded-xl bg-card/40 border-border",
@@ -165,13 +177,13 @@ export function ContactForm() {
             render={({ field }) => (
               <FormItem className="gap-1.5">
                 <FormLabel className="font-mono text-[11px] uppercase tracking-[0.15em] text-muted-foreground">
-                  Email <span className="text-primary">*</span>
+                  {t("contact.field.email")} <span className="text-primary">*</span>
                 </FormLabel>
                 <FormControl>
                   <Input
                     {...field}
                     type="email"
-                    placeholder="vous@entreprise.com"
+                    placeholder={t("contact.field.emailPlaceholder")}
                     autoComplete="email"
                     className={cn(
                       "h-11 rounded-xl bg-card/40 border-border",
@@ -195,15 +207,15 @@ export function ContactForm() {
             render={({ field }) => (
               <FormItem className="gap-1.5">
                 <FormLabel className="font-mono text-[11px] uppercase tracking-[0.15em] text-muted-foreground">
-                  Société{" "}
+                  {t("contact.field.company")}{" "}
                   <span className="text-muted-foreground/50 normal-case tracking-normal">
-                    (optionnel)
+                    ({t("contact.field.companyPlaceholder")})
                   </span>
                 </FormLabel>
                 <FormControl>
                   <Input
                     {...field}
-                    placeholder="Acme Inc."
+                    placeholder={t("contact.field.companyPlaceholder")}
                     autoComplete="organization"
                     className={cn(
                       "h-11 rounded-xl bg-card/40 border-border",
@@ -224,9 +236,9 @@ export function ContactForm() {
             render={({ field }) => (
               <FormItem className="gap-1.5">
                 <FormLabel className="font-mono text-[11px] uppercase tracking-[0.15em] text-muted-foreground">
-                  Budget{" "}
+                  {t("contact.field.budget")}{" "}
                   <span className="text-muted-foreground/50 normal-case tracking-normal">
-                    (optionnel)
+                    ({t("contact.field.companyPlaceholder")})
                   </span>
                 </FormLabel>
                 <Select
@@ -242,7 +254,7 @@ export function ContactForm() {
                         "transition-colors data-[placeholder]:text-muted-foreground/60"
                       )}
                     >
-                      <SelectValue placeholder="Sélectionnez une fourchette" />
+                      <SelectValue placeholder={t("contact.field.budgetPlaceholder")} />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent
@@ -274,12 +286,12 @@ export function ContactForm() {
           render={({ field }) => (
             <FormItem className="gap-1.5">
               <FormLabel className="font-mono text-[11px] uppercase tracking-[0.15em] text-muted-foreground">
-                Message <span className="text-primary">*</span>
+                {t("contact.field.message")} <span className="text-primary">*</span>
               </FormLabel>
               <FormControl>
                 <Textarea
                   {...field}
-                  placeholder="Parlez-moi de votre projet, votre besoin, vos contraintes… Plus c'est précis, mieux c'est."
+                  placeholder={t("contact.field.messagePlaceholder")}
                   rows={5}
                   className={cn(
                     "min-h-[132px] resize-y rounded-xl bg-card/40 border-border",
@@ -298,7 +310,7 @@ export function ContactForm() {
                   )}
                   aria-hidden
                 >
-                  {field.value.length} / 2000
+                  {t("contact.field.messageCount", { n: String(field.value.length) })}
                 </span>
               </div>
             </FormItem>
@@ -316,21 +328,21 @@ export function ContactForm() {
               "shadow-glow transition-all",
               "disabled:opacity-80 disabled:shadow-none"
             )}
-            aria-label="Envoyer le message"
+            aria-label={t("contact.submit")}
           >
             {isSubmitting ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin" />
-                <span>Envoi…</span>
+                <span>{t("contact.sending")}</span>
               </>
             ) : submitted ? (
               <>
                 <CheckCircle2 className="h-4 w-4" />
-                <span>Message envoyé</span>
+                <span>{t("contact.sent")}</span>
               </>
             ) : (
               <>
-                <span>Envoyer le message</span>
+                <span>{t("contact.submit")}</span>
                 <motion.span
                   className="inline-flex"
                   initial={false}

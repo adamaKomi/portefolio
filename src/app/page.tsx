@@ -2,15 +2,12 @@ import { Navbar } from "@/features/navbar";
 import { Hero } from "@/features/hero";
 import { About } from "@/features/about";
 import { Philosophy } from "@/features/philosophy";
-import { Skills } from "@/features/skills";
-import { Technologies } from "@/features/technologies";
+import { Expertise } from "@/features/expertise";
 import { Projects } from "@/features/projects";
-import { Experience } from "@/features/experience";
+import { Journey } from "@/features/journey";
 import { Testimonials } from "@/features/testimonials";
-import { Education } from "@/features/education";
 import { Uses } from "@/features/uses";
 import { Blog } from "@/features/blog";
-import { WhatImLookingFor } from "@/features/what-im-looking-for";
 import { Contact } from "@/features/contact";
 import { Footer } from "@/features/footer";
 import { SectionRail } from "@/features/section-rail";
@@ -28,15 +25,12 @@ export default function Home() {
           <Hero />
           <About />
           <Philosophy />
-          <Skills />
-          <Technologies />
+          <Expertise />
           <Projects />
-          <Experience />
+          <Journey />
           <Testimonials />
-          <Education />
           <Uses />
           <Blog />
-          <WhatImLookingFor />
           <Contact />
         </main>
         <Footer />

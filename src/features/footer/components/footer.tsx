@@ -6,6 +6,7 @@ import { Github, Linkedin, Mail, ArrowUp, Terminal } from "lucide-react";
 import { motion } from "framer-motion";
 import { profile, socials, navSections } from "@/shared/constants/profile";
 import { Button } from "@/components/ui/button";
+import { useT } from "@/shared/i18n";
 
 const socialIcons = {
   github: Github,
@@ -14,6 +15,7 @@ const socialIcons = {
 } as const;
 
 export function Footer() {
+  const t = useT();
   const scrollTop = () =>
     window.scrollTo({ top: 0, behavior: "smooth" });
 
@@ -36,7 +38,7 @@ export function Footer() {
               </span>
             </Link>
             <p className="text-sm text-muted-foreground max-w-xs leading-relaxed">
-              {profile.title} · {profile.subtitle}. Bâtisseur de produits web, mobiles et backend — de l'analyse métier à la production.
+              {t("footer.tagline")}
             </p>
             <div className="flex items-center gap-2">
               {socials.map((s) => {
@@ -61,7 +63,7 @@ export function Footer() {
           {/* Nav */}
           <div className="flex flex-col gap-3">
             <span className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
-              Navigation
+              {t("footer.navTitle")}
             </span>
             {navSections.map((item) => (
               <Link
@@ -73,7 +75,7 @@ export function Footer() {
                   document.getElementById(item.id)?.scrollIntoView({ behavior: "smooth" });
                 }}
               >
-                {item.label}
+                {t(item.labelKey)}
               </Link>
             ))}
           </div>
@@ -81,7 +83,7 @@ export function Footer() {
           {/* Contact */}
           <div className="flex flex-col gap-3">
             <span className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
-              Contact
+              {t("footer.contactTitle")}
             </span>
             <Link
               href={`mailto:${profile.email}`}
@@ -91,7 +93,7 @@ export function Footer() {
             </Link>
             <span className="text-sm text-muted-foreground">{profile.location}</span>
             <span className="text-sm text-primary font-mono mt-1">
-              ● {profile.availabilityLabel}
+              ● {t("footer.available")}
             </span>
           </div>
         </div>
@@ -99,7 +101,7 @@ export function Footer() {
         {/* Bottom bar */}
         <div className="mt-10 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-border pt-6">
           <p className="font-mono text-xs text-muted-foreground text-center sm:text-left">
-            © {new Date().getFullYear()} {profile.name}. Conçu & développé avec Next.js, TypeScript & Framer Motion.
+            © {new Date().getFullYear()} {profile.name}. {t("footer.copyright")}
           </p>
           <div className="flex items-center gap-4">
             <span className="font-mono text-xs text-muted-foreground">

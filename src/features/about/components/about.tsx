@@ -6,27 +6,28 @@ import { MapPin, Sparkles, Code2, Server, Cpu } from "lucide-react";
 import { Section, SectionHeading, Reveal, AuroraBackground } from "@/shared/ui";
 import { profile, stats } from "@/shared/constants/profile";
 import { fadeUp, staggerContainer, viewportOnce } from "@/shared/animations";
+import { useT } from "@/shared/i18n";
 import { cn } from "@/lib/utils";
 
 const traits = [
-  { label: "Autonome", icon: Sparkles },
-  { label: "Rigoureux", icon: Code2 },
-  { label: "Orienté produit", icon: Cpu },
-  { label: "Passionné", icon: Server },
+  { label: "about.trait1", icon: Sparkles },
+  { label: "about.trait2", icon: Code2 },
+  { label: "about.trait3", icon: Cpu },
+  { label: "about.trait4", icon: Server },
 ] as const;
 
 export function About() {
+  const t = useT();
+
   return (
     <Section id="about">
       <AuroraBackground variant="section" />
 
       <div className="relative">
         <SectionHeading
-          eyebrow="À propos"
-          title={"Un ingénieur qui conçoit des produits, pas juste des interfaces."}
-          description={
-            "Diplômé en Génie Logiciel de la FSTM, je construis des systèmes distribués, des applications temps réel et des plateformes SaaS. Mon terrain de jeu : l'architecture logicielle, la conception orientée domaine et la résolution de problèmes complexes — de l'analyse métier jusqu'à la mise en production."
-          }
+          eyebrow={t("about.eyebrow")}
+          title={t("about.title")}
+          description={t("about.description")}
         />
 
         <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:gap-12 items-start">
@@ -36,29 +37,17 @@ export function About() {
             <div className="flex flex-col gap-5 text-pretty lg:pl-6">
               <Reveal delay={0.05}>
                 <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
-                  Je suis{" "}
-                  <span className="font-medium text-foreground">Adama Komi</span>, ingénieur logiciel
-                  full-stack basé à {profile.location}. J'ai construit ma pratique autour d'une conviction simple :
-                  un bon logiciel exprime l'intention métier, cache la complexité technique et reste
-                  évolutif face au changement.
+                  {t("about.p1")}
                 </p>
               </Reveal>
               <Reveal delay={0.12}>
                 <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
-                  Mon focus va naturellement vers l'{" "}
-                  <span className="font-medium text-foreground">architecture logicielle</span>, les{" "}
-                  <span className="font-medium text-foreground">systèmes distribués</span> et les
-                  applications temps réel — des terrains où chaque décision structurelle a un impact
-                  durable. Je travaille en autonomie, avec une forte exigence sur la lisibilité du code
-                  et la testabilité.
+                  {t("about.p2")}
                 </p>
               </Reveal>
               <Reveal delay={0.19}>
                 <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
-                  Au-delà du code, je reste curieux des sujets émergents : intelligence artificielle,
-                  robotique, systèmes distribués à grande échelle. Je crois qu'un bon ingénieur est
-                  avant tout un <span className="font-medium text-foreground">résolveur de problèmes</span>{" "}
-                  qui apprend en continu.
+                  {t("about.p3")}
                 </p>
               </Reveal>
             </div>
@@ -107,7 +96,7 @@ export function About() {
                 {/* Traits grid */}
                 <div>
                   <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-                    {"// traits"}
+                    {t("about.traitsLabel")}
                   </span>
                   <div className="mt-2 grid grid-cols-2 gap-2">
                     {traits.map(({ label, icon: Icon }) => (
@@ -116,7 +105,7 @@ export function About() {
                         className="group flex items-center gap-2 rounded-lg border border-border/60 bg-card/30 px-3 py-2 text-sm transition-colors hover:border-primary/30 hover:bg-primary/5"
                       >
                         <Icon className="h-3.5 w-3.5 text-primary transition-transform group-hover:scale-110" />
-                        <span className="font-medium text-foreground/90">{label}</span>
+                        <span className="font-medium text-foreground/90">{t(label)}</span>
                       </div>
                     ))}
                   </div>
@@ -141,7 +130,7 @@ export function About() {
         <div className="mt-16 md:mt-20">
           <div className="mb-6 flex items-center gap-3">
             <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-              {"// stats"}
+              {t("about.statsLabel")}
             </span>
             <div className="h-px flex-1 bg-gradient-to-r from-border to-transparent" />
           </div>
@@ -153,9 +142,9 @@ export function About() {
             viewport={viewportOnce}
             className="grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-5"
           >
-            {stats.map((stat) => (
+            {stats.map((_, idx) => (
               <motion.div
-                key={stat.label}
+                key={idx}
                 variants={fadeUp}
                 className={cn(
                   "group relative glass rounded-xl p-5 md:p-6 overflow-hidden",
@@ -173,13 +162,13 @@ export function About() {
                 />
                 <div className="relative flex flex-col gap-1">
                   <span className="text-4xl md:text-5xl font-semibold tracking-tight text-gradient-emerald leading-none">
-                    {stat.value}
+                    {t(`about.stat${idx + 1}Value`)}
                   </span>
                   <span className="mt-2 text-sm font-medium text-foreground">
-                    {stat.label}
+                    {t(`about.stat${idx + 1}Label`)}
                   </span>
                   <span className="text-xs text-muted-foreground text-pretty">
-                    {stat.sub}
+                    {t(`about.stat${idx + 1}Sub`)}
                   </span>
                 </div>
               </motion.div>

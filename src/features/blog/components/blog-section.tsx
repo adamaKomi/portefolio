@@ -8,6 +8,7 @@ import {
   Section,
   SectionHeading,
 } from "@/shared/ui";
+import { useT } from "@/shared/i18n";
 import { getPost, posts } from "../data/posts";
 import { BlogCard } from "./blog-card";
 import { BlogReaderOverlay } from "./blog-reader-overlay";
@@ -15,6 +16,7 @@ import { BlogReaderOverlay } from "./blog-reader-overlay";
 const BLOG_HASH_RE = /^#\/blog\/([\w-]+)$/;
 
 export function Blog() {
+  const t = useT();
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
   const hasSyncedRef = useRef(false);
 
@@ -91,15 +93,15 @@ export function Blog() {
 
       <div className="relative">
         <SectionHeading
-          eyebrow="Blog"
-          title="Articles & réflexions techniques."
-          description="Je partage ce que j'apprends en construisant : architecture, systèmes distribués, temps réel, et l'art de concevoir du logiciel qui dure."
+          eyebrow={t("blog.eyebrow")}
+          title={t("blog.title")}
+          description={t("blog.description")}
         />
 
         {/* Header strip */}
         <div className="mb-6 flex items-center gap-3">
           <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-            {"// 03 articles"}
+            {t("blog.stripLabel")}
           </span>
           <div className="h-px flex-1 bg-gradient-to-r from-border to-transparent" />
         </div>
@@ -115,7 +117,7 @@ export function Blog() {
 
         {/* Hint line */}
         <div className="mt-8 flex items-center justify-center gap-2 text-xs text-muted-foreground">
-          <span className="font-mono">Cliquez sur un article pour le lire en entier.</span>
+          <span className="font-mono">{t("blog.hint")}</span>
           <span aria-hidden className="text-primary">↗</span>
         </div>
       </div>

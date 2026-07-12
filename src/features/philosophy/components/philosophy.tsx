@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { Layers, Boxes, Hexagon, Network, type LucideIcon } from "lucide-react";
 import { Section, SectionHeading, Reveal, AuroraBackground } from "@/shared/ui";
 import { fadeUp, staggerContainer, viewportOnce } from "@/shared/animations";
+import { useT } from "@/shared/i18n";
 import { cn } from "@/lib/utils";
 
 interface Principle {
@@ -17,43 +18,39 @@ interface Principle {
 const principles: Principle[] = [
   {
     icon: Layers,
-    title: "Clean Architecture",
-    description:
-      "Séparation stricte des responsabilités, indépendance des frameworks, testabilité maximale. Le code doit exprimer l'intention métier avant les détails techniques — chaque couche a un rôle, et ce rôle reste stable face au changement.",
+    title: "philosophy.p1Title",
+    description: "philosophy.p1Desc",
     featured: true,
   },
   {
     icon: Boxes,
-    title: "Domain-Driven Design",
-    description:
-      "Modéliser le logiciel autour du domaine métier. Ubiquitous language, bounded contexts, agrégats.",
+    title: "philosophy.p2Title",
+    description: "philosophy.p2Desc",
   },
   {
     icon: Hexagon,
-    title: "Architecture Hexagonale",
-    description:
-      "Isoler le cœur métier des détails techniques. Ports & adaptateurs pour une inversion de dépendances totale.",
+    title: "philosophy.p3Title",
+    description: "philosophy.p3Desc",
   },
   {
     icon: Network,
-    title: "CQRS & Microservices",
-    description:
-      "Séparer lecture et écriture pour scaler. Découper en services autonomes quand la complexité l'exige.",
+    title: "philosophy.p4Title",
+    description: "philosophy.p4Desc",
   },
 ];
 
 export function Philosophy() {
+  const t = useT();
+
   return (
     <Section id="philosophy">
       <AuroraBackground variant="subtle" />
 
       <div className="relative">
         <SectionHeading
-          eyebrow="Philosophie"
-          title={"Comment je conçois le logiciel."}
-          description={
-            "Quatre principes structurent chaque décision d'architecture que je prends — de la première ligne de code au déploiement en production. Ils ne sont pas des dogmes, mais des boussoles pour rester simple, évolutif et aligné sur le métier."
-          }
+          eyebrow={t("philosophy.eyebrow")}
+          title={t("philosophy.title")}
+          description={t("philosophy.description")}
         />
 
         <motion.div
@@ -78,6 +75,7 @@ interface PrincipleCardProps {
 }
 
 function PrincipleCard({ principle, index }: PrincipleCardProps) {
+  const t = useT();
   const { icon: Icon, title, description, featured } = principle;
 
   return (
@@ -134,7 +132,7 @@ function PrincipleCard({ principle, index }: PrincipleCardProps) {
             </div>
             <div>
               <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-                {featured ? "// core principle" : `// principle ${String(index + 1).padStart(2, "0")}`}
+                {featured ? t("philosophy.coreLabel") : `// principle ${String(index + 1).padStart(2, "0")}`}
               </span>
               <h3
                 className={cn(
@@ -142,7 +140,7 @@ function PrincipleCard({ principle, index }: PrincipleCardProps) {
                   featured ? "text-xl md:text-2xl" : "text-lg"
                 )}
               >
-                {title}
+                {t(title)}
               </h3>
             </div>
           </div>
@@ -155,7 +153,7 @@ function PrincipleCard({ principle, index }: PrincipleCardProps) {
             featured ? "text-base md:text-lg max-w-3xl" : "text-sm md:text-base"
           )}
         >
-          {description}
+          {t(description)}
         </p>
 
         {/* Featured footer accent */}

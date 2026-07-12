@@ -5,17 +5,11 @@ import { AnimatePresence, motion, Variants } from "framer-motion";
 import { ArrowLeft, ArrowRight, Quote, Star } from "lucide-react";
 import { Section, SectionHeading, AuroraBackground, Reveal } from "@/shared/ui";
 import { EASE_PREMIUM } from "@/shared/animations";
+import { useT } from "@/shared/i18n";
 import { cn } from "@/lib/utils";
 import { testimonials, type Testimonial } from "../data/testimonials";
 
 const AUTO_ADVANCE_MS = 6000;
-
-const trustSignals: { label: string }[] = [
-  { label: "FSTM · Université Hassan II" },
-  { label: "3 projets livrés" },
-  { label: "Stack moderne" },
-  { label: "Disponible immédiatement" },
-];
 
 const slideVariants: Variants = {
   enter: (dir: number) => ({
@@ -38,11 +32,12 @@ const slideVariants: Variants = {
 };
 
 function StarRating({ rating }: { rating: number }) {
+  const t = useT();
   return (
     <div
       className="flex items-center gap-1"
       role="img"
-      aria-label={`Note : ${rating} sur 5`}
+      aria-label={t("testimonials.rating", { n: String(rating) })}
     >
       {Array.from({ length: 5 }).map((_, i) => (
         <Star
@@ -135,6 +130,7 @@ function ArrowButton({
 }
 
 export function Testimonials() {
+  const t = useT();
   const count = testimonials.length;
   const [index, setIndex] = React.useState(0);
   const [direction, setDirection] = React.useState(0);
@@ -195,9 +191,9 @@ export function Testimonials() {
       <div className="relative">
         <SectionHeading
           align="center"
-          eyebrow="Recommandations"
-          title="Ce que disent ceux avec qui j'ai travaillé."
-          description="Encadrants, collaborateurs et mentors — retour d'expérience sur ma manière de concevoir le logiciel."
+          eyebrow={t("testimonials.eyebrow")}
+          title={t("testimonials.title")}
+          description={t("testimonials.description")}
         />
 
         <Reveal>
@@ -213,7 +209,7 @@ export function Testimonials() {
               <ArrowButton
                 direction="prev"
                 onClick={goPrev}
-                label="Témoignage précédent"
+                label={t("testimonials.prev")}
                 variant="side"
               />
             </div>
@@ -221,7 +217,7 @@ export function Testimonials() {
               <ArrowButton
                 direction="next"
                 onClick={goNext}
-                label="Témoignage suivant"
+                label={t("testimonials.next")}
                 variant="side"
               />
             </div>
@@ -231,7 +227,7 @@ export function Testimonials() {
               className="relative overflow-hidden rounded-3xl border border-border/60 glass-strong shadow-glow"
               role="region"
               aria-roledescription="carousel"
-              aria-label="Témoignages sur Adama Komi"
+              aria-label={t("testimonials.region")}
               onKeyDown={handleKeyDown}
               tabIndex={0}
             >
@@ -293,7 +289,7 @@ export function Testimonials() {
                       className="flex flex-col items-center"
                     >
                       <blockquote className="text-lg font-medium leading-relaxed text-pretty text-foreground/90 md:text-xl">
-                        <p>&ldquo;{current.quote}&rdquo;</p>
+                        <p>&ldquo;{t(`t${index + 1}.quote`)}&rdquo;</p>
                       </blockquote>
 
                       <div className="mt-6">
@@ -310,10 +306,10 @@ export function Testimonials() {
                         </div>
                         <div className="text-left">
                           <cite className="block not-italic font-semibold tracking-tight text-foreground">
-                            {current.authorName}
+                            {t(`t${index + 1}.author`)}
                           </cite>
                           <p className="font-mono text-xs text-muted-foreground">
-                            {current.authorRole}
+                            {t(`t${index + 1}.role`)}
                           </p>
                         </div>
                       </figcaption>
@@ -328,7 +324,7 @@ export function Testimonials() {
               <ArrowButton
                 direction="prev"
                 onClick={goPrev}
-                label="Témoignage précédent"
+                label={t("testimonials.prev")}
                 variant="bottom"
               />
               <Dots
@@ -339,7 +335,7 @@ export function Testimonials() {
               <ArrowButton
                 direction="next"
                 onClick={goNext}
-                label="Témoignage suivant"
+                label={t("testimonials.next")}
                 variant="bottom"
               />
             </div>
@@ -361,17 +357,17 @@ export function Testimonials() {
               className="font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground/60"
               aria-hidden
             >
-              {"// trust signals"}
+              {t("testimonials.trustLabel")}
             </span>
             <span aria-hidden className="text-muted-foreground/30">
               ·
             </span>
-            {trustSignals.map((signal) => (
+            {[1, 2, 3, 4].map((n) => (
               <span
-                key={signal.label}
+                key={n}
                 className="inline-flex items-center rounded-full border border-border/60 bg-card/30 px-3 py-1 font-mono text-[11px] text-muted-foreground"
               >
-                {signal.label}
+                {t(`testimonials.trust${n}`)}
               </span>
             ))}
           </div>

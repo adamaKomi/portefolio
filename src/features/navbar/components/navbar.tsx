@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Menu, X, Terminal, ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,14 +15,17 @@ import {
 import { useScrolled } from "@/shared/hooks/use-scroll";
 import { useActiveSection } from "@/shared/hooks/use-section-observer";
 import { navSections, profile } from "@/shared/constants/profile";
+import { useT } from "@/shared/i18n";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "./theme-toggle";
 import { CommandMenuTrigger } from "./command-trigger";
+import { LanguageToggle } from "./language-toggle";
 
 export function Navbar() {
   const scrolled = useScrolled(16);
   const active = useActiveSection();
   const [mobileOpen, setMobileOpen] = React.useState(false);
+  const t = useT();
 
   const handleNav = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
     e.preventDefault();
@@ -62,7 +65,7 @@ export function Navbar() {
                 <span className="text-primary">.</span>
               </span>
               <span className="font-mono text-[10px] text-muted-foreground tracking-wider uppercase">
-                {profile.title}
+                {t("nav.brandRole")}
               </span>
             </span>
           </Link>
@@ -90,7 +93,7 @@ export function Navbar() {
                       transition={{ type: "spring", stiffness: 380, damping: 30 }}
                     />
                   )}
-                  <span className="relative z-10">{item.label}</span>
+                  <span className="relative z-10">{t(item.labelKey)}</span>
                 </Link>
               );
             })}
@@ -99,6 +102,7 @@ export function Navbar() {
           {/* Actions */}
           <div className="flex items-center gap-1.5">
             <CommandMenuTrigger />
+            <LanguageToggle />
             <ThemeToggle />
 
             <Button
@@ -111,7 +115,7 @@ export function Navbar() {
                 onClick={(e) => handleNav(e, "contact")}
                 className="gap-1.5"
               >
-                Me contacter
+                {t("common.contactMe")}
                 <ArrowUpRight className="h-3.5 w-3.5" />
               </Link>
             </Button>
@@ -123,7 +127,7 @@ export function Navbar() {
                   variant="ghost"
                   size="icon"
                   className="md:hidden h-9 w-9 rounded-lg"
-                  aria-label="Ouvrir le menu"
+                  aria-label={t("common.openMenu")}
                 >
                   <Menu className="h-5 w-5" />
                 </Button>
@@ -132,17 +136,20 @@ export function Navbar() {
                 side="top"
                 className="h-auto border-border bg-background/95 backdrop-blur-xl"
               >
-                <SheetTitle className="sr-only">Navigation</SheetTitle>
+                <SheetTitle className="sr-only">{t("common.section")}</SheetTitle>
                 <div className="flex items-center justify-between px-1 pt-1 pb-4">
                   <span className="font-mono text-sm font-semibold">
                     {profile.firstName}
                     <span className="text-primary">.</span>
                   </span>
-                  <SheetClose asChild>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg">
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </SheetClose>
+                  <div className="flex items-center gap-2">
+                    <LanguageToggle />
+                    <SheetClose asChild>
+                      <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg">
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </SheetClose>
+                  </div>
                 </div>
                 <nav className="flex flex-col gap-1">
                   {navSections.map((item, i) => (
@@ -158,7 +165,7 @@ export function Navbar() {
                           onClick={(e) => handleNav(e, item.id)}
                           className="flex items-center justify-between rounded-xl px-4 py-3 text-base font-medium hover:bg-muted transition-colors"
                         >
-                          <span>{item.label}</span>
+                          <span>{t(item.labelKey)}</span>
                           <ArrowUpRight className="h-4 w-4 text-muted-foreground" />
                         </Link>
                       </SheetClose>
@@ -171,7 +178,7 @@ export function Navbar() {
                     className="w-full rounded-xl bg-primary text-primary-foreground"
                   >
                     <Link href="/#contact" onClick={(e) => handleNav(e, "contact")}>
-                      Me contacter
+                      {t("common.contactMe")}
                       <ArrowUpRight className="h-4 w-4" />
                     </Link>
                   </Button>

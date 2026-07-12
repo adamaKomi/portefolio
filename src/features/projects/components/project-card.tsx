@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { ArrowUpRight, Star } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { useT } from "@/shared/i18n";
 import type { Project } from "../data/projects";
 
 interface ProjectCardProps {
@@ -90,6 +91,7 @@ function PreviewAbstract({ project }: { project: Project }) {
 }
 
 export function ProjectCard({ project, onOpen, className }: ProjectCardProps) {
+  const t = useT();
   const visibleTech = project.tech.slice(0, project.featured ? 5 : 4);
   const extraTechCount = Math.max(0, project.tech.length - visibleTech.length);
 
@@ -110,7 +112,7 @@ export function ProjectCard({ project, onOpen, className }: ProjectCardProps) {
       onKeyDown={handleKeyDown}
       role="button"
       tabIndex={0}
-      aria-label={`Ouvrir le projet ${project.name}`}
+      aria-label={`${t("projects.viewProject")} ${project.name}`}
       className={cn(
         "group relative flex h-full cursor-pointer flex-col overflow-hidden rounded-2xl glass-strong outline-none",
         "transition-all duration-300 ease-out",
@@ -162,7 +164,7 @@ export function ProjectCard({ project, onOpen, className }: ProjectCardProps) {
           <div className="absolute top-3 right-3 md:top-4 md:right-4 flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-2.5 py-1 backdrop-blur">
             <Star className="h-3 w-3 fill-primary text-primary" />
             <span className="font-mono text-[10px] uppercase tracking-[0.15em] text-primary">
-              Featured
+              {t("projects.featured")}
             </span>
           </div>
         )}
@@ -224,12 +226,12 @@ export function ProjectCard({ project, onOpen, className }: ProjectCardProps) {
 
         {/* Tech badges */}
         <div className="flex flex-wrap items-center gap-1.5">
-          {visibleTech.map((t) => (
+          {visibleTech.map((tech) => (
             <span
-              key={t}
+              key={tech}
               className="rounded-md border border-border/60 bg-card/30 px-2 py-0.5 font-mono text-[10px] text-foreground/75"
             >
-              {t}
+              {tech}
             </span>
           ))}
           {extraTechCount > 0 && (
@@ -241,7 +243,7 @@ export function ProjectCard({ project, onOpen, className }: ProjectCardProps) {
 
         {/* CTA */}
         <div className="mt-auto flex items-center gap-1.5 pt-1 text-sm font-medium text-primary">
-          Voir le projet
+          {t("projects.viewProject")}
           <ArrowUpRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
         </div>
       </div>

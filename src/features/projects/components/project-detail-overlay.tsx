@@ -27,6 +27,7 @@ import {
   overlayContentVariants,
   overlayVariants,
 } from "@/shared/animations";
+import { useT } from "@/shared/i18n";
 import {
   getNextProject,
   getPrevProject,
@@ -103,6 +104,7 @@ export function ProjectDetailOverlay({
   onNavigate,
   onContact,
 }: ProjectDetailOverlayProps) {
+  const t = useT();
   const project = slug ? getProject(slug) : undefined;
 
   const closeButtonRef = React.useRef<HTMLButtonElement>(null);
@@ -126,10 +128,10 @@ export function ProjectDetailOverlay({
     if (!project) return;
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    const t = window.setTimeout(() => closeButtonRef.current?.focus(), 60);
+    const focusTimer = window.setTimeout(() => closeButtonRef.current?.focus(), 60);
     return () => {
       document.body.style.overflow = prev;
-      window.clearTimeout(t);
+      window.clearTimeout(focusTimer);
     };
   }, [project]);
 
@@ -206,7 +208,10 @@ export function ProjectDetailOverlay({
                   <ArrowRight className="h-4 w-4" />
                 </Button>
                 <span className="ml-2 font-mono text-xs text-muted-foreground">
-                  {currentIndex + 1} / {projects.length}
+                  {t("projects.count", {
+                    current: String(currentIndex + 1),
+                    total: String(projects.length),
+                  })}
                 </span>
               </div>
 
@@ -256,10 +261,11 @@ interface OverlayContentProps {
 /* ---------------- Case-study sections ---------------- */
 
 function MetricsSection({ metrics }: { metrics: ProjectMetric[] }) {
+  const t = useT();
   if (!metrics.length) return null;
   return (
     <section className="flex flex-col gap-4" aria-label="Métriques produit">
-      <SectionHeader icon={TrendingUp}>{"// métriques"}</SectionHeader>
+      <SectionHeader icon={TrendingUp}>{t("projects.section.metrics")}</SectionHeader>
       <ul
         role="list"
         className="grid grid-cols-1 gap-3 sm:grid-cols-2"
@@ -298,13 +304,14 @@ function ChallengesSolutionsSection({
   challenges: string[];
   solutions: string[];
 }) {
+  const t = useT();
   if (!challenges.length && !solutions.length) return null;
   return (
     <section
       className="flex flex-col gap-4"
       aria-label="Défis et solutions"
     >
-      <SectionHeader icon={AlertTriangle}>{"// défis & solutions"}</SectionHeader>
+      <SectionHeader icon={AlertTriangle}>{t("projects.section.challenges")}</SectionHeader>
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         {/* Challenges */}
         <div className="flex flex-col gap-2.5">
@@ -314,7 +321,7 @@ function ChallengesSolutionsSection({
               aria-hidden
             />
             <span className="font-mono text-xs uppercase tracking-[0.15em] text-accent">
-              Défis
+              {t("projects.challengesTitle")}
             </span>
           </div>
           <ul role="list" className="flex flex-col gap-2.5">
@@ -345,7 +352,7 @@ function ChallengesSolutionsSection({
               aria-hidden
             />
             <span className="font-mono text-xs uppercase tracking-[0.15em] text-primary">
-              Solutions
+              {t("projects.solutionsTitle")}
             </span>
           </div>
           <ul role="list" className="flex flex-col gap-2.5">
@@ -377,10 +384,11 @@ function TimelineSection({
 }: {
   timeline: ProjectTimelineItem[];
 }) {
+  const t = useT();
   if (!timeline.length) return null;
   return (
     <section className="flex flex-col gap-4" aria-label="Chronologie du projet">
-      <SectionHeader icon={Clock}>{"// chronologie"}</SectionHeader>
+      <SectionHeader icon={Clock}>{t("projects.section.timeline")}</SectionHeader>
       <ol
         aria-label="Phases de construction"
         className="relative space-y-5 pl-8 md:pl-10"
@@ -422,10 +430,11 @@ function TimelineSection({
 }
 
 function ImpactSection({ impact }: { impact: string }) {
+  const t = useT();
   if (!impact) return null;
   return (
     <section className="flex flex-col gap-4" aria-label="Impact du projet">
-      <SectionHeader icon={Sparkles}>{"// impact"}</SectionHeader>
+      <SectionHeader icon={Sparkles}>{t("projects.section.impact")}</SectionHeader>
       <div className="relative overflow-hidden rounded-xl border border-primary/20 bg-primary/[0.04] p-5 md:p-6">
         <div
           aria-hidden
@@ -445,6 +454,7 @@ function ImpactSection({ impact }: { impact: string }) {
 }
 
 function OverlayContent({ project, onContact, onClose }: OverlayContentProps) {
+  const t = useT();
   const CategoryIcon = categoryIcons[project.category] ?? Boxes;
 
   return (
@@ -490,7 +500,7 @@ function OverlayContent({ project, onContact, onClose }: OverlayContentProps) {
           <div className="absolute top-4 right-4 md:top-5 md:right-6 flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-2.5 py-1 backdrop-blur">
             <Star className="h-3 w-3 fill-primary text-primary" />
             <span className="font-mono text-[10px] uppercase tracking-[0.15em] text-primary">
-              Featured
+              {t("projects.featured")}
             </span>
           </div>
         )}
@@ -531,7 +541,7 @@ function OverlayContent({ project, onContact, onClose }: OverlayContentProps) {
 
         {/* Overview */}
         <section className="flex flex-col gap-3">
-          <SectionHeader>{"// overview"}</SectionHeader>
+          <SectionHeader>{t("projects.section.overview")}</SectionHeader>
           <p className="text-base font-medium leading-relaxed text-foreground md:text-lg">
             {project.shortDescription}
           </p>
@@ -555,7 +565,7 @@ function OverlayContent({ project, onContact, onClose }: OverlayContentProps) {
 
         {/* Points clés */}
         <section className="flex flex-col gap-3">
-          <SectionHeader>{"// points clés"}</SectionHeader>
+          <SectionHeader>{t("projects.section.highlights")}</SectionHeader>
           <ul className="grid gap-2.5 sm:grid-cols-2">
             {project.highlights.map((h) => (
               <li
@@ -575,7 +585,7 @@ function OverlayContent({ project, onContact, onClose }: OverlayContentProps) {
 
         {/* Architecture */}
         <section className="flex flex-col gap-3">
-          <SectionHeader>{"// architecture"}</SectionHeader>
+          <SectionHeader>{t("projects.section.architecture")}</SectionHeader>
           <div className="overflow-hidden rounded-xl border border-border/50 bg-background/40">
             <div className="border-b border-border/40 px-4 py-2">
               <span className="font-mono text-xs text-muted-foreground">
@@ -602,15 +612,15 @@ function OverlayContent({ project, onContact, onClose }: OverlayContentProps) {
 
         {/* Stack technique */}
         <section className="flex flex-col gap-3">
-          <SectionHeader>{"// stack technique"}</SectionHeader>
+          <SectionHeader>{t("projects.section.stack")}</SectionHeader>
           <div className="flex flex-wrap gap-2">
-            {project.tech.map((t) => (
+            {project.tech.map((tech) => (
               <Badge
-                key={t}
+                key={tech}
                 variant="outline"
                 className="bg-card/40 font-mono text-xs text-foreground/90"
               >
-                {t}
+                {tech}
               </Badge>
             ))}
           </div>
@@ -618,7 +628,7 @@ function OverlayContent({ project, onContact, onClose }: OverlayContentProps) {
 
         {/* Mon rôle */}
         <section className="flex flex-col gap-3">
-          <SectionHeader>{"// mon rôle"}</SectionHeader>
+          <SectionHeader>{t("projects.section.role")}</SectionHeader>
           <p className="text-sm leading-relaxed text-muted-foreground md:text-base">
             {project.role}
           </p>
@@ -642,14 +652,14 @@ function OverlayContent({ project, onContact, onClose }: OverlayContentProps) {
               onClick={onClose}
               className="gap-2 border-border bg-card/40 hover:bg-card"
             >
-              Voir mes autres projets
+              {t("projects.ctaOther")}
             </Button>
             <Button
               onClick={onContact}
               className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90"
             >
               <Mail className="h-4 w-4" />
-              Me contacter
+              {t("projects.ctaContact")}
               <ArrowUpRight className="h-4 w-4" />
             </Button>
           </div>

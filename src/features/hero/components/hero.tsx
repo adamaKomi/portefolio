@@ -9,9 +9,11 @@ import { profile, socials } from "@/shared/constants/profile";
 import { AuroraBackground } from "@/shared/ui/aurora-background";
 import { Magnetic } from "@/shared/ui/magnetic";
 import { EASE_PREMIUM, fadeUp, staggerContainer } from "@/shared/animations";
+import { useT } from "@/shared/i18n";
 import { TerminalCard } from "./terminal-card";
 
 export function Hero() {
+  const t = useT();
   return (
     <section
       id="hero"
@@ -36,7 +38,7 @@ export function Hero() {
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75" />
                   <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
                 </span>
-                <span className="font-mono text-primary">{profile.availabilityLabel}</span>
+                <span className="font-mono text-primary">{t("common.available")}</span>
                 <span className="text-muted-foreground">·</span>
                 <span className="flex items-center gap-1 text-muted-foreground">
                   <MapPin className="h-3 w-3" />
@@ -48,13 +50,13 @@ export function Hero() {
             {/* Title */}
             <motion.div variants={fadeUp} className="flex flex-col gap-3">
               <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-semibold tracking-tight leading-[1.05] text-balance">
-                <span className="block text-foreground">Adama Komi</span>
+                <span className="block text-foreground">{t("hero.title")}</span>
                 <span className="block text-gradient mt-1">
-                  Software Engineer
+                  {t("hero.titleAccent")}
                 </span>
               </h1>
               <p className="font-mono text-sm md:text-base text-muted-foreground tracking-wide">
-                {"// Full-Stack · Architecture · Systèmes distribués"}
+                {t("hero.subtitle")}
               </p>
             </motion.div>
 
@@ -63,7 +65,7 @@ export function Hero() {
               variants={fadeUp}
               className="text-base md:text-lg text-muted-foreground leading-relaxed max-w-xl text-pretty"
             >
-              {profile.description}
+              {t("hero.description")}
             </motion.p>
 
             {/* CTAs */}
@@ -75,7 +77,7 @@ export function Hero() {
                   className="group h-12 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 px-6 shadow-glow"
                 >
                   <Link href="/#projects" className="gap-2">
-                    Découvrir mes projets
+                    {t("hero.ctaProjects")}
                     <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                   </Link>
                 </Button>
@@ -89,7 +91,7 @@ export function Hero() {
                   className="group h-12 rounded-xl border-border bg-card/40 backdrop-blur-sm px-6 hover:bg-card"
                 >
                   <Link href="/#contact" className="gap-2">
-                    Me contacter
+                    {t("hero.ctaContact")}
                     <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                   </Link>
                 </Button>
@@ -131,14 +133,14 @@ export function Hero() {
                   <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-accent" />
                 </span>
                 <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
-                  Now
+                  {t("hero.now")}
                 </span>
               </span>
               <span className="relative h-3.5 w-px bg-border" />
               <span className="relative text-sm text-foreground/90">
-                Building{" "}
-                <span className="font-semibold text-primary">PayLith</span>
-                <span className="text-muted-foreground"> — SaaS de facturation</span>
+                {t("hero.nowBuilding")}{" "}
+                <span className="font-semibold text-primary">{t("hero.nowProject")}</span>
+                <span className="text-muted-foreground"> {t("hero.nowDesc")}</span>
               </span>
             </motion.div>
           </motion.div>
@@ -162,9 +164,9 @@ export function Hero() {
               <div className="glass-strong rounded-xl px-4 py-3 shadow-xl">
                 <div className="flex items-center gap-2">
                   <Sparkles className="h-3.5 w-3.5 text-primary" />
-                  <span className="font-mono text-xs text-muted-foreground">focus</span>
+                  <span className="font-mono text-xs text-muted-foreground">{t("hero.focus")}</span>
                 </div>
-                <p className="mt-1 text-sm font-medium">Architecture · DDD · Temps réel</p>
+                <p className="mt-1 text-sm font-medium">{t("hero.focusText")}</p>
               </div>
             </motion.div>
           </motion.div>
@@ -178,7 +180,7 @@ export function Hero() {
           className="absolute bottom-6 left-1/2 -translate-x-1/2 hidden md:flex flex-col items-center gap-2"
         >
           <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-            Scroll
+            {t("common.scroll")}
           </span>
           <div className="h-8 w-px bg-gradient-to-b from-primary/50 to-transparent">
             <motion.div

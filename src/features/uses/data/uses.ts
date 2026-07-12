@@ -6,6 +6,11 @@
  *
  * Le champ `icon` stocke directement le composant LucideIcon — plus simple
  * et type-safe (pas de map string → composant à maintenir côté composant).
+ *
+ * i18n :
+ *  - `name` est universel ("Neovim", "VS Code", etc.) — non traduit.
+ *  - `descKey` pointe vers la clé i18n de la description (ex. `uses.item.neovim`).
+ *  - `titleKey` pointe vers la clé i18n du titre de catégorie (ex. `uses.cat1`).
  */
 import {
   Code2,
@@ -17,13 +22,16 @@ import {
 } from "lucide-react";
 
 export interface UsesItem {
+  /** Nom universel — non traduit (ex. "Neovim", "TypeScript"). */
   name: string;
-  description?: string;
+  /** Clé i18n de la description (ex. "uses.item.neovim"). */
+  descKey: string;
 }
 
 export interface UsesCategory {
   id: string;
-  title: string;
+  /** Clé i18n du titre de catégorie (ex. "uses.cat1"). */
+  titleKey: string;
   icon: LucideIcon;
   /** Catégorie mise en avant : carte full-width en haut de section. */
   featured?: boolean;
@@ -33,138 +41,63 @@ export interface UsesCategory {
 export const usesCategories: UsesCategory[] = [
   {
     id: "editor-terminal",
-    title: "Éditeur & terminal",
+    titleKey: "uses.cat1",
     icon: Terminal,
     featured: true,
     items: [
-      {
-        name: "Neovim",
-        description: "Éditeur principal, configuré en Lua, LSP & Treesitter.",
-      },
-      {
-        name: "VS Code",
-        description: "Pour le frontend React/Next.js et le débogage.",
-      },
-      {
-        name: "WezTerm",
-        description: "Terminal GPU-acceléré, multiplexeur puissant.",
-      },
-      {
-        name: "Tmux",
-        description: "Sessions persistantes sur serveurs.",
-      },
-      {
-        name: "Zsh + Starship",
-        description: "Prompt shell minimal et informatif.",
-      },
+      { name: "Neovim", descKey: "uses.item.neovim" },
+      { name: "VS Code", descKey: "uses.item.vscode" },
+      { name: "WezTerm", descKey: "uses.item.wezterm" },
+      { name: "Tmux", descKey: "uses.item.tmux" },
+      { name: "Zsh + Starship", descKey: "uses.item.zsh" },
     ],
   },
   {
     id: "languages-frameworks",
-    title: "Langages & frameworks",
+    titleKey: "uses.cat2",
     icon: Code2,
     items: [
-      {
-        name: "TypeScript",
-        description: "Partout, côté frontend comme backend.",
-      },
-      {
-        name: "Java + Spring Boot",
-        description: "Backend d'entreprise, API REST, microservices.",
-      },
-      {
-        name: "Node.js + NestJS",
-        description: "APIs structurées, temps réel WebSockets.",
-      },
-      {
-        name: "Python + FastAPI",
-        description: "Scripts, prototypage, ML.",
-      },
-      {
-        name: "React + Next.js",
-        description: "Frontend SSR/SSG, Server Components.",
-      },
+      { name: "TypeScript", descKey: "uses.item.typescript" },
+      { name: "Java + Spring Boot", descKey: "uses.item.spring" },
+      { name: "Node.js + NestJS", descKey: "uses.item.nestjs" },
+      { name: "Python + FastAPI", descKey: "uses.item.fastapi" },
+      { name: "React + Next.js", descKey: "uses.item.nextjs" },
     ],
   },
   {
     id: "databases-infra",
-    title: "Bases de données & infra",
+    titleKey: "uses.cat3",
     icon: Database,
     items: [
-      {
-        name: "PostgreSQL",
-        description: "Relationnel par défaut, JSONB, CTE.",
-      },
-      {
-        name: "Redis",
-        description: "Cache, pub/sub, compteurs atomiques.",
-      },
-      {
-        name: "MongoDB",
-        description: "Quand le schéma évolue vite.",
-      },
-      {
-        name: "Docker",
-        description: "Conteneurs locaux et production.",
-      },
-      {
-        name: "Git + GitHub",
-        description: "Flow Git, PRs, Actions CI.",
-      },
+      { name: "PostgreSQL", descKey: "uses.item.postgres" },
+      { name: "Redis", descKey: "uses.item.redis" },
+      { name: "MongoDB", descKey: "uses.item.mongodb" },
+      { name: "Docker", descKey: "uses.item.docker" },
+      { name: "Git + GitHub", descKey: "uses.item.git" },
     ],
   },
   {
     id: "tools-productivity",
-    title: "Outils & productivité",
+    titleKey: "uses.cat4",
     icon: Sparkles,
     items: [
-      {
-        name: "Raycast",
-        description: "Launcher macOS, snippets, scripts.",
-      },
-      {
-        name: "Linear",
-        description: "Gestion de projets, issues, sprints.",
-      },
-      {
-        name: "Figma",
-        description: "Maquettes, design system.",
-      },
-      {
-        name: "TablePlus",
-        description: "Client DB graphique multi-SGBD.",
-      },
-      {
-        name: "Obsidian",
-        description: "Notes techniques, seconde cerveau.",
-      },
+      { name: "Raycast", descKey: "uses.item.raycast" },
+      { name: "Linear", descKey: "uses.item.linear" },
+      { name: "Figma", descKey: "uses.item.figma" },
+      { name: "TablePlus", descKey: "uses.item.tableplus" },
+      { name: "Obsidian", descKey: "uses.item.obsidian" },
     ],
   },
   {
     id: "hardware-setup",
-    title: "Setup matériel",
+    titleKey: "uses.cat5",
     icon: Monitor,
     items: [
-      {
-        name: 'MacBook Pro 14" M2 Pro',
-        description: "Machine principale.",
-      },
-      {
-        name: "LG 27UP850",
-        description: "Moniteur 4K externe.",
-      },
-      {
-        name: "Keychron K2",
-        description: "Clavier mécanique sans fil.",
-      },
-      {
-        name: "Logitech MX Master 3S",
-        description: "Souris multi-appareils.",
-      },
-      {
-        name: "AirPods Pro",
-        description: "Focus en open-space.",
-      },
+      { name: 'MacBook Pro 14" M2 Pro', descKey: "uses.item.macbook" },
+      { name: "LG 27UP850", descKey: "uses.item.monitor" },
+      { name: "Keychron K2", descKey: "uses.item.keyboard" },
+      { name: "Logitech MX Master 3S", descKey: "uses.item.mouse" },
+      { name: "AirPods Pro", descKey: "uses.item.airpods" },
     ],
   },
 ];

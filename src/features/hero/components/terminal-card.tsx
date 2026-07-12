@@ -3,20 +3,25 @@
 import * as React from "react";
 import { motion } from "framer-motion";
 import { Terminal as TerminalIcon } from "lucide-react";
-
-const LINES = [
-  { prompt: "adama@portfolio", text: "whoami", output: "Software Engineer · Full-Stack" },
-  { prompt: "adama@portfolio", text: "cat stack.json", output: '{ "backend": ["Java","Spring Boot","NestJS","Python"], "frontend": ["Next.js","React","TypeScript"], "mobile": ["React Native"] }' },
-  { prompt: "adama@portfolio", text: "ls projects/", output: "paylith/  queueclock/  parkour/" },
-  { prompt: "adama@portfolio", text: "echo $FOCUS", output: "Systèmes distribués · Temps réel · SaaS" },
-];
+import { useT } from "@/shared/i18n";
 
 export function TerminalCard() {
+  const t = useT();
   const [visibleLines, setVisibleLines] = React.useState(0);
   const [typed, setTyped] = React.useState("");
 
+  const lines = React.useMemo(
+    () => [
+      { prompt: "adama@portfolio", text: "whoami", output: t("hero.terminalRole") },
+      { prompt: "adama@portfolio", text: "cat stack.json", output: '{ "backend": ["Java","Spring Boot","NestJS","Python"], "frontend": ["Next.js","React","TypeScript"], "mobile": ["React Native"] }' },
+      { prompt: "adama@portfolio", text: "ls projects/", output: "paylith/  queueclock/  parkour/" },
+      { prompt: "adama@portfolio", text: "echo $FOCUS", output: t("hero.terminalFocus") },
+    ],
+    [t]
+  );
+
   React.useEffect(() => {
-    if (visibleLines >= LINES.length) {
+    if (visibleLines >= lines.length) {
       const reset = setTimeout(() => {
         setVisibleLines(0);
         setTyped("");
@@ -24,7 +29,7 @@ export function TerminalCard() {
       return () => clearTimeout(reset);
     }
 
-    const line = LINES[visibleLines];
+    const line = lines[visibleLines];
     let i = 0;
     const typeInterval = setInterval(() => {
       i++;
@@ -64,7 +69,7 @@ export function TerminalCard() {
 
         {/* Body */}
         <div className="min-h-[280px] p-4 font-mono text-[13px] leading-relaxed premium-scroll">
-          {LINES.slice(0, visibleLines).map((line, idx) => (
+          {lines.slice(0, visibleLines).map((line, idx) => (
             <div key={idx} className="mb-3">
               <div className="flex gap-2">
                 <span className="text-primary">➜</span>
@@ -82,10 +87,10 @@ export function TerminalCard() {
             </div>
           ))}
 
-          {visibleLines < LINES.length && (
+          {visibleLines < lines.length && (
             <div className="flex gap-2">
               <span className="text-primary">➜</span>
-              <span className="text-muted-foreground">{LINES[visibleLines].prompt}</span>
+              <span className="text-muted-foreground">{lines[visibleLines].prompt}</span>
               <span className="text-amber-300/90">~</span>
               <span className="text-foreground">{typed}</span>
               <span className="inline-block w-2 h-4 bg-primary animate-blink" />

@@ -8,6 +8,7 @@ import {
   Reveal,
   AuroraBackground,
 } from "@/shared/ui";
+import { useT } from "@/shared/i18n";
 import { cn } from "@/lib/utils";
 import { getProject, projects } from "../data/projects";
 import { ProjectCard } from "./project-card";
@@ -16,6 +17,7 @@ import { ProjectDetailOverlay } from "./project-detail-overlay";
 const PROJECT_HASH_RE = /^#\/projects\/([\w-]+)$/;
 
 export function Projects() {
+  const t = useT();
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
   const hasSyncedRef = useRef(false);
 
@@ -95,15 +97,15 @@ export function Projects() {
 
       <div className="relative">
         <SectionHeading
-          eyebrow="Projets"
-          title="Des produits pensés comme des systèmes."
-          description="Trois projets qui incarnent ma vision de l'ingénierie : architecture propre, expérience utilisateur soignée, et robustesse en production."
+          eyebrow={t("projects.eyebrow")}
+          title={t("projects.title")}
+          description={t("projects.description")}
         />
 
         {/* Bento grid header strip */}
         <div className="mb-12 flex items-center gap-4">
           <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground whitespace-nowrap">
-            {"// 03 projets sélectionnés"}
+            {t("projects.stripLabel")}
           </span>
           <div className="h-px flex-1 bg-gradient-to-r from-border via-border/40 to-transparent" />
         </div>
@@ -123,7 +125,7 @@ export function Projects() {
 
         {/* Hint line */}
         <div className="mt-8 flex items-center justify-center gap-2 text-xs text-muted-foreground">
-          <span className="font-mono">Cliquez sur un projet pour voir le détail.</span>
+          <span className="font-mono">{t("projects.hint")}</span>
           <span aria-hidden className="text-primary">↗</span>
         </div>
       </div>

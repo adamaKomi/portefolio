@@ -4,6 +4,7 @@ import * as React from "react";
 import { motion } from "framer-motion";
 import { ArrowUpRight, BookOpen, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useT, useLanguage } from "@/shared/i18n";
 import {
   type BlogPost,
   formatPostDate,
@@ -16,6 +17,15 @@ interface BlogCardProps {
 }
 
 export function BlogCard({ post, onOpen, className }: BlogCardProps) {
+  const t = useT();
+  const { locale } = useLanguage();
+
+  // Traductions i18n — fallback sur les valeurs locales du data file
+  // (servent également de SSR-safe default avant hydratation).
+  const title = t(`blog.${post.i18nKey}.title`);
+  const excerpt = t(`blog.${post.i18nKey}.excerpt`);
+  const category = t(`blog.${post.i18nKey}.category`);
+
   const handleOpen = React.useCallback(() => {
     onOpen(post.slug);
   }, [onOpen, post.slug]);
@@ -33,7 +43,7 @@ export function BlogCard({ post, onOpen, className }: BlogCardProps) {
       onKeyDown={handleKeyDown}
       role="button"
       tabIndex={0}
-      aria-label={`Lire l'article : ${post.title}`}
+      aria-label={`${t("common.viewArticle")} : ${title}`}
       className={cn(
         "group relative flex h-full cursor-pointer flex-col overflow-hidden rounded-2xl glass-strong outline-none",
         "transition-all duration-300 ease-out",
@@ -70,7 +80,7 @@ export function BlogCard({ post, onOpen, className }: BlogCardProps) {
         {/* Category mono tag (top-left) */}
         <div className="absolute top-3 left-3">
           <span className="inline-flex items-center gap-1.5 rounded-md border border-border/50 bg-background/60 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground backdrop-blur">
-            {post.category}
+            {category}
           </span>
         </div>
 
@@ -89,39 +99,39 @@ export function BlogCard({ post, onOpen, className }: BlogCardProps) {
       <div className="flex flex-1 flex-col gap-3 p-5 md:p-6">
         {/* Meta row — date + reading time */}
         <div className="flex items-center gap-3 font-mono text-[11px] text-muted-foreground">
-          <time dateTime={post.date}>{formatPostDate(post.date)}</time>
+          <time dateTime={post.date}>{formatPostDate(post.date, locale)}</time>
           <span aria-hidden className="text-border">·</span>
           <span className="inline-flex items-center gap-1">
             <Clock className="h-3 w-3" aria-hidden />
-            {post.readingTime} min
+            {t("blog.readingTime", { n: String(post.readingTime) })}
           </span>
         </div>
 
         {/* Title */}
         <h3 className="line-clamp-2 text-lg font-semibold tracking-tight text-foreground transition-colors group-hover:text-primary md:text-xl">
-          {post.title}
+          {title}
         </h3>
 
         {/* Excerpt */}
         <p className="line-clamp-3 text-sm leading-relaxed text-muted-foreground/80 text-pretty">
-          {post.excerpt}
+          {excerpt}
         </p>
 
         {/* Tags */}
         <div className="flex flex-wrap items-center gap-1.5">
-          {post.tags.map((t) => (
+          {post.tags.map((tag) => (
             <span
-              key={t}
+              key={tag}
               className="rounded-md border border-border/60 bg-card/30 px-2 py-0.5 font-mono text-[10px] text-muted-foreground"
             >
-              {t}
+              {tag}
             </span>
           ))}
         </div>
 
         {/* CTA */}
         <div className="mt-auto flex items-center gap-1.5 pt-1 text-sm font-medium text-primary">
-          Lire l&rsquo;article
+          {t("common.viewArticle")}
           <ArrowUpRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
         </div>
       </div>

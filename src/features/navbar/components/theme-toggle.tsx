@@ -4,10 +4,12 @@ import * as React from "react";
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
+import { useT } from "@/shared/i18n";
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = React.useState(false);
+  const t = useT();
   React.useEffect(() => setMounted(true), []);
 
   const isDark = mounted ? theme === "dark" : true;
@@ -18,7 +20,7 @@ export function ThemeToggle() {
       size="icon"
       onClick={() => setTheme(isDark ? "light" : "dark")}
       className="h-9 w-9 rounded-lg relative overflow-hidden"
-      aria-label={isDark ? "Activer le thème clair" : "Activer le thème sombre"}
+      aria-label={isDark ? t("nav.themeLight") : t("nav.themeDark")}
       suppressHydrationWarning
     >
       {mounted ? (

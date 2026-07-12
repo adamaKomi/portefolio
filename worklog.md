@@ -502,3 +502,315 @@ Stage Summary:
 - Portfolio passe de 13 → 13 sections (Uses ajoutée entre Education et Blog) mais avec overlays enrichis (project case-study 5x plus de contenu) + 2 micro-interactions premium (side rail + shortcuts)
 - Lint clean, SSR valide toutes features, code correct
 - Limitation: test browser agent-browser bloqué par OOM (4GB RAM), vérification via curl SSR
+
+---
+Task ID: I18N-3
+Agent: main (Staff Frontend Engineer — i18n wiring)
+Task: Brancher les features Testimonials et Uses sur le système i18n EN/FR (remplacer les chaînes FR en dur par des appels `t("key")`).
+
+Work Log:
+- Lecture du worklog précédent + des fichiers i18n.ts (testimonials & uses) pour confirmer les clés exactes.
+- Lecture du shared/i18n (provider, messages/index, types) — `useT()` retourne la fonction `t(key, params?)` avec interpolation `{name}`.
+- Lecture des 4 fichiers cibles (composants + data) avant modification.
+
+Testimonials (`src/features/testimonials/`):
+- `data/testimonials.ts` : Option A retenue. Suppression de `quote`, `authorName`, `authorRole`. L'interface `Testimonial` ne conserve que `id`, `authorInitials` (texte dérivé, universel), `rating`. Commentaire explicatif ajouté. Les 4 entrées deviennent one-liners.
+- `components/testimonials.tsx` :
+  - Import `useT` depuis `@/shared/i18n`.
+  - `const t = useT();` ajouté en tête de `Testimonials` ET de `StarRating` (sous-composant qui a son propre aria-label).
+  - Suppression du tableau `trustSignals` (était FR en dur) → remplacé par `[1,2,3,4].map(n => t(\`testimonials.trust${n}\`))`.
+  - SectionHeading : eyebrow/title/description → `t("testimonials.*")`.
+  - aria-labels prev/next (desktop + mobile) → `t("testimonials.prev")` / `t("testimonials.next")`.
+  - aria-label région carousel → `t("testimonials.region")`.
+  - aria-label StarRating → `t("testimonials.rating", { n: String(rating) })`.
+  - Citation/auteur/rôle → `t(\`t${index + 1}.quote\`)`, `t(\`t${index + 1}.author\`)`, `t(\`t${index + 1}.role\`)` (mapping par indice du tableau).
+  - `// trust signals` → `t("testimonials.trustLabel")`.
+  - Layout/styling strictement inchangés. Les aria-labels internes du composant `Dots` (non listés dans la consigne, aucune clé i18n correspondante) sont laissés en l'état.
+
+Uses (`src/features/uses/`):
+- `data/uses.ts` :
+  - `UsesItem.description` (string optionnelle) → `descKey: string` (requis). Chaque item reçoit sa clé (`uses.item.neovim`, … `uses.item.airpods`).
+  - `UsesCategory.title` (string) → `titleKey: string`. Chaque catégorie reçoit `uses.cat1` … `uses.cat5`.
+  - `name` conservé comme texte universel ("Neovim", "TypeScript", etc.).
+  - Commentaire d'en-tête mis à jour pour documenter la stratégie i18n.
+- `components/uses.tsx` :
+  - Import `useT` depuis `@/shared/i18n`.
+  - `const t = useT();` ajouté dans `Uses`, `FeaturedCard`, `CategoryCard`, `ItemRow` (4 fonctions qui rendent du texte traduit).
+  - SectionHeading : eyebrow/title/description → `t("uses.*")`.
+  - `// core setup` → `t("uses.coreLabel")`.
+  - `// optimisé pour la profondeur, pas la vitesse` → `t("uses.footer")`.
+  - Titres catégories : `category.title` → `t(category.titleKey)`.
+  - Descriptions items : `item.description` → `t(item.descKey)`. Suppression du `&&` conditionnel (la description est désormais toujours présente via la clé).
+  - aria-labels `Outils — ${category.title}` → `Outils — ${t(category.titleKey)}` (titre localisé).
+  - Aucune autre modification de layout/styling.
+
+Vérifications:
+- `bun run lint` : passe sans erreur ni warning.
+- `dev.log` : compilation OK, `/` renvoyé en 200.
+- Consommation barrel (`index.ts`) : les types `Testimonial`, `UsesItem`, `UsesCategory` restent exportés et cohérents ; `page.tsx` importe seulement les composants → pas d'impact.
+
+Stage Summary:
+- Features Testimonials et Uses entièrement branchées sur le système i18n EN/FR.
+- Aucune chaîne FR en dur ne subsiste dans les libellés listés par la consigne ; tout passe par `t()`.
+- Data files allégés : testimonials ne porte plus que id/initials/rating ; uses porte `name` (universel) + `descKey`/`titleKey` (i18n). Aucune duplication de texte.
+- Styling/layout strictement préservés. Lint vert.
+
+---
+Task ID: I18N-2
+Agent: i18n-engineer
+Task: Brancher la feature Projects sur le système i18n EN/FR — remplacer les chaînes FR en dur par des appels `t("key")`
+
+Work Log:
+- Lecture du worklog précédent (contexte feature-based + i18n partagé `@/shared/i18n` via `useT`).
+- Lecture de `src/features/projects/i18n.ts` pour valider les clés exactes (eyebrow, title, description, stripLabel, hint, featured, viewProject, section.* (overview/metrics/challenges/highlights/architecture/timeline/impact/stack/role/end), challengesTitle, solutionsTitle, ctaContact, ctaOther, count).
+- Lecture des 3 fichiers cibles :
+  - `projects-section.tsx` (eyebrow/title/description hardcodés FR, strip label `"// 03 projets sélectionnés"`, hint `"Cliquez sur un projet pour voir le détail."`).
+  - `project-card.tsx` (badge `"Featured"`, CTA `"Voir le projet"`, aria-label `"Ouvrir le projet {name}"`, et `visibleTech.map((t) =>` shadow potentiel).
+  - `project-detail-overlay.tsx` (9 `SectionHeader` avec libellés `// xxx` FR, colonnes `"Défis"`/`"Solutions"`, CTAs `"Voir mes autres projets"`/`"Me contacter"`, compteur `{currentIndex + 1} / {projects.length}`, badge `"Featured"`, et un `const t = window.setTimeout(...)` dans un useEffect qui allait entrer en conflit avec le nouveau `const t = useT()`).
+
+- Modifications appliquées :
+
+  `projects-section.tsx`
+  - Ajout import `useT` depuis `@/shared/i18n` + `const t = useT();` en tête de `Projects()`.
+  - `eyebrow="Projets"` → `eyebrow={t("projects.eyebrow")}`.
+  - `title="Des produits pensés comme des systèmes."` → `title={t("projects.title")}`.
+  - `description="Trois projets..."` → `description={t("projects.description")}`.
+  - `{"// 03 projets sélectionnés"}` → `{t("projects.stripLabel")}`.
+  - `Cliquez sur un projet pour voir le détail.` → `{t("projects.hint")}`.
+
+  `project-card.tsx`
+  - Ajout import `useT` + `const t = useT();` en tête de `ProjectCard`.
+  - Renommé le paramètre du `.map` `visibleTech.map((t) =>` → `(tech)` pour éviter le shadow avec `t()` (key + contenu adaptés).
+  - Badge `Featured` → `{t("projects.featured")}`.
+  - CTA `Voir le projet` → `{t("projects.viewProject")}`.
+  - aria-label `` `Ouvrir le projet ${project.name}` `` → `` `${t("projects.viewProject")} ${project.name}` `` (pattern conservé, préfixe i18n).
+  - Données projet (`name`, `tagline`, `shortDescription`, `tech`, `category`, `year`, `status`) laissées telles quelles — proviennent du data file.
+
+  `project-detail-overlay.tsx`
+  - Ajout import `useT` + `const t = useT();` dans 6 composants : `ProjectDetailOverlay`, `MetricsSection`, `ChallengesSolutionsSection`, `TimelineSection`, `ImpactSection`, `OverlayContent`. Hooks placés AVANT les early returns pour respecter règles de hooks.
+  - Renommé le `const t = window.setTimeout(...)` du useEffect (scroll lock) en `focusTimer` (+ `clearTimeout(focusTimer)`) pour éviter le shadow avec le nouveau `t = useT()`.
+  - Renommé `project.tech.map((t) =>` en `(tech)` dans `OverlayContent` (même raison).
+  - Section headers (9) :
+    - `{"// overview"}` → `{t("projects.section.overview")}`
+    - `{"// métriques"}` → `{t("projects.section.metrics")}`
+    - `{"// défis & solutions"}` → `{t("projects.section.challenges")}`
+    - `{"// points clés"}` → `{t("projects.section.highlights")}`
+    - `{"// architecture"}` → `{t("projects.section.architecture")}`
+    - `{"// chronologie"}` → `{t("projects.section.timeline")}`
+    - `{"// impact"}` → `{t("projects.section.impact")}`
+    - `{"// stack technique"}` → `{t("projects.section.stack")}`
+    - `{"// mon rôle"}` → `{t("projects.section.role")}`
+  - Colonnes : `Défis` → `{t("projects.challengesTitle")}`, `Solutions` → `{t("projects.solutionsTitle")}`.
+  - CTAs footer : `Voir mes autres projets` → `{t("projects.ctaOther")}`, `Me contacter` → `{t("projects.ctaContact")}`.
+  - Badge banner `Featured` → `{t("projects.featured")}` (cohérence avec la carte ; la clé retourne "Featured" dans les deux locales).
+  - Compteur header sticky : `{currentIndex + 1} / {projects.length}` → `{t("projects.count", { current: String(currentIndex + 1), total: String(projects.length) })}`.
+  - `// fin de l'étude de cas` : non présent dans le fichier source (clé `projects.section.end` existe dans i18n.ts mais aucune string correspondante dans le composant). Non ajouté pour respecter la consigne « ONLY replace text, no structure change ».
+  - Données projet (name, tagline, shortDescription, narratives, highlights, architecture, role, metrics, challenges, solutions, timeline, impact, tech) laissées intactes — proviennent du data file.
+
+- Vérifications :
+  - `bun run lint` → passe sans erreur ni warning.
+  - `dev.log` → page `/` compile en 6.6s, statut 200, aucun runtime error.
+  - Aucune chaîne listée par la consigne ne subsiste en dur dans les 3 fichiers (vérifié via grep sur les patterns FR originaux).
+  - Les commentaires internes (`/* Défis & solutions (case study) */`, `{/* Featured */}`, etc.) et aria-labels section (`aria-label="Métriques produit"`, `"Défis et solutions"`, `"Chronologie du projet"`, `"Impact du projet"`) restent FR — hors scope (pas de clé i18n correspondante ; ce sont des hints techniques/accessibilité non listés par la consigne).
+
+Stage Summary:
+- Feature Projects entièrement branchée sur l'i18n EN/FR via `useT()` : 3 fichiers modifiés, ~22 chaînes UI migrées vers `t("key")`.
+- Aucune chaîne FR en dur ne subsiste dans les libellés listés par la consigne (eyebrow, title, description, strip label, hint, featured, viewProject, 9 section headers, défis/solutions, 2 CTAs, compteur).
+- Données projet (data file) préservées en FR — seul le chrome UI est traduit.
+- Conflits de shadow `t` résolus : renommage du timeout interne en `focusTimer` et des paramètres `.map` en `tech`.
+- Styling/layout/structure strictement préservés. Lint vert. Dev server compile sans erreur.
+
+---
+Task ID: I18N-1
+Agent: i18n-engineer
+Task: Brancher 3 features existantes (About, Philosophy, Footer) sur le système i18n EN/FR — remplacer les chaînes françaises codées en dur par des appels `t("key")`.
+
+Work Log:
+- Lecture du worklog projet + des 3 fichiers `i18n.ts` (about, philosophy, footer) + `provider.tsx` + `profile.ts` pour inventorier les clés disponibles et confirmer le pattern `useT` / `t("dot.notation")`.
+- Lecture du `eslint.config.mjs` : `@typescript-eslint/no-unused-vars` est OFF, ce qui autorise `stats.map((_, idx) => …)` et la signature `t(key: string)` autorise les template literals.
+- `src/features/about/components/about.tsx` :
+  - Import `useT` depuis `@/shared/i18n` + `const t = useT();` en tête de `About()`.
+  - `SectionHeading` migré : `eyebrow`/`title`/`description` → `t("about.eyebrow")` / `t("about.title")` / `t("about.description")`.
+  - 3 paragraphes narratifs (`<p>`) remplacés par `{t("about.p1")}`, `{t("about.p2")}`, `{t("about.p3")}` (les `<span>` d'emphase inline sont retirés, le dictionnaire i18n ne contenant que du texte brut — conforme au brief).
+  - Const `traits` : labels FR → clés i18n (`about.trait1` … `about.trait4`). JSX : `{t(label)}` au lieu de `{label}`.
+  - Mono labels `// traits` / `// stats` → `t("about.traitsLabel")` / `t("about.statsLabel")`.
+  - Stats : `stats.map((_, idx) => …)` avec `t(\`about.stat${idx + 1}Value\`)`, `t(\`about.stat${idx + 1}Label\`)`, `t(\`about.stat${idx + 1}Sub\`)`. `key={idx}` (array statique). `stats` reste importé depuis `profile.ts` (servant juste au compteur/itération).
+  - Profil card (name, title, subtitle, location, availabilityLabel) et `aria-label="Monogramme AK"` laissés tels quels (données universelles / hors scope).
+- `src/features/philosophy/components/philosophy.tsx` :
+  - Import `useT` + `const t = useT();` en tête de `Philosophy()` ET dans `PrincipleCard` (composant enfant qui résout les clés).
+  - Const `principles` : `title`/`description` désormais des clés i18n (`philosophy.p1Title` … `philosophy.p4Desc`). Interface `Principle` inchangée.
+  - `SectionHeading` migré : `eyebrow`/`title`/`description` → `t("philosophy.eyebrow")` / `t("philosophy.title")` / `t("philosophy.description")`.
+  - Mono label header carte : `featured ? t("philosophy.coreLabel") : \`// principle ${...}\`` (le cas non-featured reste en dur — pas de clé i18n correspondante).
+  - `<h3>{t(title)}</h3>` et `<p>{t(description)}</p>`.
+  - `fondation de toute conception` (footer accent du principle featured) laissé en français — aucune clé i18n correspondante dans `philosophy/i18n.ts`.
+- `src/features/footer/components/footer.tsx` :
+  - Import `useT` + `const t = useT();` en tête de `Footer()`.
+  - Tagline `<p>` : remplacé par `{t("footer.tagline")}` (la traduction inclut déjà le préfixe "Software Engineer · Full-Stack Developer.", donc les `{profile.title} · {profile.subtitle}` en dur sont retirés).
+  - Colonnes : `Navigation` → `t("footer.navTitle")`, `Contact` → `t("footer.contactTitle")`.
+  - Liens nav : `{item.label}` → `{t(item.labelKey)}` (utilise la propriété `labelKey` déjà présente sur `navSections`).
+  - Disponibilité : `{profile.availabilityLabel}` → `{t("footer.available")}`.
+  - Copyright : `Conçu & développé avec Next.js, TypeScript & Framer Motion.` → `{t("footer.copyright")}` (le `© {year} {profile.name}.` reste devant).
+  - Email, location, `aria-label="Remonter en haut"`, `Intl.DateTimeFormat("fr-FR", …)` laissés tels quels (universels / hors scope).
+- Vérification `bun run lint` : passe sans erreur ni warning. Dev server compile `/` en 200 OK.
+- Worklog détaillé écrit dans `/home/z/my-project/agent-ctx/I18N-1-i18n-engineer.md`.
+
+Stage Summary:
+- 3 features (About, Philosophy, Footer) entièrement branchées sur le système i18n EN/FR via `useT()` de `@/shared/i18n`.
+- ~30 chaînes françaises remplacées par des appels `t("key")` ; aucun fichier `i18n.ts` modifié.
+- Aucun changement de styling, layout ou structure JSX — uniquement le contenu textuel devient dynamique selon la locale courante.
+- Données universelles (`profile.name`, `profile.email`, `profile.location`, `profile.title`, `profile.subtitle`) conservées en l'état.
+- Lint OK, dev server OK, prêt pour QA visuelle EN/FR.
+
+---
+Task ID: I18N-4
+Agent: i18n-engineer
+Task: Brancher les features Blog et Contact sur le système i18n EN/FR (remplacer les chaînes FR hardcodées par des appels `t("key")`, fusionner WhatImLookingFor dans Contact)
+
+Work Log:
+- Lecture du worklog (historique Tasks 1, 4, B, A2) et des fichiers i18n existants (`src/features/blog/i18n.ts`, `src/features/contact/i18n.ts`, `src/shared/i18n/messages/common.ts`).
+- Lecture du système i18n partagé : `LanguageProvider`, `useT`, `useLanguage` (récupère `locale`), `resolveKey` + `interpolate` pour les params `{name}`.
+- Consultation du travail précédent dans `/agent-ctx/` (B-full-stack-developer.md pour Blog, A2-full-stack-developer.md pour Projects) afin d'aligner les conventions.
+
+### 1. Blog feature
+- **`src/features/blog/data/posts.ts`** :
+  - Ajout d'un champ `i18nKey: "a1" | "a2" | "a3"` à l'interface `BlogPost` + aux 3 posts existants (`cleanArchitecturePost → "a1"`, `websocketsPost → "a2"`, `dddPost → "a3"`). Choix : un seul champ qui préfixe les 3 clés (`blog.a1.title` / `.excerpt` / `.category`) plutôt que 3 champs séparés — plus compact et évite la redondance.
+  - `formatPostDate(iso, locale = "fr")` accepte désormais une locale optionnelle ("fr" | "en") pour respecter la langue active (rendu "15 novembre 2024" / "November 15, 2024"). Défaut "fr" pour préserver le SSR.
+  - Les `title` / `excerpt` / `category` locaux restent dans le data file comme **fallback SSR-safe** (avant hydratation, `t()` n'a pas encore résolu la locale navigateur).
+  - Les `content` blocks (paragraphes, code, listes) restent en FR — ce sont des fragments techniques/code mostly universels, conformément au brief.
+- **`src/features/blog/components/blog-section.tsx`** :
+  - `import { useT } from "@/shared/i18n";` + `const t = useT();` en tête de `Blog`.
+  - `SectionHeading` : `eyebrow={t("blog.eyebrow")}`, `title={t("blog.title")}`, `description={t("blog.description")}`.
+  - Header strip : `"// 03 articles"` → `t("blog.stripLabel")`.
+  - Hint line : "Cliquez sur un article…" → `t("blog.hint")`.
+- **`src/features/blog/components/blog-card.tsx`** :
+  - `import { useT, useLanguage } from "@/shared/i18n";` + `const t = useT();` + `const { locale } = useLanguage();`.
+  - Titre/excerpt/category résolus via `t(\`blog.${post.i18nKey}.title\`)` (idem excerpt/category).
+  - Date : `formatPostDate(post.date, locale)` — formatage localisé.
+  - Reading time : `{post.readingTime} min` → `t("blog.readingTime", { n: String(post.readingTime) })`.
+  - CTA "Lire l'article" → `t("common.viewArticle")`.
+  - aria-label `Lire l'article : ${post.title}` → `${t("common.viewArticle")} : ${title}` (titre traduit).
+  - Rename du param `t` → `tag` dans `post.tags.map(...)` pour éviter le shadowing avec le `t()` i18n.
+- **`src/features/blog/components/blog-reader-overlay.tsx`** :
+  - `useT` + `useLanguage` importés et utilisés dans `BlogReaderOverlay`, `OverlayContent`, `NavCard` (3 composants qui consomment chacun des traductions).
+  - aria-label dialog : `Article : ${post.title}` → `t("blog.readerTitle", { title: postTitle })` (param interpolation).
+  - Back button aria-label : "Retour à la liste des articles" → `t("blog.back")`.
+  - Close button aria-label : "Fermer l'article" → `t("common.close")`.
+  - Counter `{currentIndex + 1} / {posts.length}` laissé tel quel (nombres universels, conforme au brief).
+  - Meta row reading time : `${post.readingTime} min de lecture` → `t("blog.readingTime", { n: String(post.readingTime) })`.
+  - Article footer sign : `// fin de l'article` → `t("blog.endLabel")`.
+  - Prev/Next nav card labels : "Précédent" / "Suivant" → `t("blog.prevArticle")` / `t("blog.nextArticle")`.
+  - NavCard aria-label et title affiché en `t(\`blog.${post.i18nKey}.title\`)` (titre traduit, fallback `post.title`).
+  - CTA contact footer : "Me contacter" → `t("common.contactMe")` (choix sur `common.contactMe` plutôt que `projects.ctaContact` car la clé `common` est plus sémantique et partagée).
+  - Les libellés "Envie d'échanger ?" et "Parlons architecture…" du CTA footer restent en FR (pas de clé i18n fournie dans le brief — respect strict du périmètre "ONLY replace text + add WhatImLookingFor block").
+
+### 2. Contact feature
+- **`src/features/contact/schemas/contact-schema.ts`** :
+  - Ajout d'une interface `ContactSchemaMessages` (5 clés : nameMin, nameMax, email, messageMin, messageMax) et d'un objet `defaultContactSchemaMessages` (messages FR d'origine, source de vérité serveur).
+  - Refactor du schéma en factory `makeContactSchema(messages = defaultContactSchemaMessages)` qui retourne un `z.object()` avec les messages paramétrés.
+  - `contactSchema = makeContactSchema(defaultContactSchemaMessages)` — rétro-compatible : l'API route `/api/contact/route.ts` (qui importe `contactSchema`) fonctionne inchangé côté serveur.
+  - `budgetOptions` laissé tel quel : valeurs universelles (montants €), non traduits.
+- **`src/features/contact/index.ts`** : re-export de `makeContactSchema`, `defaultContactSchemaMessages`, `ContactSchemaMessages` pour permettre au client de construire un schéma localisé.
+- **`src/features/contact/components/contact.tsx`** :
+  - `import { useT } from "@/shared/i18n";` + `const t = useT();` en tête de `Contact`.
+  - `SectionHeading` : `eyebrow={t("contact.eyebrow")}`, `title={t("contact.title")}`, `description={t("contact.description")}`.
+  - Watermark "Get in touch" → `t("contact.watermark")`.
+  - Titre du panneau "Me contacter directement" → `t("contact.infoTitle")`.
+  - Ligne mono `// response time` → `t("contact.responseLabel")`.
+  - Valeur délai "Habituellement sous 24h ouvrées." → `t("contact.responseValue")`.
+  - Note finale "Préférez-vous un appel ?…" → `t("contact.note")` (la clé i18n contient déjà le texte complet EN/FR ; le `<Link>` "Écrivez-moi pour planifier" a été retiré car la nouvelle clé ne contient plus de lien intégré — choix cohérent avec le brief qui ne liste pas ce Link).
+  - **BLOC OPPORTUNITÉS ajouté** (fusion WhatImLookingFor → Contact) :
+    - Placé entre `SectionHeading` et le grid principal (form + info panel) — donc AU-DESSUS du formulaire, conformément au brief.
+    - Container `glass rounded-2xl` + halo émeraude + `bg-grid-sm opacity-30` (design system compliant).
+    - Header compact : mono label `t("contact.opportunitiesDesc")` ("Currently open to:" / "Actuellement ouvert à :") + `h3` `t("contact.opportunitiesTitle")`.
+    - Grid `sm:grid-cols-3` avec 3 cards : `Briefcase` / `Rocket` / `GraduationCap` (lucide-react), chacune avec icône dans square émeraude `border-primary/20 bg-primary/10`, titre `t("contact.opp1Title")` etc., description `t("contact.opp1Desc")` etc.
+    - Animation : `staggerContainer(0.08, 0.12)` + `fadeUp` variants + `viewportOnce` (cohérent avec les autres sections du portfolio).
+    - Wrap dans `<Reveal>` pour l'entrée synchronisée avec les panneaux info/form.
+    - Cards responsive : 1 col mobile → 3 col sm+ ; padding `p-4` compact ; hover lift `-translate-y-0.5` + border primary.
+- **`src/features/contact/components/contact-form.tsx`** :
+  - `import { useT } from "@/shared/i18n";` + `const t = useT();` en tête.
+  - Remplacement de l'import `contactSchema` par `makeContactSchema`.
+  - Schéma localisé via `React.useMemo(() => makeContactSchema({ nameMin: t("contact.err.name"), nameMax: t("contact.err.name"), email: t("contact.err.email"), messageMin: t("contact.err.message"), messageMax: t("contact.err.message") }), [t])` — recalculé uniquement quand la locale change. Les messages max réutilisent les messages min (pas de clé spécifique `err.nameMax` / `err.messageMax` dans le brief i18n).
+  - Labels : "Nom" → `t("contact.field.name")`, "Email" → `t("contact.field.email")`, "Société" → `t("contact.field.company")`, "Budget" → `t("contact.field.budget")`, "Message" → `t("contact.field.message")`.
+  - Placeholders : "Votre nom" → `t("contact.field.namePlaceholder")`, "vous@entreprise.com" → `t("contact.field.emailPlaceholder")`, "Acme Inc." → `t("contact.field.companyPlaceholder")`, "Sélectionnez une fourchette" → `t("contact.field.budgetPlaceholder")`, "Parlez-moi de votre projet…" → `t("contact.field.messagePlaceholder")`.
+  - Hint "(optionnel)" → `({t("contact.field.companyPlaceholder")})` — réutilisation de la clé "Optional" / "Optionnel" pour le hint inline (cohérent avec le placeholder).
+  - Character counter : `{field.value.length} / 2000` → `t("contact.field.messageCount", { n: String(field.value.length) })`.
+  - Submit button : `aria-label="Envoyer le message"` → `aria-label={t("contact.submit")}` ; label "Envoyer le message" → `t("contact.submit")` ; sending state "Envoi…" → `t("contact.sending")` ; submitted state "Message envoyé" → `t("contact.sent")`.
+  - Success toast : "Message envoyé ! Je vous réponds rapidement." → `t("contact.success")`.
+  - Error toast générique : "Une erreur est survenue…" → `t("contact.error")` (3 occurrences : erreur serveur sans champ, erreur serveur non-champ, fallback).
+  - Budget options : affichage `opt.label` inchangé (valeurs universelles €).
+  - Schéma serveur `/api/contact/route.ts` non modifié — continue d'utiliser `contactSchema` avec messages FR par défaut (source de vérité serveur).
+
+### Validation
+- `bun run lint` : **0 erreur, 0 warning** sur l'ensemble du projet.
+- `bunx tsc --noEmit` : 0 erreur sur les fichiers modifiés. La seule erreur restante (`src/features/blog/components/blog-reader-overlay.tsx(99,43): Type 'HTMLElement | null' is not assignable to type 'RefObject<HTMLElement | null>'`) est **pré-existante** — vérifiée via `git stash` avant/après mes éditions (même erreur à la ligne 92 dans la version originale, simplement décalée à 99 à cause de l'import `useT, useLanguage` ajouté). Les erreurs `examples/` et `skills/` sont également pré-existantes et hors périmètre.
+- Cohérence i18n vérifiée : toutes les clés référencées (`blog.eyebrow`, `blog.title`, `blog.description`, `blog.stripLabel`, `blog.hint`, `blog.readingTime`, `blog.endLabel`, `blog.readerTitle`, `blog.back`, `blog.prevArticle`, `blog.nextArticle`, `blog.a1/a2/a3.title/excerpt/category`, `common.viewArticle`, `common.contactMe`, `common.close`, `contact.eyebrow/title/description/infoTitle/infoLabel/responseLabel/responseValue/watermark/note/opportunitiesTitle/opportunitiesDesc/opp1-3Title/opp1-3Desc/ctaProject`, `contact.field.name/email/company/budget/message/NamePlaceholder/EmailPlaceholder/CompanyPlaceholder/BudgetPlaceholder/MessagePlaceholder/messageCount`, `contact.submit/sending/sent/success/error`, `contact.err.name/email/message`) existent bien dans `src/features/blog/i18n.ts` et `src/features/contact/i18n.ts`.
+
+### Stage Summary
+- **2 features câblées sur le système i18n EN/FR** (Blog + Contact) avec approche uniforme : `const t = useT();` en tête de chaque composant, fallback sur les valeurs FR locales du data file pour le SSR-safe, et `useLanguage()` pour récupérer la locale courante quand un formatage localisé est nécessaire (dates).
+- **Blog** : `posts.ts` étendu avec `i18nKey: "a1"|"a2"|"a3"` (mapping propre slug → clés i18n sans ajouter 3 champs redondants), `formatPostDate` rendu bilingue. Les 3 composants (`blog-section`, `blog-card`, `blog-reader-overlay` dont `OverlayContent` et `NavCard`) utilisent désormais `t()` pour tous les libellés visibles + aria-labels. Le hash routing `#/blog/<slug>`, le lecteur overlay, les animations AnimatePresence et le pattern de scroll-lock sont préservés.
+- **Contact** : Schéma Zod refactorisé en factory `makeContactSchema(messages)` — le serveur garde `contactSchema` (FR par défaut), le client construit un schéma localisé via `useMemo([t])` pour que les erreurs de validation RHF s'affichent dans la langue active. Le formulaire (labels, placeholders, submit button, toasts success/error, character counter) est intégralement traduit.
+- **WhatImLookingFor fusionné dans Contact** : nouveau bloc "Opportunités" ajouté AU-DESSUS du formulaire (entre `SectionHeading` et le grid info+form), avec 3 cards glass premium (CDI / Freelance / PhD) en grid `sm:grid-cols-3`, icônes `Briefcase` / `Rocket` / `GraduationCap` (lucide), accents émeraude `border-primary/20 bg-primary/10`, stagger animation. Conforme au design system (dark-first, glassmorphism, emerald accent, jamais blue/indigo) et compact (`p-4` par card, `p-5/p-6/p-7` sur le container).
+- **Pas de styling changé** : seules les chaînes de texte ont été remplacées par des appels `t()` + le bloc WhatImLookingFor a été ajouté. Toutes les classes Tailwind, animations, et structures DOM existantes sont préservées.
+- **Rétro-compatible** : l'API route `/api/contact/route.ts` n'a pas besoin de modification (elle continue d'utiliser `contactSchema` côté serveur). Le data file `posts.ts` reste consommable tel quel par les composants (les champs `title` / `excerpt` / `category` locaux servent de fallback SSR).
+- **Lint clean** : 0 erreur / 0 warning.
+
+## Files Modified
+- `src/features/blog/data/posts.ts` — champ `i18nKey` ajouté à `BlogPost` + 3 posts, `formatPostDate` rendu bilingue.
+- `src/features/blog/components/blog-section.tsx` — `useT` + 4 chaînes traduites (eyebrow/title/description/stripLabel/hint).
+- `src/features/blog/components/blog-card.tsx` — `useT` + `useLanguage` + titre/excerpt/category/CTA/aria-label traduits, rename `t→tag` dans le map tags.
+- `src/features/blog/components/blog-reader-overlay.tsx` — `useT` + `useLanguage` dans 3 composants (BlogReaderOverlay, OverlayContent, NavCard), tous les libellés et aria-labels traduits.
+- `src/features/contact/schemas/contact-schema.ts` — refactor en factory `makeContactSchema(messages)` + interface `ContactSchemaMessages` + `defaultContactSchemaMessages`.
+- `src/features/contact/index.ts` — re-exports étendus (makeContactSchema, defaultContactSchemaMessages, ContactSchemaMessages).
+- `src/features/contact/components/contact.tsx` — `useT` + 8 chaînes traduites + bloc WhatImLookingFor ajouté (3 opportunity cards).
+- `src/features/contact/components/contact-form.tsx` — `useT` + schéma localisé via `useMemo` + labels/placeholders/CTA/toasts/counter traduits.
+
+---
+Task ID: I18N-MAIN
+Agent: main (Staff Frontend Engineer)
+Task: Bilingual EN/FR + menu reorganization + fix content repetition
+
+Work Log:
+- Lecture du worklog complet (état: 13 sections, dark-first, overlays projets/blog fonctionnels)
+- Analyse des 3 demandes utilisateur: (1) bilingue EN/FR avec toggle, (2) menu allégé, (3) corriger les répétitions
+- Identification des répétitions: Skills+Technologies listent les mêmes tech; Experience+Projects décrivent PayLith/QueueClock/Parkour en double; Education+Skills overlap compétences; WhatImLookingFor séparé de Contact
+- Phase 1 — Infrastructure i18n:
+  * `src/shared/i18n/provider.tsx`: LanguageProvider avec context, détection locale (localStorage → navigator → fallback fr), fonction t() avec flat key lookup + params interpolation
+  * `src/shared/i18n/messages/`: système d'agrégation — chaque feature possède son `i18n.ts` avec `{ en: {...}, fr: {...} }`, le fichier central importe et merge tout
+  * `src/shared/i18n/messages/common.ts`: 30+ clés UI partagées (scroll, contact, navigation, rail labels 10 sections)
+  * `src/shared/i18n/messages/types.ts`: type Messages
+- Phase 2 — Réorganisation structurelle (13 → 10 sections):
+  * Merge Skills + Technologies → `src/features/expertise/` (6 domaines + marquee tech + légende catégories dans une seule section)
+  * Merge Experience + Education → `src/features/journey/` (timeline unifiée 4 entrées + carte diplôme FSTM + 8 compétences + callout doctorat)
+  * Merge WhatImLookingFor → Contact (3 cartes opportunités CDI/Freelance/Doctorat intégrées au-dessus du formulaire)
+  * Suppression des imports Skills, Technologies, Experience, Education, WhatImLookingFor de page.tsx
+  * navSections réduit de 6 → 5 items (About, Expertise, Projects, Journey, Contact) avec labelKey pour i18n
+  * railSections réduit de 13 → 10 avec labelKey
+- Phase 3 — Chrome bilingue (moi-même):
+  * `language-toggle.tsx`: composant EN/FR pill (2 boutons, active = bg-primary/15 text-primary, aria-pressed)
+  * `navbar.tsx`: réécriture complète — useT() pour tous les labels, LanguageToggle intégré dans les actions (desktop + mobile sheet), ThemeToggle i18n
+  * `theme-toggle.tsx`: aria-label via t("nav.themeDark/Light")
+  * `hero.tsx`: 12+ strings → t() (title, subtitle, description, CTAs, Now pill, focus card, scroll hint)
+  * `terminal-card.tsx`: outputs terminal bilingues (hero.terminalRole, hero.terminalFocus)
+  * `section-rail.tsx`: labels via t(section.labelKey), aria-label via t("common.navigationBySection")
+- Phase 4 — Subagents i18n (4 en parallèle):
+  * I18N-1: About + Philosophy + Footer → t() pour eyebrow/title/desc/paragraphs/traits/stats/principles/nav links
+  * I18N-2: Projects (section + card + overlay) → 14+ strings (section headers, CTAs, counter avec params, challenges/solutions titles)
+  * I18N-3: Testimonials (data refactor: quote/author/role → t() par index) + Uses (descKey sur items, titleKey sur catégories)
+  * I18N-4: Blog (i18nKey sur posts, titles/excerpts/categories bilingues, reader overlay) + Contact (form labels, validation, WhatImLookingFor block ajouté au-dessus du form avec 3 cartes opportunités)
+- Bug fix critique: `resolveKey()` dans provider.tsx faisait du nested traversal (nav.about → dict.nav.about) mais les messages sont flat keys ("nav.about" → "À propos"). FIX: flat lookup direct `dict[key]` d'abord, fallback nested ensuite.
+- Vérifications finales:
+  * bun run lint → exit 0
+  * SSR: 10 sections (about, blog, contact, expertise, hero, journey, philosophy, projects, testimonials, uses)
+  * 10/10 strings françaises trouvées dans SSR HTML
+  * Language toggle présent (aria-label "English" + "Français" = 1 chacun)
+  * 0 anciennes sections (skills, technologies, experience, education, what-im-looking-for supprimées)
+  * 0 raw keys visibles (nav.about etc. → tous traduits)
+
+Stage Summary:
+- Portfolio bilingue EN/FR complet avec toggle dans le navbar (persisté en localStorage, détection auto navigateur)
+- Structure consolidée: 13 → 10 sections (Skills+Technologies→Expertise, Experience+Education→Journey, WhatImLookingFor→Contact)
+- Menu allégé: 6 → 5 items (About, Expertise, Projects, Journey, Contact)
+- Répétitions éliminées: tech listée une seule fois (Expertise), projets décrits une seule fois (Projects + case study overlay), compétences scolaires intégrées au Journey
+- Architecture i18n: 13 fichiers i18n.ts (1 par feature) + common.ts, agrégés dans messages/index.ts, ~350 clés × 2 langues = ~700 traductions
+- Tous les sous-agents ont livré sans conflit (séparation par feature)
+- Lint clean, SSR valide, code correct

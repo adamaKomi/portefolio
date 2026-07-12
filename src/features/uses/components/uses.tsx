@@ -9,6 +9,7 @@ import {
   Section,
   SectionHeading,
 } from "@/shared/ui";
+import { useT } from "@/shared/i18n";
 import { cn } from "@/lib/utils";
 import {
   featuredUsesCategory,
@@ -33,15 +34,16 @@ import {
  * données → pas de map string → composant à maintenir.
  * ---------------------------------------------------------- */
 export function Uses() {
+  const t = useT();
   return (
     <Section id="uses" className="overflow-hidden">
       <AuroraBackground variant="section" />
 
       <div className="relative">
         <SectionHeading
-          eyebrow="Uses"
-          title="Les outils de mon quotidien."
-          description="Un setup pensé pour la productivité, le typage strict et l'expérience développeur — du terminal au déploiement."
+          eyebrow={t("uses.eyebrow")}
+          title={t("uses.title")}
+          description={t("uses.description")}
         />
 
         {/* Featured category — full width */}
@@ -66,7 +68,7 @@ export function Uses() {
           >
             <div className="h-px w-8 bg-primary/40" />
             <span className="font-mono text-[10px] uppercase tracking-[0.2em]">
-              {"// optimisé pour la profondeur, pas la vitesse"}
+              {t("uses.footer")}
             </span>
             <div className="h-px flex-1 bg-gradient-to-r from-border to-transparent" />
           </div>
@@ -82,6 +84,7 @@ export function Uses() {
 
 function FeaturedCard({ category }: { category: UsesCategory }) {
   const Icon = category.icon;
+  const t = useT();
 
   return (
     <motion.article
@@ -115,10 +118,10 @@ function FeaturedCard({ category }: { category: UsesCategory }) {
           </span>
           <div className="flex flex-col gap-1">
             <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary/80">
-              {"// core setup"}
+              {t("uses.coreLabel")}
             </span>
             <h3 className="text-xl font-semibold tracking-tight text-foreground md:text-2xl">
-              {category.title}
+              {t(category.titleKey)}
             </h3>
           </div>
           <span
@@ -131,7 +134,7 @@ function FeaturedCard({ category }: { category: UsesCategory }) {
 
         {/* Items — 2 cols on md+ for the featured card */}
         <ul
-          aria-label={`Outils — ${category.title}`}
+          aria-label={`Outils — ${t(category.titleKey)}`}
           className="grid grid-cols-1 gap-x-8 gap-y-3 md:grid-cols-2"
         >
           {category.items.map((item) => (
@@ -151,6 +154,7 @@ function FeaturedCard({ category }: { category: UsesCategory }) {
 
 function CategoryCard({ category }: { category: UsesCategory }) {
   const Icon = category.icon;
+  const t = useT();
 
   return (
     <motion.article
@@ -178,7 +182,7 @@ function CategoryCard({ category }: { category: UsesCategory }) {
             <Icon className="h-4 w-4" aria-hidden />
           </span>
           <h3 className="text-base font-semibold tracking-tight text-foreground">
-            {category.title}
+            {t(category.titleKey)}
           </h3>
           <span
             className="ml-auto inline-flex items-center rounded-md border border-border bg-card/40 px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground"
@@ -190,7 +194,7 @@ function CategoryCard({ category }: { category: UsesCategory }) {
 
         {/* Items */}
         <ul
-          aria-label={`Outils — ${category.title}`}
+          aria-label={`Outils — ${t(category.titleKey)}`}
           className="flex flex-col gap-3"
         >
           {category.items.map((item) => (
@@ -209,6 +213,7 @@ function CategoryCard({ category }: { category: UsesCategory }) {
 /* ---------------------------------------------------------- */
 
 function ItemRow({ item }: { item: UsesItem }) {
+  const t = useT();
   return (
     <div className="flex items-start gap-2.5">
       <Check
@@ -218,11 +223,9 @@ function ItemRow({ item }: { item: UsesItem }) {
       />
       <div className="flex min-w-0 flex-col gap-0.5">
         <span className="text-sm font-medium text-foreground">{item.name}</span>
-        {item.description && (
-          <p className="text-xs leading-relaxed text-muted-foreground text-pretty">
-            {item.description}
-          </p>
-        )}
+        <p className="text-xs leading-relaxed text-muted-foreground text-pretty">
+          {t(item.descKey)}
+        </p>
       </div>
     </div>
   );

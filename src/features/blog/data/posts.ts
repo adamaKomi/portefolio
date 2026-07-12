@@ -26,6 +26,12 @@ export interface BlogPost {
   category: string;
   /** Mot-clé mis en avant dans le titre de l'overlay (rendu text-gradient). */
   highlightKeyword?: string;
+  /**
+   * Clé i18n ("a1" | "a2" | "a3") utilisée pour résoudre les traductions
+   * du titre, de l'extrait et de la catégorie via t(`blog.${i18nKey}.title`), etc.
+   * Le titre/excerpt/category locaux servent désormais de fallback SSR.
+   */
+  i18nKey: "a1" | "a2" | "a3";
   content: ContentBlock[];
 }
 
@@ -42,6 +48,7 @@ const cleanArchitecturePost: BlogPost = {
   tags: ["Architecture", "NestJS", "DDD"],
   category: "Architecture",
   highlightKeyword: "métier",
+  i18nKey: "a1",
   content: [
     {
       type: "paragraph",
@@ -129,6 +136,7 @@ const websocketsPost: BlogPost = {
   tags: ["Temps réel", "Redis", "WebSockets"],
   category: "Systèmes distribués",
   highlightKeyword: "horizontalement",
+  i18nKey: "a2",
   content: [
     {
       type: "paragraph",
@@ -227,6 +235,7 @@ const dddPost: BlogPost = {
   tags: ["DDD", "Architecture", "Métier"],
   category: "Architecture",
   highlightKeyword: "métier",
+  i18nKey: "a3",
   content: [
     {
       type: "paragraph",
@@ -335,10 +344,14 @@ export function getPrevPost(slug: string): BlogPost | null {
   return posts[(i - 1 + posts.length) % posts.length];
 }
 
-/** Formatte une date ISO en chaîne lisible en français. */
-export function formatPostDate(iso: string): string {
+/**
+ * Formatte une date ISO en chaîne lisible.
+ * Accepte une locale optionnelle ("fr" | "en") pour respecter la langue active.
+ * Par défaut "fr" pour préserver le comportement SSR historique.
+ */
+export function formatPostDate(iso: string, locale: "fr" | "en" = "fr"): string {
   const d = new Date(iso);
-  return d.toLocaleDateString("fr-FR", {
+  return d.toLocaleDateString(locale === "en" ? "en-US" : "fr-FR", {
     year: "numeric",
     month: "long",
     day: "numeric",

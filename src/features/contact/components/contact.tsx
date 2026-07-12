@@ -5,11 +5,14 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import {
   ArrowUpRight,
+  Briefcase,
   Github,
+  GraduationCap,
   Linkedin,
   Mail,
   MapPin,
   Clock,
+  Rocket,
   Sparkles,
 } from "lucide-react";
 
@@ -20,6 +23,8 @@ import {
   Reveal,
   Magnetic,
 } from "@/shared/ui";
+import { useT } from "@/shared/i18n";
+import { fadeUp, staggerContainer, viewportOnce } from "@/shared/animations";
 import { profile, socials } from "@/shared/constants/profile";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -31,6 +36,16 @@ const socialIcons = {
   linkedin: Linkedin,
   mail: Mail,
 } as const;
+
+/**
+ * Données des opportunités (fusion de l'ancienne section WhatImLookingFor).
+ * Les libellés et descriptions sont traduits via i18n (contact.opp1/2/3…).
+ */
+const opportunityItems = [
+  { icon: Briefcase, titleKey: "contact.opp1Title", descKey: "contact.opp1Desc" },
+  { icon: Rocket, titleKey: "contact.opp2Title", descKey: "contact.opp2Desc" },
+  { icon: GraduationCap, titleKey: "contact.opp3Title", descKey: "contact.opp3Desc" },
+] as const;
 
 /**
  * Hook utilitaire : heure locale live basée sur la timezone du profil.
@@ -84,6 +99,7 @@ function useLocalTime(timezone: string) {
 }
 
 export function Contact() {
+  const t = useT();
   const { time, date } = useLocalTime(profile.timezone);
 
   // On n'affiche que GitHub + LinkedIn dans le panneau d'infos
@@ -102,16 +118,73 @@ export function Contact() {
         className="pointer-events-none absolute inset-x-0 -bottom-10 sm:-bottom-16 flex justify-center select-none"
       >
         <span className="text-[18vw] sm:text-[14vw] lg:text-[12rem] font-semibold tracking-tighter leading-none text-transparent bg-clip-text bg-gradient-to-b from-foreground/[0.04] to-transparent">
-          Get in touch
+          {t("contact.watermark")}
         </span>
       </div>
 
       <SectionHeading
-        eyebrow="Contact"
-        title="Discutons de votre prochain projet."
-        description="Recrutement, mission freelance ou simple échange — je réponds sous 24h."
+        eyebrow={t("contact.eyebrow")}
+        title={t("contact.title")}
+        description={t("contact.description")}
         align="center"
       />
+
+      {/* ============ BLOC OPPORTUNITÉS (What I'm looking for — fusionné) ============ */}
+      <Reveal>
+        <div className="relative mb-10 overflow-hidden rounded-2xl border border-border/60 glass md:mb-12">
+          {/* Décor grille interne + halos */}
+          <div aria-hidden className="pointer-events-none absolute inset-0 bg-grid-sm opacity-30" />
+          <div
+            aria-hidden
+            className="pointer-events-none absolute -top-20 right-1/4 h-48 w-72 rounded-full blur-[100px]"
+            style={{
+              background:
+                "radial-gradient(circle, oklch(0.78 0.17 162 / 0.14), transparent 70%)",
+            }}
+          />
+          <div className="relative flex flex-col gap-5 p-5 sm:p-6 md:p-7">
+            {/* Header compact */}
+            <div className="flex flex-col gap-1.5">
+              <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary">
+                {t("contact.opportunitiesDesc")}
+              </span>
+              <h3 className="text-lg font-semibold tracking-tight text-foreground sm:text-xl">
+                {t("contact.opportunitiesTitle")}
+              </h3>
+            </div>
+
+            {/* Grid 3 opportunités */}
+            <motion.div
+              variants={staggerContainer(0.08, 0.12)}
+              initial="hidden"
+              whileInView="visible"
+              viewport={viewportOnce}
+              className="grid gap-3 sm:grid-cols-3 sm:gap-4"
+            >
+              {opportunityItems.map(({ icon: Icon, titleKey, descKey }) => (
+                <motion.div
+                  key={titleKey}
+                  variants={fadeUp}
+                  className={cn(
+                    "group relative flex flex-col gap-2.5 rounded-xl border border-border/60 bg-card/30 p-4",
+                    "transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/30 hover:bg-card/50"
+                  )}
+                >
+                  <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-primary/20 bg-primary/10 text-primary transition-transform duration-300 group-hover:scale-110">
+                    <Icon className="h-4 w-4" />
+                  </div>
+                  <h4 className="text-sm font-semibold tracking-tight text-foreground">
+                    {t(titleKey)}
+                  </h4>
+                  <p className="text-xs leading-relaxed text-muted-foreground text-pretty">
+                    {t(descKey)}
+                  </p>
+                </motion.div>
+              ))}
+            </motion.div>
+          </div>
+        </div>
+      </Reveal>
 
       <div className="relative grid gap-6 lg:gap-8 lg:grid-cols-[0.85fr_1.15fr]">
         {/* ============ COLONNE GAUCHE — PANNEAU INFO ============ */}
@@ -152,7 +225,7 @@ export function Contact() {
               {/* Titre du panneau */}
               <div className="flex flex-col gap-1.5">
                 <h3 className="text-xl font-semibold tracking-tight">
-                  Me contacter directement
+                  {t("contact.infoTitle")}
                 </h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">
                   Le formulaire, c&apos;est bien. Mais parfois un email direct
@@ -260,11 +333,11 @@ export function Contact() {
                 <div className="flex items-center gap-2">
                   <Sparkles className="h-3.5 w-3.5 text-primary" />
                   <span className="font-mono text-xs text-muted-foreground">
-                    {"// response time"}
+                    {t("contact.responseLabel")}
                   </span>
                 </div>
                 <p className="text-sm font-medium text-foreground/90">
-                  Habituellement sous 24h ouvrées.
+                  {t("contact.responseValue")}
                 </p>
               </div>
             </div>
@@ -321,14 +394,7 @@ export function Contact() {
         transition={{ delay: 0.3, duration: 0.6 }}
         className="mt-8 text-center font-mono text-xs text-muted-foreground/70"
       >
-        Préférez-vous un appel ?{" "}
-        <Link
-          href={`mailto:${profile.email}?subject=Demande%20d%27appel`}
-          className="text-primary hover:underline underline-offset-4"
-        >
-          Écrivez-moi pour planifier
-        </Link>{" "}
-        — je suis flexible sur les créneaux.
+        {t("contact.note")}
       </motion.p>
     </Section>
   );

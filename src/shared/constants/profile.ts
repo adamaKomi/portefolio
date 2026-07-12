@@ -27,32 +27,29 @@ export const socials = [
 ] as const;
 
 export const navSections = [
-  { id: "about", label: "À propos" },
-  { id: "philosophy", label: "Philosophie" },
-  { id: "skills", label: "Compétences" },
-  { id: "projects", label: "Projets" },
-  { id: "experience", label: "Parcours" },
-  { id: "contact", label: "Contact" },
+  { id: "about", label: "À propos", labelKey: "nav.about" },
+  { id: "expertise", label: "Expertise", labelKey: "nav.expertise" },
+  { id: "projects", label: "Projets", labelKey: "nav.projects" },
+  { id: "journey", label: "Parcours", labelKey: "nav.journey" },
+  { id: "contact", label: "Contact", labelKey: "nav.contact" },
 ] as const;
 
 /**
  * Sections affichées dans le rail latéral (indicateur de progression vertical).
- * Inclut toutes les sections majeures de la page, dans l'ordre d'apparition.
+ * Structure consolidée (10 sections — Skills+Technologies fusionnés en Expertise,
+ * Experience+Education fusionnés en Journey, WhatImLookingFor fusionné dans Contact).
  */
 export const railSections = [
-  { id: "hero", label: "Hero", index: "01" },
-  { id: "about", label: "À propos", index: "02" },
-  { id: "philosophy", label: "Philosophie", index: "03" },
-  { id: "skills", label: "Compétences", index: "04" },
-  { id: "technologies", label: "Stack", index: "05" },
-  { id: "projects", label: "Projets", index: "06" },
-  { id: "experience", label: "Parcours", index: "07" },
-  { id: "testimonials", label: "Recommandations", index: "08" },
-  { id: "education", label: "Formation", index: "09" },
-  { id: "uses", label: "Uses", index: "10" },
-  { id: "blog", label: "Blog", index: "11" },
-  { id: "what-im-looking-for", label: "Opportunités", index: "12" },
-  { id: "contact", label: "Contact", index: "13" },
+  { id: "hero", label: "Hero", index: "01", labelKey: "common.rail.hero" },
+  { id: "about", label: "À propos", index: "02", labelKey: "common.rail.about" },
+  { id: "philosophy", label: "Philosophie", index: "03", labelKey: "common.rail.philosophy" },
+  { id: "expertise", label: "Expertise", index: "04", labelKey: "common.rail.expertise" },
+  { id: "projects", label: "Projets", index: "05", labelKey: "common.rail.projects" },
+  { id: "journey", label: "Parcours", index: "06", labelKey: "common.rail.journey" },
+  { id: "testimonials", label: "Recommandations", index: "07", labelKey: "common.rail.testimonials" },
+  { id: "uses", label: "Uses", index: "08", labelKey: "common.rail.uses" },
+  { id: "blog", label: "Blog", index: "09", labelKey: "common.rail.blog" },
+  { id: "contact", label: "Contact", index: "10", labelKey: "common.rail.contact" },
 ] as const;
 
 export const stats = [
