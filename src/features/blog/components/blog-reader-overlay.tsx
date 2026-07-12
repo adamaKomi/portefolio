@@ -4,8 +4,6 @@ import * as React from "react";
 import {
   AnimatePresence,
   motion,
-  useScroll,
-  useSpring,
   type Variants,
 } from "framer-motion";
 import {
@@ -87,21 +85,22 @@ export function BlogReaderOverlay({
 
   const closeButtonRef = React.useRef<HTMLButtonElement>(null);
   const panelRef = React.useRef<HTMLDivElement>(null);
-  const [scrollContainer, setScrollContainer] = React.useState<HTMLElement | null>(null);
+  const [progress, setProgress] = React.useState(0);
 
-  /* Reading progress — tracks the overlay's internal scroll, not the window.
-   * We only attach the scroll container when the panel actually exists (overlay
-   * open), to avoid passing a null ref to useScroll on initial page load. */
+  /* Reading progress — manual scroll listener on the panel.
+   * Avoids useScroll container ref issues; updates a state 0→1. */
   React.useEffect(() => {
-    setScrollContainer(panelRef.current);
+    if (!post) return;
+    const panel = panelRef.current;
+    if (!panel) return;
+    const onScroll = () => {
+      const max = panel.scrollHeight - panel.clientHeight;
+      setProgress(max > 0 ? Math.min(1, panel.scrollTop / max) : 0);
+    };
+    panel.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => panel.removeEventListener("scroll", onScroll);
   }, [post]);
-
-  const { scrollYProgress } = useScroll({ container: scrollContainer });
-  const progress = useSpring(scrollYProgress, {
-    stiffness: 120,
-    damping: 30,
-    restDelta: 0.001,
-  });
 
   /* ESC to close */
   React.useEffect(() => {
@@ -180,10 +179,10 @@ export function BlogReaderOverlay({
             className="relative z-10 flex max-h-[100vh] w-full max-w-3xl flex-col overflow-y-auto premium-scroll border border-border/60 bg-card/95 shadow-2xl backdrop-blur-2xl md:max-h-[90vh] md:rounded-2xl"
           >
             {/* ---------- Reading progress bar (top of panel) ---------- */}
-            <motion.div
+            <div
               aria-hidden
-              style={{ scaleX: progress }}
-              className="sticky top-0 left-0 right-0 z-30 h-0.5 origin-left bg-gradient-to-r from-primary to-accent"
+              style={{ transform: `scaleX(${progress})` }}
+              className="sticky top-0 left-0 right-0 z-30 h-0.5 origin-left bg-gradient-to-r from-primary to-accent transition-transform duration-75 ease-out"
             />
 
             {/* ---------- Sticky header ---------- */}

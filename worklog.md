@@ -814,3 +814,36 @@ Stage Summary:
 - Architecture i18n: 13 fichiers i18n.ts (1 par feature) + common.ts, agrégés dans messages/index.ts, ~350 clés × 2 langues = ~700 traductions
 - Tous les sous-agents ont livré sans conflit (séparation par feature)
 - Lint clean, SSR valide, code correct
+
+---
+Task ID: FIX-PREVIEW
+Agent: main (Staff Frontend Engineer)
+Task: Fix preview not working — client-side crash from useScroll with invalid container
+
+Work Log:
+- Diagnostic: l'utilisateur signale "la prévisualisation ne fonctionne toujours pas"
+- Vérification serveur: HTTP 200, SSR 278KB, 10 sections, aucune erreur de compilation
+- Vérification TypeScript: `bunx tsc --noEmit` a révélé une erreur critique:
+  `src/features/blog/components/blog-reader-overlay.tsx(99,43): error TS2322: Type 'HTMLElement | null' is not assignable to type 'RefObject<HTMLElement | null> | undefined'`
+- Analyse: le fix précédent (REVIEW-2) pour le crash useScroll utilisait un STATE (`scrollContainer: HTMLElement | null`) au lieu d'un REF. Framer Motion `useScroll({ container })` attend un `RefObject<HTMLElement>` et essaie de lire `.current` dessus. Quand on passe `null` (state value), `.current` est `undefined` → crash client-side.
+- Le `BlogReaderOverlay` est TOUJOURS monté (même fermé, avec slug=null), donc le useScroll invalide crashait à CHAQUE chargement de page → écran blanc "Application error: a client-side exception has occurred".
+- FIX: remplacement complet de useScroll/useSpring par un scroll listener manuel:
+  * Suppression imports `useScroll`, `useSpring` de framer-motion
+  * Remplacement par `const [progress, setProgress] = React.useState(0)` + `useEffect` avec `panel.addEventListener("scroll", ...)` qui calcule `scrollTop / (scrollHeight - clientHeight)`
+  * La barre de progression passe de `<motion.div style={{ scaleX: progress }}>` (MotionValue) à `<div style={{ transform: scaleX(${progress}) }}>` (number) avec `transition-transform duration-75`
+  * Le scroll listener n'est attaché que quand `post` existe (overlay ouvert), évitant tout crash
+- Vérification agent-browser (après warm-up curl pour éviter OOM):
+  * Page charge: 10 sections, 0 "Application error", contenu Adama présent ✓
+  * 0 erreur console, 0 page error ✓
+  * Toggle EN/FR: clic "English" → "Explore my projects" apparaît ✓, clic "Français" → "Découvrir mes projets" revient ✓
+  * Blog overlay: clic sur article → hash `#/blog/clean-architecture-nodejs` → dialog ouvert avec contenu "1/3 ARCHITECTURE 15 NOVEMBRE 2024 8 MIN Clean Architecture..." ✓
+  * Capture d'écran: preview-fixed.png
+- `bun run lint` → exit 0
+- `bunx tsc --noEmit` → plus d'erreur sur blog-reader-overlay
+- Serveur redémarré avec `NODE_OPTIONS="--max-old-space-size=896"` pour stabilité OOM
+
+Stage Summary:
+- BUG CRITIQUE RÉSOLU: le crash client-side du BlogReaderOverlay (useScroll avec container invalide) empêchait toute la page de s'afficher — écran blanc "Application error" à chaque chargement
+- Fix: remplacement de useScroll/useSpring par un scroll listener manuel avec useState — plus simple, plus robuste, aucune dépendance à un RefObject
+- La prévisualisation fonctionne maintenant: page charge, 10 sections rendues, toggle bilingue EN/FR opérationnel, overlays (blog + projets) s'ouvrent sans crash
+- Lesson learned: ne JAMAIS passer un state value à `useScroll({ container })` — Framer Motion attend un RefObject et lit `.current`
