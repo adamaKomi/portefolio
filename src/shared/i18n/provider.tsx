@@ -1,13 +1,14 @@
 "use client";
 
 import * as React from "react";
+import type { TranslationKey } from "./messages/types";
 
 export type Locale = "en" | "fr";
 
 export interface LanguageContextValue {
   locale: Locale;
   setLocale: (locale: Locale) => void;
-  t: (key: string, params?: Record<string, string | number>) => string;
+  t: (key: TranslationKey, params?: Record<string, string | number>) => string;
   /** Returns true if current locale matches — useful for conditional content */
   is: (locale: Locale) => boolean;
 }
@@ -60,7 +61,7 @@ export function LanguageProvider({ children, messages }: LanguageProviderProps) 
   }, []);
 
   const t = React.useCallback(
-    (key: string, params?: Record<string, string | number>) => {
+    (key: TranslationKey, params?: Record<string, string | number>) => {
       const dict = messages[locale] as Record<string, unknown>;
       // Flat key lookup first (messages stored as "nav.about" → "À propos")
       const flat = dict[key];
