@@ -5,13 +5,13 @@ import { motion } from "framer-motion";
 import { Layers, Boxes, Hexagon, Network, type LucideIcon } from "lucide-react";
 import { Section, SectionHeading, Reveal, AuroraBackground } from "@/shared/ui";
 import { fadeUp, staggerContainer, viewportOnce } from "@/shared/animations";
-import { useT } from "@/shared/i18n";
+import { useT, type TranslationKey } from "@/shared/i18n";
 import { cn } from "@/lib/utils";
 
 interface Principle {
   icon: LucideIcon;
-  title: string;
-  description: string;
+  title: TranslationKey;
+  description: TranslationKey;
   featured?: boolean;
 }
 
@@ -132,7 +132,7 @@ function PrincipleCard({ principle, index }: PrincipleCardProps) {
             </div>
             <div>
               <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-                {featured ? t("philosophy.coreLabel") : `// principle ${String(index + 1).padStart(2, "0")}`}
+                {featured ? t("philosophy.coreLabel") : t("philosophy.principleLabel", { n: String(index + 1).padStart(2, "0") })}
               </span>
               <h3
                 className={cn(
@@ -161,7 +161,7 @@ function PrincipleCard({ principle, index }: PrincipleCardProps) {
           <div className="mt-1 flex items-center gap-2 text-primary">
             <div className="h-px w-8 bg-primary/40" />
             <span className="font-mono text-[10px] uppercase tracking-[0.2em]">
-              fondation de toute conception
+              {t("philosophy.coreNote")}
             </span>
           </div>
         )}

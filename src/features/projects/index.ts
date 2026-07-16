@@ -1,6 +1,5 @@
 export { Projects } from "./components/projects-section";
 export type {
   Project,
-  ProjectMetric,
-  ProjectTimelineItem,
+  ProjectTimelineItemI18n,
 } from "./data/projects";

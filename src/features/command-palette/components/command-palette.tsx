@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { navSections, profile, socials } from "@/shared/constants/profile";
+import { useT } from "@/shared/i18n";
 import { cn } from "@/lib/utils";
 
 interface CommandPaletteContextValue {
@@ -73,6 +74,7 @@ function CommandPaletteDialog({
 }) {
   const { setTheme } = useTheme();
   const [search, setSearch] = React.useState("");
+  const t = useT();
 
   React.useEffect(() => {
     if (!open) setSearch("");
@@ -114,7 +116,7 @@ function CommandPaletteDialog({
               <div className="flex items-center gap-3 border-b border-border px-4">
                 <Search className="h-4 w-4 text-muted-foreground shrink-0" />
                 <CommandPrimitive.Input
-                  placeholder="Rechercher une section, un projet, un lien..."
+                  placeholder={t("cmd.placeholder")}
                   className="h-14 flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
                   autoFocus
                 />
@@ -125,48 +127,48 @@ function CommandPaletteDialog({
 
               <CommandPrimitive.List className="max-h-[60vh] overflow-y-auto p-2 premium-scroll">
                 <CommandPrimitive.Empty className="py-8 text-center text-sm text-muted-foreground">
-                  Aucun résultat pour « {search} »
+                  {t("cmd.empty", { search })}
                 </CommandPrimitive.Empty>
 
-                <CommandGroup title="Navigation">
+                <CommandGroup title={t("cmd.group.nav")}>
                   {navSections.map((s) => (
                     <CommandItem key={s.id} onSelect={() => runNav(s.id)} icon={<SectionIcon id={s.id} />}>
-                      <span>{s.label}</span>
+                      <span>{t(s.labelKey)}</span>
                     </CommandItem>
                   ))}
                 </CommandGroup>
 
-                <CommandGroup title="Projets">
+                <CommandGroup title={t("cmd.group.projects")}>
                   <CommandItem
                     onSelect={() => runNav("projects")}
                     icon={<FolderGit2 className="h-4 w-4" />}
                   >
-                    Voir tous les projets
+                    {t("cmd.allProjects")}
                   </CommandItem>
                 </CommandGroup>
 
-                <CommandGroup title="Contenu">
+                <CommandGroup title={t("cmd.group.content")}>
                   <CommandItem
                     onSelect={() => runNav("blog")}
                     icon={<BookOpen className="h-4 w-4" />}
                   >
-                    Blog technique
+                    {t("cmd.blog")}
                   </CommandItem>
-                  <CommandItem
+                  {/* <CommandItem
                     onSelect={() => runNav("testimonials")}
                     icon={<Quote className="h-4 w-4" />}
                   >
-                    Recommandations
-                  </CommandItem>
+                    {t("cmd.testimonials")}
+                  </CommandItem> */}
                   <CommandItem
-                    onSelect={() => runNav("education")}
+                    onSelect={() => runNav("journey-edu")}
                     icon={<GraduationCap className="h-4 w-4" />}
                   >
-                    Formation
+                    {t("cmd.education")}
                   </CommandItem>
                 </CommandGroup>
 
-                <CommandGroup title="Liens">
+                <CommandGroup title={t("cmd.group.links")}>
                   <CommandItem
                     onSelect={() => {
                       onOpenChange(false);
@@ -191,11 +193,11 @@ function CommandPaletteDialog({
                     onSelect={() => runNav("contact")}
                     icon={<Mail className="h-4 w-4" />}
                   >
-                    Me contacter
+                    {t("cmd.contact")}
                   </CommandItem>
                 </CommandGroup>
 
-                <CommandGroup title="Apparence">
+                <CommandGroup title={t("cmd.group.appearance")}>
                   <CommandItem
                     onSelect={() => {
                       setTheme("dark");
@@ -203,7 +205,7 @@ function CommandPaletteDialog({
                     }}
                     icon={<Moon className="h-4 w-4" />}
                   >
-                    Thème sombre
+                    {t("cmd.theme.dark")}
                   </CommandItem>
                   <CommandItem
                     onSelect={() => {
@@ -212,7 +214,7 @@ function CommandPaletteDialog({
                     }}
                     icon={<Sun className="h-4 w-4" />}
                   >
-                    Thème clair
+                    {t("cmd.theme.light")}
                   </CommandItem>
                 </CommandGroup>
               </CommandPrimitive.List>
@@ -220,16 +222,16 @@ function CommandPaletteDialog({
               <div className="flex items-center justify-between border-t border-border px-4 py-2.5 text-[11px] text-muted-foreground">
                 <span className="font-mono">
                   {profile.firstName}
-                  <span className="text-primary">.</span> portfolio
+                  <span className="text-primary">.</span> {t("cmd.brand")}
                 </span>
                 <div className="flex items-center gap-3">
                   <span className="flex items-center gap-1">
                     <kbd className="rounded border border-border bg-muted px-1 font-mono">↑↓</kbd>
-                    naviguer
+                    {t("cmd.hint.navigate")}
                   </span>
                   <span className="flex items-center gap-1">
                     <kbd className="rounded border border-border bg-muted px-1 font-mono">↵</kbd>
-                    ouvrir
+                    {t("cmd.hint.open")}
                   </span>
                 </div>
               </div>
@@ -245,9 +247,9 @@ function SectionIcon({ id }: { id: string }) {
   const map: Record<string, React.ReactNode> = {
     about: <User className="h-4 w-4" />,
     philosophy: <Sparkles className="h-4 w-4" />,
-    skills: <Code2 className="h-4 w-4" />,
+    expertise: <Code2 className="h-4 w-4" />,
     projects: <FolderGit2 className="h-4 w-4" />,
-    experience: <Briefcase className="h-4 w-4" />,
+    journey: <Briefcase className="h-4 w-4" />,
     education: <GraduationCap className="h-4 w-4" />,
     contact: <Mail className="h-4 w-4" />,
   };

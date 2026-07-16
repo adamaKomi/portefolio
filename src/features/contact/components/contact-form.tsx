@@ -51,10 +51,10 @@ export function ContactForm() {
     () =>
       makeContactSchema({
         nameMin: t("contact.err.name"),
-        nameMax: t("contact.err.name"),
+        nameMax: t("contact.err.nameMax"),
         email: t("contact.err.email"),
         messageMin: t("contact.err.message"),
-        messageMax: t("contact.err.message"),
+        messageMax: t("contact.err.messageMax"),
       }),
     [t],
   );
@@ -122,16 +122,14 @@ export function ContactForm() {
         if (!hasFieldError) {
           toast.error(t("contact.error"));
         } else {
-          toast.error("Certains champs nécessitent votre attention.");
+          toast.error(t("contact.form.toastValidation"));
         }
         return;
       }
 
       toast.error(t("contact.error"));
     } catch {
-      toast.error(
-        "Réseau indisponible. Réessayez ou écrivez-moi directement par email."
-      );
+      toast.error(t("contact.form.toastNetwork"));
     }
   }
 
@@ -141,7 +139,7 @@ export function ContactForm() {
         onSubmit={handleSubmit(onSubmit)}
         noValidate
         className="flex flex-col gap-5"
-        aria-label="Formulaire de contact"
+        aria-label={t("contact.form.ariaLabel")}
       >
         {/* Nom + Email */}
         <div className="grid gap-5 sm:grid-cols-2">
@@ -268,7 +266,7 @@ export function ContactForm() {
                         value={opt.value}
                         className="rounded-lg focus:bg-primary/10 focus:text-foreground"
                       >
-                        {opt.label}
+                        {t(opt.labelKey)}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -356,7 +354,7 @@ export function ContactForm() {
         </Magnetic>
 
         <p className="text-center font-mono text-[11px] text-muted-foreground/70">
-          {"// Réponse sous 24h ouvrées · Vos données ne sont jamais stockées."}
+          {t("contact.form.footerDisclaimer")}
         </p>
       </form>
     </Form>

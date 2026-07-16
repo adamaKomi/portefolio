@@ -363,7 +363,7 @@ function OverlayContent({
       {/* ---------- Prev / Next navigation ---------- */}
       <div className="border-t border-border/40 px-5 py-6 md:px-10">
         <div className="mb-4 flex items-center gap-3">
-          <SectionLabel>{"// continuer la lecture"}</SectionLabel>
+          <SectionLabel>{t("blog.reader.continueReading")}</SectionLabel>
           <div className="h-px flex-1 bg-gradient-to-r from-border to-transparent" />
         </div>
         <div className="grid gap-3 sm:grid-cols-2">
@@ -392,10 +392,10 @@ function OverlayContent({
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-col">
             <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-              Envie d&rsquo;échanger ?
+              {t("blog.reader.ctaHeading")}
             </span>
             <span className="text-sm font-medium text-foreground">
-              Parlons architecture, systèmes distribués, ou votre prochain projet.
+              {t("blog.reader.ctaSubtext")}
             </span>
           </div>
           <Button

@@ -66,11 +66,12 @@ function Dots({
   onSelect: (i: number) => void;
   className?: string;
 }) {
+  const t = useT();
   return (
     <div
       className={cn("flex items-center gap-2", className)}
       role="tablist"
-      aria-label="Sélectionner un témoignage"
+      aria-label={t("testimonials.select")}
     >
       {Array.from({ length: count }).map((_, i) => {
         const active = i === current;
@@ -80,7 +81,7 @@ function Dots({
             type="button"
             role="tab"
             aria-selected={active}
-            aria-label={`Témoignage ${i + 1} sur ${count}`}
+            aria-label={t("testimonials.dot", { n: String(i + 1), total: String(count) })}
             onClick={() => onSelect(i)}
             className={cn(
               "h-1.5 rounded-full transition-all duration-300",
@@ -289,7 +290,7 @@ export function Testimonials() {
                       className="flex flex-col items-center"
                     >
                       <blockquote className="text-lg font-medium leading-relaxed text-pretty text-foreground/90 md:text-xl">
-                        <p>&ldquo;{t(`t${index + 1}.quote`)}&rdquo;</p>
+                        <p>&ldquo;{t(`t${index + 1}.quote` as any)}&rdquo;</p>
                       </blockquote>
 
                       <div className="mt-6">
@@ -306,10 +307,10 @@ export function Testimonials() {
                         </div>
                         <div className="text-left">
                           <cite className="block not-italic font-semibold tracking-tight text-foreground">
-                            {t(`t${index + 1}.author`)}
+                            {t(`t${index + 1}.author` as any)}
                           </cite>
                           <p className="font-mono text-xs text-muted-foreground">
-                            {t(`t${index + 1}.role`)}
+                            {t(`t${index + 1}.role` as any)}
                           </p>
                         </div>
                       </figcaption>
@@ -367,7 +368,7 @@ export function Testimonials() {
                 key={n}
                 className="inline-flex items-center rounded-full border border-border/60 bg-card/30 px-3 py-1 font-mono text-[11px] text-muted-foreground"
               >
-                {t(`testimonials.trust${n}`)}
+                {t(`testimonials.trust${n}` as any)}
               </span>
             ))}
           </div>

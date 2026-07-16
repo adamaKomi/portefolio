@@ -16,6 +16,12 @@ const socialIcons = {
 
 export function Footer() {
   const t = useT();
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const scrollTop = () =>
     window.scrollTo({ top: 0, behavior: "smooth" });
 
@@ -91,7 +97,7 @@ export function Footer() {
             >
               {profile.email}
             </Link>
-            <span className="text-sm text-muted-foreground">{profile.location}</span>
+            <span className="text-sm text-muted-foreground">{t("common.location")}</span>
             <span className="text-sm text-primary font-mono mt-1">
               ● {t("footer.available")}
             </span>
@@ -105,14 +111,14 @@ export function Footer() {
           </p>
           <div className="flex items-center gap-4">
             <span className="font-mono text-xs text-muted-foreground">
-              {Intl.DateTimeFormat("fr-FR", { hour: "2-digit", minute: "2-digit", timeZone: profile.timezone }).format(new Date())} · {profile.timezone}
+              {mounted ? Intl.DateTimeFormat("fr-FR", { hour: "2-digit", minute: "2-digit", timeZone: profile.timezone }).format(new Date()) : ""} · {profile.timezone}
             </span>
             <Button
               variant="ghost"
               size="icon"
               onClick={scrollTop}
               className="h-9 w-9 rounded-lg border border-border bg-card/40 hover:bg-card"
-              aria-label="Remonter en haut"
+              aria-label={t("common.backToTop")}
             >
               <motion.div whileHover={{ y: -2 }} whileTap={{ y: 0 }}>
                 <ArrowUp className="h-4 w-4" />

@@ -1,14 +1,13 @@
 import { z } from "zod";
+import { fr } from "@/shared/i18n/messages/fr";
 
 /**
- * Schéma de validation du formulaire de contact.
- * Utilisé à la fois côté client (RHF + zodResolver) et côté serveur (API route).
+ * Zod-based contact form validation schema.
+ * Used both client-side (RHF + zodResolver) and server-side (API route).
  *
- * Zod v4 — `z.string().email()` reste supporté, on garde une API stable.
- *
- * Les messages sont paramétrables via `makeContactSchema(messages)` afin que
- * le client puisse fournir des messages traduits (i18n) tout en gardant un
- * schéma serveur par défaut (français) pour l'API route.
+ * Messages are customizable via `makeContactSchema(messages)` so the client
+ * can pass translated messages via `t("contact.err.*")`, while keeping a
+ * server-side default (French, matching the site's primary locale).
  */
 export interface ContactSchemaMessages {
   nameMin: string;
@@ -18,13 +17,12 @@ export interface ContactSchemaMessages {
   messageMax: string;
 }
 
-/** Messages par défaut (français) — utilisés côté serveur (API route). */
 export const defaultContactSchemaMessages: ContactSchemaMessages = {
-  nameMin: "Le nom doit contenir au moins 2 caractères",
-  nameMax: "Le nom est trop long (80 caractères max)",
-  email: "Email invalide",
-  messageMin: "Le message doit contenir au moins 10 caractères",
-  messageMax: "Le message est trop long (2000 caractères max)",
+  nameMin: String(fr["contact.err.name"]),
+  nameMax: String(fr["contact.err.nameMax"]),
+  email: String(fr["contact.err.email"]),
+  messageMin: String(fr["contact.err.message"]),
+  messageMax: String(fr["contact.err.messageMax"]),
 };
 
 /**
@@ -46,25 +44,15 @@ export function makeContactSchema(
   });
 }
 
-/** Schéma par défaut (messages français) — source de vérité côté serveur. */
 export const contactSchema = makeContactSchema(defaultContactSchemaMessages);
 
 export type ContactFormValues = z.infer<typeof contactSchema>;
 
-/**
- * Options du select "budget" — exposées pour réutilisation
- * entre le formulaire et d'éventuels tests / analytics.
- *
- * Les valeurs (stockées) sont volontairement universelles ("5k — 15k€"…).
- * Les labels affichés sont identiques aux valeurs : ils restent semi-universels
- * (montants en €), donc non traduits. Le composant peut toutefois surcharger
- * l'affichage en mappant les valeurs vers des clés i18n si besoin.
- */
-export const budgetOptions: { value: string; label: string }[] = [
-  { value: "< 5k€", label: "< 5k€" },
-  { value: "5k — 15k€", label: "5k — 15k€" },
-  { value: "15k — 30k€", label: "15k — 30k€" },
-  { value: "30k€+", label: "30k€+" },
-  { value: "CDI / Recrutement", label: "CDI / Recrutement" },
-  { value: "Autre", label: "Autre" },
-];
+export const budgetOptions = [
+  { value: "< 5k€", labelKey: "contact.budget.lt5k" },
+  { value: "5k — 15k€", labelKey: "contact.budget.5k15k" },
+  { value: "15k — 30k€", labelKey: "contact.budget.15k30k" },
+  { value: "30k€+", labelKey: "contact.budget.30kPlus" },
+  { value: "CDI / Recrutement", labelKey: "contact.budget.cdi" },
+  { value: "Autre", labelKey: "contact.budget.other" },
+] as const;

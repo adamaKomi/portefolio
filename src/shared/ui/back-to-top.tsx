@@ -3,6 +3,7 @@
 import * as React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowUp } from "lucide-react";
+import { useT } from "@/shared/i18n";
 import { useScrolled } from "@/shared/hooks/use-scroll";
 
 /**
@@ -11,6 +12,7 @@ import { useScrolled } from "@/shared/hooks/use-scroll";
  * Positioned bottom-right, above the Sonner toaster.
  */
 export function BackToTop() {
+  const t = useT();
   const visible = useScrolled(600);
 
   const scrollToTop = React.useCallback(() => {
@@ -26,7 +28,7 @@ export function BackToTop() {
           exit={{ opacity: 0, scale: 0.8, y: 20 }}
           transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
           onClick={scrollToTop}
-          aria-label="Remonter en haut"
+          aria-label={t("common.backToTop")}
           className="group fixed bottom-6 right-6 z-40 flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-card/80 backdrop-blur-xl shadow-lg transition-colors hover:border-primary/40 hover:bg-card"
         >
           {/* Hover glow */}

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Terminal, ArrowRight, Home } from "lucide-react";
+import { fr } from "@/shared/i18n/messages/fr";
 
 export default function NotFound() {
   return (
@@ -42,8 +43,7 @@ export default function NotFound() {
 
         {/* Message */}
         <p className="max-w-md text-base md:text-lg text-muted-foreground text-pretty">
-          This page doesn&apos;t exist — or maybe it hasn&apos;t been built yet.
-          Let&apos;s get you back on track.
+          {fr["notFound.message"]}
         </p>
 
         {/* CTAs */}
@@ -53,14 +53,14 @@ export default function NotFound() {
             className="group inline-flex h-12 items-center gap-2 rounded-xl bg-primary px-6 text-sm font-medium text-primary-foreground shadow-glow transition-colors hover:bg-primary/90"
           >
             <Home className="h-4 w-4" />
-            Back to home
+            {fr["notFound.backHome"]}
             <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
           </Link>
           <Link
             href="/#projects"
             className="inline-flex h-12 items-center gap-2 rounded-xl border border-border bg-card/40 px-6 text-sm font-medium backdrop-blur-sm transition-colors hover:bg-card"
           >
-            View projects
+            {fr["notFound.viewProjects"]}
           </Link>
         </div>
       </div>

@@ -64,7 +64,7 @@ export function Uses() {
         <Reveal delay={0.1}>
           <div
             className="mt-10 flex items-center gap-3 text-muted-foreground"
-            aria-label={`${usesStats.items} outils répartis sur ${usesStats.categories} catégories`}
+            aria-label={t("uses.statsAria", { items: String(usesStats.items), categories: String(usesStats.categories) })}
           >
             <div className="h-px w-8 bg-primary/40" />
             <span className="font-mono text-[10px] uppercase tracking-[0.2em]">
@@ -126,7 +126,7 @@ function FeaturedCard({ category }: { category: UsesCategory }) {
           </div>
           <span
             className="ml-auto inline-flex items-center rounded-md border border-border bg-card/40 px-2 py-0.5 font-mono text-xs text-muted-foreground"
-            aria-label={`${category.items.length} outils`}
+            aria-label={`${String(category.items.length)} ${t("uses.toolsLabel")}`}
           >
             {String(category.items.length).padStart(2, "0")}
           </span>
@@ -134,7 +134,7 @@ function FeaturedCard({ category }: { category: UsesCategory }) {
 
         {/* Items — 2 cols on md+ for the featured card */}
         <ul
-          aria-label={`Outils — ${t(category.titleKey)}`}
+          aria-label={`${t("uses.toolsLabel")} — ${t(category.titleKey)}`}
           className="grid grid-cols-1 gap-x-8 gap-y-3 md:grid-cols-2"
         >
           {category.items.map((item) => (
@@ -186,7 +186,7 @@ function CategoryCard({ category }: { category: UsesCategory }) {
           </h3>
           <span
             className="ml-auto inline-flex items-center rounded-md border border-border bg-card/40 px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground"
-            aria-label={`${category.items.length} outils`}
+            aria-label={`${String(category.items.length)} ${t("uses.toolsLabel")}`}
           >
             {String(category.items.length).padStart(2, "0")}
           </span>
@@ -194,7 +194,7 @@ function CategoryCard({ category }: { category: UsesCategory }) {
 
         {/* Items */}
         <ul
-          aria-label={`Outils — ${t(category.titleKey)}`}
+          aria-label={`${t("uses.toolsLabel")} — ${t(category.titleKey)}`}
           className="flex flex-col gap-3"
         >
           {category.items.map((item) => (

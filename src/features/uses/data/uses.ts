@@ -14,24 +14,26 @@
  */
 import {
   Code2,
-  Database,
+  GitBranch,
+  Package,
+  Settings,
   Monitor,
-  Sparkles,
-  Terminal,
   type LucideIcon,
 } from "lucide-react";
+
+import type { TranslationKey } from "@/shared/i18n";
 
 export interface UsesItem {
   /** Nom universel — non traduit (ex. "Neovim", "TypeScript"). */
   name: string;
   /** Clé i18n de la description (ex. "uses.item.neovim"). */
-  descKey: string;
+  descKey: TranslationKey;
 }
 
 export interface UsesCategory {
   id: string;
   /** Clé i18n du titre de catégorie (ex. "uses.cat1"). */
-  titleKey: string;
+  titleKey: TranslationKey;
   icon: LucideIcon;
   /** Catégorie mise en avant : carte full-width en haut de section. */
   featured?: boolean;
@@ -40,64 +42,49 @@ export interface UsesCategory {
 
 export const usesCategories: UsesCategory[] = [
   {
-    id: "editor-terminal",
+    id: "editors",
     titleKey: "uses.cat1",
-    icon: Terminal,
+    icon: Code2,
     featured: true,
     items: [
-      { name: "Neovim", descKey: "uses.item.neovim" },
       { name: "VS Code", descKey: "uses.item.vscode" },
-      { name: "WezTerm", descKey: "uses.item.wezterm" },
-      { name: "Tmux", descKey: "uses.item.tmux" },
-      { name: "Zsh + Starship", descKey: "uses.item.zsh" },
+      { name: "antigravity", descKey: "uses.item.antigravity" },
     ],
   },
   {
-    id: "languages-frameworks",
+    id: "versioning",
     titleKey: "uses.cat2",
-    icon: Code2,
+    icon: GitBranch,
     items: [
-      { name: "TypeScript", descKey: "uses.item.typescript" },
-      { name: "Java + Spring Boot", descKey: "uses.item.spring" },
-      { name: "Node.js + NestJS", descKey: "uses.item.nestjs" },
-      { name: "Python + FastAPI", descKey: "uses.item.fastapi" },
-      { name: "React + Next.js", descKey: "uses.item.nextjs" },
+      { name: "Git", descKey: "uses.item.git" },
+      { name: "GitHub", descKey: "uses.item.github" },
     ],
   },
   {
-    id: "databases-infra",
+    id: "containerization",
     titleKey: "uses.cat3",
-    icon: Database,
+    icon: Package,
     items: [
-      { name: "PostgreSQL", descKey: "uses.item.postgres" },
-      { name: "Redis", descKey: "uses.item.redis" },
-      { name: "MongoDB", descKey: "uses.item.mongodb" },
       { name: "Docker", descKey: "uses.item.docker" },
-      { name: "Git + GitHub", descKey: "uses.item.git" },
+      { name: "Docker Compose", descKey: "uses.item.dockercompose" },
     ],
   },
   {
-    id: "tools-productivity",
+    id: "tools",
     titleKey: "uses.cat4",
-    icon: Sparkles,
+    icon: Settings,
     items: [
-      { name: "Raycast", descKey: "uses.item.raycast" },
-      { name: "Linear", descKey: "uses.item.linear" },
+      { name: "Postman", descKey: "uses.item.postman" },
       { name: "Figma", descKey: "uses.item.figma" },
-      { name: "TablePlus", descKey: "uses.item.tableplus" },
-      { name: "Obsidian", descKey: "uses.item.obsidian" },
     ],
   },
   {
-    id: "hardware-setup",
+    id: "systems",
     titleKey: "uses.cat5",
     icon: Monitor,
     items: [
-      { name: 'MacBook Pro 14" M2 Pro', descKey: "uses.item.macbook" },
-      { name: "LG 27UP850", descKey: "uses.item.monitor" },
-      { name: "Keychron K2", descKey: "uses.item.keyboard" },
-      { name: "Logitech MX Master 3S", descKey: "uses.item.mouse" },
-      { name: "AirPods Pro", descKey: "uses.item.airpods" },
+      { name: "Windows", descKey: "uses.item.windows" },
+      { name: "Ubuntu", descKey: "uses.item.ubuntu" },
     ],
   },
 ];

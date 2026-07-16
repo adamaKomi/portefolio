@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { Check, Copy } from "lucide-react";
+import { useT } from "@/shared/i18n";
 import type { ContentBlock } from "../data/posts";
 
 /* ----------------------------------------------------------
@@ -87,6 +88,7 @@ function ListBlock({ items }: { items: string[] }) {
  * ---------------------------------------------------------- */
 
 function CodeBlock({ code, language }: { code: string; language: string }) {
+  const t = useT();
   const lines = React.useMemo(() => code.replace(/\n$/, "").split("\n"), [code]);
   const [copied, setCopied] = React.useState(false);
 
@@ -116,7 +118,7 @@ function CodeBlock({ code, language }: { code: string; language: string }) {
           <button
             type="button"
             onClick={handleCopy}
-            aria-label={copied ? "Copied" : "Copy code"}
+            aria-label={copied ? t("blog.code.copied") : t("blog.code.copy")}
             className="flex h-6 w-6 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
           >
             {copied ? (

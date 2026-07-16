@@ -1,4 +1,5 @@
 import { ImageResponse } from "next/og";
+import { fr } from "@/shared/i18n/messages/fr";
 
 export const alt = "Adama Komi — Software Engineer & Full-Stack Developer";
 export const size = { width: 1200, height: 630 };
@@ -50,7 +51,7 @@ export default async function OGImage() {
               textTransform: "uppercase",
             }}
           >
-            Disponible pour opportunités
+            {fr["common.available"]}
           </div>
         </div>
 

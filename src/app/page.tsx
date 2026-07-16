@@ -33,8 +33,8 @@ export default function Home() {
           <SectionDivider />
           <Journey />
           <SectionDivider />
-          <Testimonials />
-          <SectionDivider />
+          {/* <Testimonials />
+          <SectionDivider /> */}
           <Uses />
           <SectionDivider />
           <Blog />

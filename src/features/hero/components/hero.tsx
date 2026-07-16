@@ -56,7 +56,7 @@ export function Hero() {
                 <span className="text-muted-foreground">·</span>
                 <span className="flex items-center gap-1 text-muted-foreground">
                   <MapPin className="h-3 w-3" />
-                  {profile.location}
+                  {t("common.location")}
                 </span>
               </div>
             </motion.div>
@@ -75,12 +75,12 @@ export function Hero() {
             </motion.div>
 
             {/* Description */}
-            <motion.p
+            <motion.div
               variants={fadeUp}
-              className="text-base md:text-lg text-muted-foreground leading-relaxed max-w-xl text-pretty"
+              className="text-base md:text-lg text-muted-foreground leading-relaxed max-w-xl text-pretty whitespace-pre-line flex flex-col gap-4"
             >
               {t("hero.description")}
-            </motion.p>
+            </motion.div>
 
             {/* CTAs */}
             <motion.div variants={fadeUp} className="flex flex-wrap items-center gap-3 pt-2">
@@ -168,21 +168,7 @@ export function Hero() {
           >
             <TerminalCard />
 
-            {/* Floating accent card */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.7, ease: EASE_PREMIUM }}
-              className="absolute -bottom-6 -left-4 sm:-left-8 hidden sm:block"
-            >
-              <div className="glass-strong rounded-xl px-4 py-3 shadow-xl">
-                <div className="flex items-center gap-2">
-                  <Sparkles className="h-3.5 w-3.5 text-primary" />
-                  <span className="font-mono text-xs text-muted-foreground">{t("hero.focus")}</span>
-                </div>
-                <p className="mt-1 text-sm font-medium">{t("hero.focusText")}</p>
-              </div>
-            </motion.div>
+
           </motion.div>
         </div>
 

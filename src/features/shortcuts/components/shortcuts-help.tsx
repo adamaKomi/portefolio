@@ -5,23 +5,24 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, Command, ArrowUp, ArrowDown } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useCommandPalette } from "@/features/command-palette";
+import { useT, type TranslationKey } from "@/shared/i18n";
 
 interface Shortcut {
   keys: React.ReactNode;
-  label: string;
-  group: string;
+  labelKey: TranslationKey;
+  groupKey: TranslationKey;
 }
 
 const SHORTCUTS: Shortcut[] = [
-  { group: "Navigation", keys: <Kbd><Command />K</Kbd>, label: "Ouvrir la palette de commandes" },
-  { group: "Navigation", keys: <Kbd>?</Kbd>, label: "Afficher cette aide" },
-  { group: "Navigation", keys: <><Kbd>G</Kbd><Kbd>B</Kbd></>, label: "Aller au blog" },
-  { group: "Navigation", keys: <><Kbd>G</Kbd><Kbd>P</Kbd></>, label: "Aller aux projets" },
-  { group: "Navigation", keys: <><Kbd>G</Kbd><Kbd>C</Kbd></>, label: "Aller au contact" },
-  { group: "Navigation", keys: <><Kbd><ArrowUp /></Kbd><Kbd><ArrowDown /></Kbd></>, label: "Section suivante / précédente" },
-  { group: "Overlays", keys: <Kbd>Esc</Kbd>, label: "Fermer l'overlay / dialogue" },
-  { group: "Overlays", keys: <><Kbd>←</Kbd><Kbd>→</Kbd></>, label: "Projet / article précédent · suivant" },
-  { group: "Apparence", keys: <Kbd>T</Kbd>, label: "Basculer le thème clair / sombre" },
+  { groupKey: "shortcuts.group.nav", keys: <Kbd><Command />K</Kbd>, labelKey: "shortcuts.openCmd" },
+  { groupKey: "shortcuts.group.nav", keys: <Kbd>?</Kbd>, labelKey: "shortcuts.showHelp" },
+  { groupKey: "shortcuts.group.nav", keys: <><Kbd>G</Kbd><Kbd>B</Kbd></>, labelKey: "shortcuts.goBlog" },
+  { groupKey: "shortcuts.group.nav", keys: <><Kbd>G</Kbd><Kbd>P</Kbd></>, labelKey: "shortcuts.goProjects" },
+  { groupKey: "shortcuts.group.nav", keys: <><Kbd>G</Kbd><Kbd>C</Kbd></>, labelKey: "shortcuts.goContact" },
+  { groupKey: "shortcuts.group.nav", keys: <><Kbd><ArrowUp /></Kbd><Kbd><ArrowDown /></Kbd></>, labelKey: "shortcuts.scrollSection" },
+  { groupKey: "shortcuts.group.overlays", keys: <Kbd>Esc</Kbd>, labelKey: "shortcuts.closeOverlay" },
+  { groupKey: "shortcuts.group.overlays", keys: <><Kbd>←</Kbd><Kbd>→</Kbd></>, labelKey: "shortcuts.prevNextItem" },
+  { groupKey: "shortcuts.group.appearance", keys: <Kbd>T</Kbd>, labelKey: "shortcuts.toggleTheme" },
 ];
 
 function Kbd({ children }: { children: React.ReactNode }) {
@@ -32,12 +33,13 @@ function Kbd({ children }: { children: React.ReactNode }) {
   );
 }
 
-const GROUPS = ["Navigation", "Overlays", "Apparence"] as const;
+const GROUPS = ["shortcuts.group.nav", "shortcuts.group.overlays", "shortcuts.group.appearance"] as const;
 
 export function ShortcutsHelp() {
   const [open, setOpen] = React.useState(false);
   const { setOpen: setCmdOpen } = useCommandPalette();
   const { theme, setTheme } = useTheme();
+  const t = useT();
 
   React.useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -52,7 +54,7 @@ export function ShortcutsHelp() {
       }
       // "T" toggles theme
       if (
-        e.key.toLowerCase() === "t" &&
+        e.key && e.key.toLowerCase() === "t" &&
         !e.metaKey &&
         !e.ctrlKey &&
         !e.altKey &&
@@ -125,13 +127,13 @@ export function ShortcutsHelp() {
             <div className="flex items-center justify-between border-b border-border px-5 py-4">
               <div className="flex items-center gap-2">
                 <span className="font-mono text-xs uppercase tracking-[0.2em] text-primary">
-                  {"// raccourcis"}
+                  {t("shortcuts.title")}
                 </span>
               </div>
               <button
                 onClick={() => setOpen(false)}
                 className="flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
-                aria-label="Fermer l'aide"
+                aria-label={t("shortcuts.closeHelp")}
               >
                 <X className="h-4 w-4" />
               </button>
@@ -139,18 +141,18 @@ export function ShortcutsHelp() {
 
             {/* Body */}
             <div className="max-h-[70vh] overflow-y-auto p-5 premium-scroll">
-              {GROUPS.map((group) => (
-                <div key={group} className="mb-5 last:mb-0">
+              {GROUPS.map((groupKey) => (
+                <div key={groupKey} className="mb-5 last:mb-0">
                   <h3 className="mb-2.5 font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
-                    {group}
+                    {t(groupKey)}
                   </h3>
                   <ul className="flex flex-col gap-1.5">
-                    {SHORTCUTS.filter((s) => s.group === group).map((s, i) => (
+                    {SHORTCUTS.filter((s) => s.groupKey === groupKey).map((s, i) => (
                       <li
                         key={i}
                         className="flex items-center justify-between gap-4 rounded-lg px-2.5 py-2 hover:bg-muted/40 transition-colors"
                       >
-                        <span className="text-sm text-foreground/85">{s.label}</span>
+                        <span className="text-sm text-foreground/85">{t(s.labelKey)}</span>
                         <span className="flex items-center gap-1 shrink-0">{s.keys}</span>
                       </li>
                     ))}
@@ -162,7 +164,7 @@ export function ShortcutsHelp() {
             {/* Footer */}
             <div className="flex items-center justify-between border-t border-border px-5 py-3">
               <span className="font-mono text-[11px] text-muted-foreground">
-                Adama<span className="text-primary">.</span> portfolio
+                Adama<span className="text-primary">.</span> {t("cmd.brand")}
               </span>
               <button
                 onClick={() => {
@@ -171,7 +173,7 @@ export function ShortcutsHelp() {
                 }}
                 className="font-mono text-[11px] text-primary hover:underline"
               >
-                Ouvrir la palette →
+                {t("shortcuts.openPaletteLink")}
               </button>
             </div>
           </motion.div>

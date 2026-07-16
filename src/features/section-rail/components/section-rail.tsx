@@ -42,7 +42,7 @@ export function SectionRail() {
                 onMouseLeave={() => setHovered(null)}
                 onFocus={() => setHovered(section.id)}
                 onBlur={() => setHovered(null)}
-                aria-label={t("common.rail." + section.id) ? `${t("common.navigationBySection")}: ${t(section.labelKey)}` : section.label}
+                aria-label={t(("common.rail." + section.id) as any) ? `${t("common.navigationBySection")}: ${t(section.labelKey)}` : section.label}
                 aria-current={isActive ? "true" : undefined}
                 className={cn(
                   "group flex items-center gap-3 rounded-full py-1.5 pl-1.5 pr-3 transition-colors",

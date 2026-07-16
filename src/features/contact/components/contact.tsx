@@ -13,6 +13,7 @@ import {
   MapPin,
   Clock,
   Rocket,
+  FileText,
   Sparkles,
 } from "lucide-react";
 
@@ -23,7 +24,7 @@ import {
   Reveal,
   Magnetic,
 } from "@/shared/ui";
-import { useT } from "@/shared/i18n";
+import { useT, useLanguage } from "@/shared/i18n";
 import { fadeUp, staggerContainer, viewportOnce } from "@/shared/animations";
 import { profile, socials } from "@/shared/constants/profile";
 import { Button } from "@/components/ui/button";
@@ -100,6 +101,8 @@ function useLocalTime(timezone: string) {
 
 export function Contact() {
   const t = useT();
+  const { locale } = useLanguage();
+  const cvUrl = locale === "en" ? "/CV_Adama_Komi_English.pdf" : "/CV_Adama_Komi_French.pdf";
   const { time, date } = useLocalTime(profile.timezone);
 
   // On n'affiche que GitHub + LinkedIn dans le panneau d'infos
@@ -218,7 +221,7 @@ export function Contact() {
                   <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
                 </span>
                 <span className="font-mono text-xs text-primary">
-                  {profile.availabilityLabel}
+                  {t("common.available")}
                 </span>
               </div>
 
@@ -228,8 +231,7 @@ export function Contact() {
                   {t("contact.infoTitle")}
                 </h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  Le formulaire, c&apos;est bien. Mais parfois un email direct
-                  va plus vite — choisissez ce qui vous arrange.
+                  {t("contact.infoDescription")}
                 </p>
               </div>
 
@@ -247,7 +249,7 @@ export function Contact() {
                   </span>
                   <span className="flex min-w-0 flex-col">
                     <span className="font-mono text-[10px] uppercase tracking-[0.15em] text-muted-foreground">
-                      Email
+                      {t("contact.infoEmail")}
                     </span>
                     <span className="truncate text-sm font-medium">
                       {profile.email}
@@ -262,10 +264,10 @@ export function Contact() {
                   </span>
                   <span className="flex min-w-0 flex-col">
                     <span className="font-mono text-[10px] uppercase tracking-[0.15em] text-muted-foreground">
-                      Localisation
+                      {t("contact.infoLocation")}
                     </span>
                     <span className="truncate text-sm font-medium">
-                      {profile.location}
+                      {t("common.location")}
                     </span>
                   </span>
                 </div>
@@ -276,7 +278,7 @@ export function Contact() {
                   </span>
                   <span className="flex min-w-0 flex-col">
                     <span className="font-mono text-[10px] uppercase tracking-[0.15em] text-muted-foreground">
-                      Heure locale · {profile.timezone}
+                      {t("contact.infoTimezone", { tz: profile.timezone })}
                     </span>
                     <span className="flex items-baseline gap-2">
                       <span className="text-sm font-medium tabular-nums">
@@ -295,7 +297,7 @@ export function Contact() {
               {/* Réseaux */}
               <div className="flex flex-col gap-2">
                 <span className="font-mono text-[10px] uppercase tracking-[0.15em] text-muted-foreground">
-                  Réseaux
+                  {t("contact.infoSocial")}
                 </span>
                 <div className="flex items-center gap-2">
                   {panelSocials.map((s) => {
@@ -326,6 +328,27 @@ export function Contact() {
                     );
                   })}
                 </div>
+              </div>
+
+              {/* CV */}
+              <div className="flex flex-col gap-2">
+                <Link
+                  href={cvUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={cn(
+                    "group flex items-center gap-3 rounded-xl border border-border/60 bg-card/30 p-3",
+                    "transition-colors hover:border-primary/40 hover:bg-card/50"
+                  )}
+                >
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                    <FileText className="h-4 w-4" />
+                  </span>
+                  <span className="text-sm font-medium">
+                    {t("contact.downloadCV")}
+                  </span>
+                  <ArrowUpRight className="ml-auto h-4 w-4 text-muted-foreground opacity-0 transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:opacity-100" />
+                </Link>
               </div>
 
               {/* Séparateur + ligne mono response time */}
@@ -370,13 +393,13 @@ export function Contact() {
               {/* Header du form */}
               <div className="flex flex-col gap-1.5">
                 <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary">
-                  /contact
+                  {t("contact.formLabel")}
                 </span>
                 <h3 className="text-xl font-semibold tracking-tight">
-                  Écrivez-moi
+                  {t("contact.formHeading")}
                 </h3>
                 <p className="text-sm text-muted-foreground">
-                  Quelques informations suffisent pour démarrer la conversation.
+                  {t("contact.formSubtext")}
                 </p>
               </div>
 

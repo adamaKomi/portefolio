@@ -8,7 +8,7 @@ import {
   Smartphone,
   Database,
   Boxes,
-  Wrench,
+  Cloud,
   type LucideIcon,
 } from "lucide-react";
 import {
@@ -19,12 +19,11 @@ import {
   Marquee,
 } from "@/shared/ui";
 import { fadeUp, staggerContainer, viewportOnce } from "@/shared/animations";
-import { useT } from "@/shared/i18n";
+import { useT, type TranslationKey } from "@/shared/i18n";
 import { cn } from "@/lib/utils";
-import { TechConstellation } from "./tech-constellation";
 
 interface SkillDomain {
-  nameKey: string;
+  nameKey: TranslationKey;
   icon: LucideIcon;
   skills: string[];
   specialty?: boolean;
@@ -58,9 +57,9 @@ const domains: SkillDomain[] = [
     specialty: true,
   },
   {
-    nameKey: "expertise.domain.tools",
-    icon: Wrench,
-    skills: ["Docker", "Git", "REST API", "WebSockets", "Redis"],
+    nameKey: "expertise.domain.cloudDevops",
+    icon: Cloud,
+    skills: ["Docker", "Docker Compose", "Git", "GitHub Actions", "CI/CD"],
   },
 ];
 
@@ -119,18 +118,7 @@ export function Expertise() {
           </span>
         </motion.div>
 
-        {/* Interactive tech constellation */}
-        <div className="mt-14">
-          <div className="mb-6 flex items-center justify-between gap-4">
-            <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary">
-              {"// constellation"}
-            </span>
-            <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-              {t("expertise.stackCount")}
-            </span>
-          </div>
-          <TechConstellation />
-        </div>
+
 
         {/* Tech marquee (merged from Technologies) */}
         <div className="mt-14">

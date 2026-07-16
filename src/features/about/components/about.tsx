@@ -4,7 +4,7 @@ import * as React from "react";
 import { motion } from "framer-motion";
 import { MapPin, Sparkles, Code2, Server, Cpu } from "lucide-react";
 import { Section, SectionHeading, Reveal, AuroraBackground } from "@/shared/ui";
-import { profile, stats } from "@/shared/constants/profile";
+import { profile } from "@/shared/constants/profile";
 import { fadeUp, staggerContainer, viewportOnce } from "@/shared/animations";
 import { useCountUp } from "@/shared/hooks/use-count-up";
 import { useT } from "@/shared/i18n";
@@ -68,6 +68,17 @@ export function About() {
               />
 
               <div className="relative flex flex-col gap-5">
+                {/* Portrait image */}
+                <div className="relative aspect-square w-full overflow-hidden rounded-xl border border-border/50 group/portrait-img">
+                  <img
+                    src="/portrait.png"
+                    alt={profile.name}
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover/portrait-img:scale-105"
+                  />
+                  {/* Sheen/gradient overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-background/40 via-transparent to-transparent pointer-events-none" />
+                </div>
+
                 {/* Header: monogram + identity */}
                 <div className="flex items-center gap-4">
                   <div
@@ -89,7 +100,7 @@ export function About() {
                     </p>
                     <p className="mt-0.5 flex items-center gap-1 text-xs text-muted-foreground">
                       <MapPin className="h-3 w-3" />
-                      {profile.location}
+                      {t("common.location")}
                     </p>
                   </div>
                 </div>
@@ -119,76 +130,14 @@ export function About() {
                     <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
                   </span>
                   <span className="font-mono text-xs text-primary">
-                    {profile.availabilityLabel}
+                    {t("common.available")}
                   </span>
                 </div>
               </div>
             </div>
           </Reveal>
         </div>
-
-        {/* Stats row */}
-        <div className="mt-16 md:mt-20">
-          <div className="mb-6 flex items-center gap-3">
-            <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-              {t("about.statsLabel")}
-            </span>
-            <div className="h-px flex-1 bg-gradient-to-r from-border to-transparent" />
-          </div>
-
-          <motion.div
-            variants={staggerContainer(0.1)}
-            initial="hidden"
-            whileInView="visible"
-            viewport={viewportOnce}
-            className="grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-5"
-          >
-            {stats.map((_, idx) => (
-              <StatCard key={idx} idx={idx} />
-            ))}
-          </motion.div>
-        </div>
       </div>
     </Section>
-  );
-}
-
-function StatCard({ idx }: { idx: number }) {
-  const t = useT();
-  const value = t(`about.stat${idx + 1}Value`);
-  const { ref, display } = useCountUp(value, { delay: idx * 100 });
-
-  return (
-    <motion.div
-      variants={fadeUp}
-      className={cn(
-        "group relative glass rounded-xl p-5 md:p-6 overflow-hidden",
-        "transition-all duration-300 hover:-translate-y-1 hover:border-primary/30"
-      )}
-    >
-      {/* Hover glow */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-        style={{
-          background:
-            "radial-gradient(circle at top right, oklch(0.78 0.17 162 / 0.1), transparent 60%)",
-        }}
-      />
-      <div className="relative flex flex-col gap-1">
-        <span
-          ref={ref}
-          className="text-4xl md:text-5xl font-semibold tracking-tight text-gradient-emerald leading-none tabular-nums"
-        >
-          {display}
-        </span>
-        <span className="mt-2 text-sm font-medium text-foreground">
-          {t(`about.stat${idx + 1}Label`)}
-        </span>
-        <span className="text-xs text-muted-foreground text-pretty">
-          {t(`about.stat${idx + 1}Sub`)}
-        </span>
-      </div>
-    </motion.div>
   );
 }
