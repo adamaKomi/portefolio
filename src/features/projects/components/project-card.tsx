@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { ArrowUpRight, Star } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { useT } from "@/shared/i18n";
+import { useT, type TranslationKey } from "@/shared/i18n";
 import type { Project } from "../data/projects";
 
 interface ProjectCardProps {
@@ -24,70 +24,6 @@ function CategoryTag({ children }: { children: React.ReactNode }) {
       {children}
     </span>
   );
-}
-
-/**
- * Rendu spécifique au slug : petits "cartels" flottants dans la zone de preview.
- * Donne à chaque projet une identité visuelle distincte sans alourdir la carte.
- */
-function PreviewAbstract({ project }: { project: Project }) {
-  if (project.slug === "paylith") {
-    // SaaS → mini KPI cards flottants
-    return (
-      <div className="absolute inset-x-0 bottom-4 hidden md:flex items-end justify-center gap-2.5 px-6">
-        <div
-          className="glass rounded-lg px-3 py-2 text-xs animate-float"
-          style={{ animationDelay: "0s" }}
-        >
-          <div className="text-[10px] text-muted-foreground font-mono">CA mensuel</div>
-          <div className="font-semibold text-foreground">12 450 €</div>
-        </div>
-        <div
-          className="glass rounded-lg px-3 py-2 text-xs animate-float"
-          style={{ animationDelay: "1.2s" }}
-        >
-          <div className="text-[10px] text-muted-foreground font-mono">Factures</div>
-          <div className="font-semibold text-foreground">42 payées</div>
-        </div>
-        <div
-          className="glass rounded-lg px-3 py-2 text-xs animate-float"
-          style={{ animationDelay: "0.6s" }}
-        >
-          <div className="text-[10px] text-muted-foreground font-mono">Relances</div>
-          <div className="font-semibold text-primary">Auto ✓</div>
-        </div>
-      </div>
-    );
-  }
-
-  if (project.slug === "queueclock") {
-    // Real-time → compteur de file avec pulse
-    return (
-      <div className="absolute bottom-3 left-3 md:bottom-4 md:left-4 flex items-center gap-2">
-        <div className="relative flex h-2 w-2">
-          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75" />
-          <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
-        </div>
-        <span className="glass rounded-md px-2 py-1 font-mono text-[11px] text-foreground/90">
-          Q-042 <span className="text-muted-foreground">·</span>{" "}
-          <span className="text-primary">en attente</span>
-        </span>
-      </div>
-    );
-  }
-
-  if (project.slug === "parkour") {
-    // Mobile → stats de course
-    return (
-      <div className="absolute bottom-3 left-3 md:bottom-4 md:left-4">
-        <span className="glass rounded-md px-2 py-1 font-mono text-[11px] text-foreground/90">
-          5.2 km <span className="text-muted-foreground">·</span> 4:45 /km
-        </span>
-      </div>
-    );
-  }
-
-  return null;
 }
 
 export function ProjectCard({ project, onOpen, className }: ProjectCardProps) {
@@ -112,7 +48,7 @@ export function ProjectCard({ project, onOpen, className }: ProjectCardProps) {
       onKeyDown={handleKeyDown}
       role="button"
       tabIndex={0}
-      aria-label={`${t("projects.viewProject")} ${project.name}`}
+      aria-label={`${t("common.viewProject")} ${project.name}`}
       className={cn(
         "group relative flex h-full cursor-pointer flex-col overflow-hidden rounded-2xl glass-strong outline-none",
         "transition-all duration-300 ease-out",
@@ -169,9 +105,6 @@ export function ProjectCard({ project, onOpen, className }: ProjectCardProps) {
           </div>
         )}
 
-        {/* Slug-specific abstract visual */}
-        <PreviewAbstract project={project} />
-
         {/* Hover sheen */}
         <div
           aria-hidden
@@ -197,7 +130,7 @@ export function ProjectCard({ project, onOpen, className }: ProjectCardProps) {
             variant="outline"
             className="bg-background/40 font-mono text-[10px] uppercase tracking-wider text-foreground/80"
           >
-            {project.status}
+            {t(project.statusKey as TranslationKey)}
           </Badge>
         </div>
 
@@ -211,7 +144,7 @@ export function ProjectCard({ project, onOpen, className }: ProjectCardProps) {
           >
             {project.name}
           </h3>
-          <p className="text-sm text-muted-foreground text-pretty">{project.tagline}</p>
+          <p className="text-sm text-muted-foreground text-pretty">{t(project.taglineKey as TranslationKey)}</p>
         </div>
 
         {/* Short description (2-line clamp) */}
@@ -221,7 +154,7 @@ export function ProjectCard({ project, onOpen, className }: ProjectCardProps) {
             project.featured && "md:line-clamp-3"
           )}
         >
-          {project.shortDescription}
+          {t(project.shortDescriptionKey as TranslationKey)}
         </p>
 
         {/* Tech badges */}
@@ -243,7 +176,7 @@ export function ProjectCard({ project, onOpen, className }: ProjectCardProps) {
 
         {/* CTA */}
         <div className="mt-auto flex items-center gap-1.5 pt-1 text-sm font-medium text-primary">
-          {t("projects.viewProject")}
+          {t("common.viewProject")}
           <ArrowUpRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
         </div>
       </div>

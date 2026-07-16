@@ -15,7 +15,6 @@ import {
   Smartphone,
   Sparkles,
   Star,
-  TrendingUp,
   X,
   Zap,
 } from "lucide-react";
@@ -27,15 +26,14 @@ import {
   overlayContentVariants,
   overlayVariants,
 } from "@/shared/animations";
-import { useT } from "@/shared/i18n";
+import { useT, type TranslationKey } from "@/shared/i18n";
 import {
   getNextProject,
   getPrevProject,
   getProject,
   projects,
   type Project,
-  type ProjectMetric,
-  type ProjectTimelineItem,
+  type ProjectTimelineItemI18n,
 } from "../data/projects";
 
 interface ProjectDetailOverlayProps {
@@ -44,19 +42,6 @@ interface ProjectDetailOverlayProps {
   onNavigate: (slug: string) => void;
   onContact?: () => void;
 }
-
-/* ----------------------------------------------------------
- * Données de présentation spécifiques aux projets.
- * Narratives étendues (rédigées à partir des champs existants).
- * ---------------------------------------------------------- */
-const narratives: Record<string, string> = {
-  paylith:
-    "Au-delà d'une simple facturation, PayLith est un écosystème complet pensé pour les indépendants. La plateforme orchestre tout le cycle de vie d'une facture — du devis initial au paiement final — tout en offrant une vision claire de la santé financière. L'architecture Clean + DDD permet d'évoluer sans dette technique, et la séparation CQRS garantit des lectures ultra-rapides pour les dashboards analytics. Le tout dans un multi-tenant sécurisé, prêt à scaler.",
-  queueclock:
-    "QueueClock résout un problème universel : l'attente physique. En virtualisant la file, les commerces et administrations fluidifient le parcours client tout en gardant une vision temps réel de la charge. Le défi technique réside dans la cohérence distribuée : plusieurs instances du backend, synchronisées via Redis pub/sub, doivent présenter un état de file unifié sans condition de course. Les notifications push libèrent le client de l'attente passive.",
-  parkour:
-    "Parkour transforme la course en jeu. Le suivi GPS en arrière-plan capture chaque mouvement avec précision, même écran éteint, sans vider la batterie. La gamification — défis, badges, XP — est modélisée en DDD pour rester maintenable face à l'évolution des règles métier. Les classements live, synchronisés via WebSockets, créent une émulation sociale qui pousse à progresser.",
-};
 
 const categoryIcons: Record<string, React.ElementType> = {
   "SaaS Platform": Boxes,
@@ -167,7 +152,7 @@ export function ProjectDetailOverlay({
           exit="exit"
           role="dialog"
           aria-modal="true"
-          aria-label={`Détails du projet ${project.name}`}
+          aria-label={t("projects.detail.ariaDialog", { name: project.name })}
         >
           {/* Backdrop */}
           <div
@@ -193,7 +178,7 @@ export function ProjectDetailOverlay({
                   variant="ghost"
                   size="icon"
                   onClick={() => prevProject && onNavigate(prevProject.slug)}
-                  aria-label={`Projet précédent : ${prevProject?.name ?? ""}`}
+                  aria-label={t("projects.detail.ariaPrev", { name: prevProject?.name ?? "" })}
                   className="h-8 w-8 text-muted-foreground hover:text-foreground"
                 >
                   <ArrowLeft className="h-4 w-4" />
@@ -202,7 +187,7 @@ export function ProjectDetailOverlay({
                   variant="ghost"
                   size="icon"
                   onClick={() => nextProject && onNavigate(nextProject.slug)}
-                  aria-label={`Projet suivant : ${nextProject?.name ?? ""}`}
+                  aria-label={t("projects.detail.ariaNext", { name: nextProject?.name ?? "" })}
                   className="h-8 w-8 text-muted-foreground hover:text-foreground"
                 >
                   <ArrowRight className="h-4 w-4" />
@@ -220,7 +205,7 @@ export function ProjectDetailOverlay({
                 variant="ghost"
                 size="icon"
                 onClick={onClose}
-                aria-label="Fermer"
+                aria-label={t("common.close")}
                 className="h-8 w-8 text-muted-foreground hover:text-foreground"
               >
                 <X className="h-4 w-4" />
@@ -260,43 +245,6 @@ interface OverlayContentProps {
 
 /* ---------------- Case-study sections ---------------- */
 
-function MetricsSection({ metrics }: { metrics: ProjectMetric[] }) {
-  const t = useT();
-  if (!metrics.length) return null;
-  return (
-    <section className="flex flex-col gap-4" aria-label="Métriques produit">
-      <SectionHeader icon={TrendingUp}>{t("projects.section.metrics")}</SectionHeader>
-      <ul
-        role="list"
-        className="grid grid-cols-1 gap-3 sm:grid-cols-2"
-      >
-        {metrics.map((m) => (
-          <li
-            key={m.label}
-            className="group relative overflow-hidden rounded-xl border border-border/50 bg-card/40 p-4 backdrop-blur transition-colors duration-300 hover:border-primary/30"
-          >
-            <div
-              aria-hidden
-              className="pointer-events-none absolute -top-10 -right-8 h-24 w-24 rounded-full bg-primary/[0.06] blur-2xl transition-opacity duration-300 group-hover:opacity-100 opacity-60"
-            />
-            <p className="text-2xl font-semibold tracking-tight text-gradient-emerald md:text-3xl">
-              {m.value}
-            </p>
-            <p className="mt-1 text-sm font-medium text-foreground/90">
-              {m.label}
-            </p>
-            {m.hint ? (
-              <p className="mt-0.5 font-mono text-[11px] text-muted-foreground">
-                {m.hint}
-              </p>
-            ) : null}
-          </li>
-        ))}
-      </ul>
-    </section>
-  );
-}
-
 function ChallengesSolutionsSection({
   challenges,
   solutions,
@@ -309,7 +257,7 @@ function ChallengesSolutionsSection({
   return (
     <section
       className="flex flex-col gap-4"
-      aria-label="Défis et solutions"
+      aria-label={t("projects.detail.ariaChallenges")}
     >
       <SectionHeader icon={AlertTriangle}>{t("projects.section.challenges")}</SectionHeader>
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
@@ -336,7 +284,7 @@ function ChallengesSolutionsSection({
                     aria-hidden
                   />
                   <span className="text-sm leading-relaxed text-foreground/85">
-                    {c}
+                    {t(c as TranslationKey)}
                   </span>
                 </div>
               </li>
@@ -367,7 +315,7 @@ function ChallengesSolutionsSection({
                     aria-hidden
                   />
                   <span className="text-sm leading-relaxed text-foreground/85">
-                    {s}
+                    {t(s as TranslationKey)}
                   </span>
                 </div>
               </li>
@@ -382,15 +330,15 @@ function ChallengesSolutionsSection({
 function TimelineSection({
   timeline,
 }: {
-  timeline: ProjectTimelineItem[];
+  timeline: ProjectTimelineItemI18n[];
 }) {
   const t = useT();
   if (!timeline.length) return null;
   return (
-    <section className="flex flex-col gap-4" aria-label="Chronologie du projet">
+    <section className="flex flex-col gap-4" aria-label={t("projects.detail.ariaTimeline")}>
       <SectionHeader icon={Clock}>{t("projects.section.timeline")}</SectionHeader>
       <ol
-        aria-label="Phases de construction"
+        aria-label={t("projects.detail.ariaTimelineList")}
         className="relative space-y-5 pl-8 md:pl-10"
       >
         {/* Vertical gradient line */}
@@ -412,14 +360,14 @@ function TimelineSection({
             <div className="flex flex-col gap-1">
               <div className="flex flex-wrap items-center gap-2">
                 <span className="text-sm font-medium text-foreground">
-                  {item.phase}
+                  {t(item.phaseKey as TranslationKey)}
                 </span>
                 <span className="inline-flex items-center rounded-md border border-border/60 bg-card/40 px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
                   {item.period}
                 </span>
               </div>
               <p className="text-sm leading-relaxed text-muted-foreground">
-                {item.detail}
+                {t(item.detailKey as TranslationKey)}
               </p>
             </div>
           </li>
@@ -433,7 +381,7 @@ function ImpactSection({ impact }: { impact: string }) {
   const t = useT();
   if (!impact) return null;
   return (
-    <section className="flex flex-col gap-4" aria-label="Impact du projet">
+    <section className="flex flex-col gap-4" aria-label={t("projects.detail.ariaImpact")}>
       <SectionHeader icon={Sparkles}>{t("projects.section.impact")}</SectionHeader>
       <div className="relative overflow-hidden rounded-xl border border-primary/20 bg-primary/[0.04] p-5 md:p-6">
         <div
@@ -527,7 +475,7 @@ function OverlayContent({ project, onContact, onClose }: OverlayContentProps) {
               variant="outline"
               className="bg-primary/5 font-mono text-[10px] uppercase tracking-wider text-primary"
             >
-              {project.status}
+              {t(project.statusKey as TranslationKey)}
             </Badge>
           </div>
 
@@ -535,7 +483,7 @@ function OverlayContent({ project, onContact, onClose }: OverlayContentProps) {
             {project.name}
           </h2>
           <p className="text-lg text-muted-foreground text-pretty md:text-xl">
-            {project.tagline}
+            {t(project.taglineKey as TranslationKey)}
           </p>
         </section>
 
@@ -543,23 +491,18 @@ function OverlayContent({ project, onContact, onClose }: OverlayContentProps) {
         <section className="flex flex-col gap-3">
           <SectionHeader>{t("projects.section.overview")}</SectionHeader>
           <p className="text-base font-medium leading-relaxed text-foreground md:text-lg">
-            {project.shortDescription}
+            {t(project.shortDescriptionKey as TranslationKey)}
           </p>
           <p className="text-sm leading-relaxed text-muted-foreground md:text-base">
-            {narratives[project.slug]}
+            {t(`projects.detail.narrative.${project.slug}` as TranslationKey)}
           </p>
         </section>
 
-        {/* Métriques (case study) */}
-        {project.metrics?.length ? (
-          <MetricsSection metrics={project.metrics} />
-        ) : null}
-
         {/* Défis & solutions (case study) */}
-        {project.challenges?.length || project.solutions?.length ? (
+        {project.challengeKeys?.length || project.solutionKeys?.length ? (
           <ChallengesSolutionsSection
-            challenges={project.challenges ?? []}
-            solutions={project.solutions ?? []}
+            challenges={project.challengeKeys ?? []}
+            solutions={project.solutionKeys ?? []}
           />
         ) : null}
 
@@ -567,16 +510,16 @@ function OverlayContent({ project, onContact, onClose }: OverlayContentProps) {
         <section className="flex flex-col gap-3">
           <SectionHeader>{t("projects.section.highlights")}</SectionHeader>
           <ul className="grid gap-2.5 sm:grid-cols-2">
-            {project.highlights.map((h) => (
+            {project.highlightKeys.map((k) => (
               <li
-                key={h}
+                key={k}
                 className="flex items-start gap-2.5 rounded-lg border border-border/40 bg-card/30 p-3"
               >
                 <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-primary/30 bg-primary/10">
                   <Check className="h-3 w-3 text-primary" />
                 </span>
                 <span className="text-sm leading-relaxed text-foreground/90">
-                  {h}
+                  {t(k as TranslationKey)}
                 </span>
               </li>
             ))}
@@ -594,20 +537,20 @@ function OverlayContent({ project, onContact, onClose }: OverlayContentProps) {
             </div>
             <div className="px-4 py-4">
               <p className="font-mono text-sm leading-relaxed text-foreground/80">
-                {project.architecture}
+                {t(project.architectureKey as TranslationKey)}
               </p>
             </div>
           </div>
         </section>
 
         {/* Chronologie (case study) */}
-        {project.timeline?.length ? (
-          <TimelineSection timeline={project.timeline} />
+        {project.timelineI18n?.length ? (
+          <TimelineSection timeline={project.timelineI18n} />
         ) : null}
 
         {/* Impact (case study) */}
-        {project.impact ? (
-          <ImpactSection impact={project.impact} />
+        {project.impactKey ? (
+          <ImpactSection impact={t(project.impactKey as TranslationKey)} />
         ) : null}
 
         {/* Stack technique */}
@@ -630,7 +573,7 @@ function OverlayContent({ project, onContact, onClose }: OverlayContentProps) {
         <section className="flex flex-col gap-3">
           <SectionHeader>{t("projects.section.role")}</SectionHeader>
           <p className="text-sm leading-relaxed text-muted-foreground md:text-base">
-            {project.role}
+            {t(project.roleKey as TranslationKey)}
           </p>
         </section>
       </div>
@@ -640,10 +583,10 @@ function OverlayContent({ project, onContact, onClose }: OverlayContentProps) {
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-col">
             <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-              Envie d'échanger ?
+              {t("projects.detail.ctaHeading")}
             </span>
             <span className="text-sm font-medium text-foreground">
-              Parlons de votre projet.
+              {t("projects.detail.ctaSubtext")}
             </span>
           </div>
           <div className="flex flex-col gap-2 sm:flex-row">

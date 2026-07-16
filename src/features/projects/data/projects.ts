@@ -1,62 +1,46 @@
 /**
  * Source de vérité pour les projets du portfolio.
  * Trois projets majeurs : PayLith (SaaS), QueueClock (temps réel), Parkour (mobile).
+ *
+ * Toutes les chaînes traduisibles sont désormais des clés i18n ;
+ * les valeurs humaines correspondantes sont dans src/shared/i18n/messages/.
  */
 
-export interface ProjectMetric {
-  /** Libellé court, ex. "Factures générées". */
-  label: string;
-  /** Valeur mise en avant, ex. "1 200+". */
-  value: string;
-  /** Précision contextuelle optionnelle, ex. "depuis le lancement". */
-  hint?: string;
-}
-
-export interface ProjectTimelineItem {
-  /** Nom de la phase, ex. "Analyse & conception". */
-  phase: string;
-  /** Période lisible, ex. "Semaine 1-2". */
+export interface ProjectTimelineItemI18n {
+  phaseKey: string;
   period: string;
-  /** Description de ce qui s'est passé pendant cette phase. */
-  detail: string;
+  detailKey: string;
 }
 
 export interface Project {
   slug: string;
   name: string;
-  tagline: string;
+  taglineKey: string;
   category: string;
   year: string;
-  status: string;
+  statusKey: string;
   featured: boolean;
-  shortDescription: string;
+  shortDescriptionKey: string;
   tech: string[];
-  highlights: string[];
-  architecture: string;
-  role: string;
-  /** KPIs / métriques produit — transforme le projet en case study. */
-  metrics?: ProjectMetric[];
-  /** Problèmes complexes rencontrés (côté métier ou technique). */
-  challenges?: string[];
-  /** Décisions d'ingénierie qui répondent aux challenges. */
-  solutions?: string[];
-  /** Chronologie des phases de construction du projet. */
-  timeline?: ProjectTimelineItem[];
-  /** Conclusion narrative : ce que le projet démontre. */
-  impact?: string;
+  highlightKeys: string[];
+  architectureKey: string;
+  roleKey: string;
+  challengeKeys?: string[];
+  solutionKeys?: string[];
+  timelineI18n?: ProjectTimelineItemI18n[];
+  impactKey?: string;
 }
 
 export const projects: Project[] = [
   {
     slug: "paylith",
     name: "PayLith",
-    tagline: "La facturation moderne pour freelances et TPE.",
+    taglineKey: "projects.data.paylith.tagline",
     category: "SaaS Platform",
     year: "2024",
-    status: "Projet principal",
+    statusKey: "projects.data.paylith.status",
     featured: true,
-    shortDescription:
-      "Plateforme moderne de facturation destinée aux freelances, indépendants et petites entreprises. Conçue comme un produit SaaS complet, de la gestion des clients au suivi des paiements.",
+    shortDescriptionKey: "projects.data.paylith.shortDescription",
     tech: [
       "Next.js",
       "TypeScript",
@@ -66,77 +50,63 @@ export const projects: Project[] = [
       "Docker",
       "Stripe",
     ],
-    highlights: [
-      "Gestion complète des clients, devis et factures",
-      "Suivi des paiements et relances automatisées",
-      "Tableau de bord analytics en temps réel",
-      "Architecture Clean Architecture + DDD",
-      "Multi-tenant, sécurisé, scalable",
+    highlightKeys: [
+      "projects.data.paylith.highlights.0",
+      "projects.data.paylith.highlights.1",
+      "projects.data.paylith.highlights.2",
+      "projects.data.paylith.highlights.3",
+      "projects.data.paylith.highlights.4",
     ],
-    architecture:
-      "Clean Architecture avec séparation stricte des couches. Domain-Driven Design pour modéliser le métier de la facturation. CQRS pour séparer lectures (dashboards, listing) et écritures (création de factures). API Spring Boot sécurisée par JWT, frontend Next.js avec Server Components pour le SEO et les performances.",
-    role: "Conception, architecture, développement full-stack, déploiement.",
-    metrics: [
-      { label: "Factures générées", value: "1 200+", hint: "sur 6 mois" },
-      { label: "Taux de paiement", value: "94%", hint: "à 30 jours" },
-      { label: "Temps gagné", value: "8h/sem", hint: "vs. Excel" },
-      { label: "Clients actifs", value: "47", hint: "freelances & TPE" },
+    architectureKey: "projects.data.paylith.architecture",
+    roleKey: "projects.data.paylith.role",
+    challengeKeys: [
+      "projects.data.paylith.challenges.0",
+      "projects.data.paylith.challenges.1",
+      "projects.data.paylith.challenges.2",
     ],
-    challenges: [
-      "Modéliser un métier fiscal complexe (TVA, acomptes, avoirs) sans coupler le code aux spécificités locales.",
-      "Gérer la concurrence sur la numérotation des factures (multi-tenant, plusieurs utilisateurs simultanés).",
-      "Offrir une expérience de tableau de bord rapide sur des volumes de factures qui croissent.",
+    solutionKeys: [
+      "projects.data.paylith.solutions.0",
+      "projects.data.paylith.solutions.1",
+      "projects.data.paylith.solutions.2",
     ],
-    solutions: [
-      "Domain-Driven Design : un agrégat `Facture` encapsule les règles d'invariants (numérotation, statuts, totaux).",
-      "CQRS : séparation des écritures (création de facture) et des lectures (dashboards, exports) via des projections dédiées.",
-      "Projections matérialisées en Redis pour les compteurs temps réel et les KPIs du dashboard.",
-    ],
-    timeline: [
+    timelineI18n: [
       {
-        phase: "Discovery & modelling",
+        phaseKey: "projects.data.paylith.timeline.0.phase",
         period: "Semaine 1-2",
-        detail:
-          "Entretiens utilisateurs, ubiquitous language, conception des agrégats et bounded contexts.",
+        detailKey: "projects.data.paylith.timeline.0.detail",
       },
       {
-        phase: "Architecture",
+        phaseKey: "projects.data.paylith.timeline.1.phase",
         period: "Semaine 3",
-        detail:
-          "Clean Architecture en couches, ports & adaptateurs, choix CQRS + Event Sourcing léger.",
+        detailKey: "projects.data.paylith.timeline.1.detail",
       },
       {
-        phase: "Core backend",
+        phaseKey: "projects.data.paylith.timeline.2.phase",
         period: "Semaine 4-7",
-        detail:
-          "Spring Boot, agrégats, projections, auth JWT, multi-tenant.",
+        detailKey: "projects.data.paylith.timeline.2.detail",
       },
       {
-        phase: "Frontend",
+        phaseKey: "projects.data.paylith.timeline.3.phase",
         period: "Semaine 8-10",
-        detail:
-          "Next.js Server Components, dashboards temps réel, exports PDF.",
+        detailKey: "projects.data.paylith.timeline.3.detail",
       },
       {
-        phase: "Production",
+        phaseKey: "projects.data.paylith.timeline.4.phase",
         period: "Semaine 11+",
-        detail:
-          "Docker, CI/CD, observabilité, déploiement progressif.",
+        detailKey: "projects.data.paylith.timeline.4.detail",
       },
     ],
-    impact:
-      "PayLith est devenu un produit utilisable en production par des freelances réels. Il démontre qu'une architecture propre n'est pas un coût : chaque nouvelle fonctionnalité (avoirs, relances, exports) s'ajoute sans fragiliser l'existant.",
+    impactKey: "projects.data.paylith.impact",
   },
   {
     slug: "queueclock",
     name: "QueueClock",
-    tagline: "Files d'attente virtuelles, synchronisées en temps réel.",
+    taglineKey: "projects.data.queueclock.tagline",
     category: "Real-time System",
     year: "2024",
-    status: "Système distribué",
+    statusKey: "projects.data.queueclock.status",
     featured: false,
-    shortDescription:
-      "Application web et mobile de gestion de files d'attente virtuelles en temps réel. Pensée pour les commerces, administrations et événements qui veulent fluidifier l'attente physique.",
+    shortDescriptionKey: "projects.data.queueclock.shortDescription",
     tech: [
       "NestJS",
       "React Native",
@@ -145,65 +115,53 @@ export const projects: Project[] = [
       "PostgreSQL",
       "Docker",
     ],
-    highlights: [
-      "Synchronisation temps réel via WebSockets",
-      "Gestion de la concurrence avec Redis",
-      "Application mobile React Native (Expo)",
-      "Architecture distribuée, scalable horizontalement",
-      "Notifications push aux clients",
+    highlightKeys: [
+      "projects.data.queueclock.highlights.0",
+      "projects.data.queueclock.highlights.1",
+      "projects.data.queueclock.highlights.2",
+      "projects.data.queueclock.highlights.3",
+      "projects.data.queueclock.highlights.4",
     ],
-    architecture:
-      "Backend NestJS avec WebSockets (Socket.io) pour la diffusion temps réel. Redis comme store de concurrence pour les compteurs de file et la pub/sub. Architecture distribuée : plusieurs instances du backend synchronisées via Redis. Frontend web React, application mobile React Native avec notifications push.",
-    role: "Architecture du système temps réel, backend NestJS, application mobile.",
-    metrics: [
-      { label: "Latence temps réel", value: "< 80ms", hint: "p95" },
-      { label: "Files gérées", value: "50+", hint: "simultanées" },
-      { label: "Clients sync", value: "2 000", hint: "par instance" },
-      { label: "Instances", value: "3", hint: "scaling horizontal" },
+    architectureKey: "projects.data.queueclock.architecture",
+    roleKey: "projects.data.queueclock.role",
+    challengeKeys: [
+      "projects.data.queueclock.challenges.0",
+      "projects.data.queueclock.challenges.1",
+      "projects.data.queueclock.challenges.2",
     ],
-    challenges: [
-      "Synchroniser en temps réel des milliers de clients sans saturer le backend.",
-      "Garantir la cohérence des compteurs de file avec plusieurs instances backend.",
-      "Notifier un mobile en arrière-plan sans vider la batterie.",
+    solutionKeys: [
+      "projects.data.queueclock.solutions.0",
+      "projects.data.queueclock.solutions.1",
+      "projects.data.queueclock.solutions.2",
     ],
-    solutions: [
-      "Redis pub/sub comme bus d'événements entre instances backend (fan-out décentralisé).",
-      "Compteurs atomiques Redis (INCR) pour la concurrence sur les files.",
-      "WebSockets côté client + notifications push push-side, relayées par le gateway NestJS.",
-    ],
-    timeline: [
+    timelineI18n: [
       {
-        phase: "Architecture distribuée",
+        phaseKey: "projects.data.queueclock.timeline.0.phase",
         period: "Phase 1",
-        detail:
-          "Choix Redis pub/sub, design du gateway NestJS, protocole WebSocket.",
+        detailKey: "projects.data.queueclock.timeline.0.detail",
       },
       {
-        phase: "Backend temps réel",
+        phaseKey: "projects.data.queueclock.timeline.1.phase",
         period: "Phase 2",
-        detail:
-          "Gateway, gestionnaire de files, adaptateurs Redis, tests de charge.",
+        detailKey: "projects.data.queueclock.timeline.1.detail",
       },
       {
-        phase: "Mobile",
+        phaseKey: "projects.data.queueclock.timeline.2.phase",
         period: "Phase 3",
-        detail:
-          "App React Native, notifications push, synchronisation offline.",
+        detailKey: "projects.data.queueclock.timeline.2.detail",
       },
     ],
-    impact:
-      "QueueClock prouve la capacité à concevoir un système distribué cohérent, où la synchronisation temps réel n'est pas un accident mais le fruit d'une architecture pensée pour scaler.",
+    impactKey: "projects.data.queueclock.impact",
   },
   {
     slug: "parkour",
     name: "Parkour",
-    tagline: "Suivi GPS et gamification pour la course à pied.",
+    taglineKey: "projects.data.parkour.tagline",
     category: "Mobile App",
     year: "2023",
-    status: "Application mobile",
+    statusKey: "projects.data.parkour.status",
     featured: false,
-    shortDescription:
-      "Application mobile de suivi GPS et de gamification. Transforme la course en expérience engageante avec défis, badges et classements.",
+    shortDescriptionKey: "projects.data.parkour.shortDescription",
     tech: [
       "React Native",
       "Expo",
@@ -212,54 +170,43 @@ export const projects: Project[] = [
       "PostgreSQL",
       "Maps",
     ],
-    highlights: [
-      "Suivi GPS en arrière-plan, même écran éteint",
-      "Cartographie interactive temps réel",
-      "Système de gamification : défis, badges, XP",
-      "Classements live via WebSockets",
-      "Notifications push de progression",
+    highlightKeys: [
+      "projects.data.parkour.highlights.0",
+      "projects.data.parkour.highlights.1",
+      "projects.data.parkour.highlights.2",
+      "projects.data.parkour.highlights.3",
+      "projects.data.parkour.highlights.4",
     ],
-    architecture:
-      "Application React Native (Expo) avec suivi GPS en arrière-plan via task background. Backend NestJS exposant REST + WebSockets. Cartographie interactive. Synchronisation temps réel des classements. Système de gamification modélisé en DDD.",
-    role: "Développement mobile React Native, backend NestJS, gamification.",
-    metrics: [
-      { label: "Précision GPS", value: "±3m", hint: "en extérieur" },
-      { label: "Sessions suivies", value: "500+", hint: "tests" },
-      { label: "Défis", value: "12", hint: "badges & XP" },
-      { label: "Batterie", value: "< 4%/h", hint: "suivi actif" },
+    architectureKey: "projects.data.parkour.architecture",
+    roleKey: "projects.data.parkour.role",
+    challengeKeys: [
+      "projects.data.parkour.challenges.0",
+      "projects.data.parkour.challenges.1",
+      "projects.data.parkour.challenges.2",
     ],
-    challenges: [
-      "Capturer le GPS en arrière-plan sans drainer la batterie.",
-      "Reprendre une session après perte de signal GPS (tunnels, bâtiments).",
-      "Rendre la gamification engageante sans alourdir l'expérience de course.",
+    solutionKeys: [
+      "projects.data.parkour.solutions.0",
+      "projects.data.parkour.solutions.1",
+      "projects.data.parkour.solutions.2",
     ],
-    solutions: [
-      "Background task Expo avec geofencing et échantillonnage adaptatif (fréquence réduite au repos).",
-      "Lissage des tracés (Kalman léger) et détection des gaps pour reconnexion intelligente.",
-      "Domaine gamification isolé (agrégat `ParkourSession`) — les badges sont des règles pures, testables.",
-    ],
-    timeline: [
+    timelineI18n: [
       {
-        phase: "R&D GPS",
+        phaseKey: "projects.data.parkour.timeline.0.phase",
         period: "Phase 1",
-        detail:
-          "Prototypage suivi arrière-plan, mesure batterie, précision.",
+        detailKey: "projects.data.parkour.timeline.0.detail",
       },
       {
-        phase: "Domaine gamification",
+        phaseKey: "projects.data.parkour.timeline.1.phase",
         period: "Phase 2",
-        detail:
-          "Modélisation DDD : sessions, défis, badges, XP.",
+        detailKey: "projects.data.parkour.timeline.1.detail",
       },
       {
-        phase: "Backend & live",
+        phaseKey: "projects.data.parkour.timeline.2.phase",
         period: "Phase 3",
-        detail:
-          "NestJS, WebSockets classements, notifications progression.",
+        detailKey: "projects.data.parkour.timeline.2.detail",
       },
     ],
-    impact:
-      "Parkour illustre la maîtrise du mobile couplé à un backend temps réel — un terrain où chaque décision technique (batterie, précision, UX) a un impact direct sur l'utilisateur.",
+    impactKey: "projects.data.parkour.impact",
   },
 ];
 
