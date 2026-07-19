@@ -21,6 +21,8 @@ node_modules
 /.next/
 /out/
 
+/.opencode/
+
 # production
 /build
 

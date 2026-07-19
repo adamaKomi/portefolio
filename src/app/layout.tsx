@@ -4,6 +4,7 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as SonnerToaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/shared/lib/theme-provider";
+import { env } from "@/config/env";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -17,7 +18,7 @@ const geistMono = Geist_Mono({
   display: "swap",
 });
 
-const siteUrl = "https://adama-komi.dev";
+const siteUrl = env.websiteUrl || "https://your-domain.com";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),

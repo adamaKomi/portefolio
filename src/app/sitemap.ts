@@ -1,7 +1,8 @@
 import type { MetadataRoute } from "next";
+import { env } from "@/config/env";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = "https://adama-komi.dev";
+  const baseUrl = env.websiteUrl || "https://your-domain.com";
   const lastModified = new Date();
 
   return [

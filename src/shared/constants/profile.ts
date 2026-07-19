@@ -24,7 +24,7 @@ export const profile = {
 export const socials = [
   { name: "GitHub", href: "https://github.com/adamaKomi", handle: "@adamaKomi", icon: "github" },
   { name: "LinkedIn", href: "https://linkedin.com/in/adama-komi", handle: "in/adama-komi", icon: "linkedin" },
-  { name: "Email", href: "mailto:adamakomi15@gmail.com", handle: "adamakomi15@gmail.com", icon: "mail" },
+  { name: "Email", href: `mailto:${env.contactEmailTo || "#"}`, handle: env.contactEmailTo || "", icon: "mail" },
 ] as const;
 
 export const navSections = [
