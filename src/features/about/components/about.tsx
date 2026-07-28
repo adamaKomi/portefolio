@@ -71,7 +71,7 @@ export function About() {
                 {/* Portrait image */}
                 <div className="relative aspect-square w-full overflow-hidden rounded-xl border border-border/50 group/portrait-img">
                   <img
-                    src="/portrait.png"
+                    src="/portrait.jpeg"
                     alt={profile.name}
                     className="h-full w-full object-cover transition-transform duration-500 group-hover/portrait-img:scale-105"
                   />

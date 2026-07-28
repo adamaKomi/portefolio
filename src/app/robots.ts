@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { env } from "@/config/env";
 
 export default function robots(): MetadataRoute.Robots {
-  const baseUrl = env.websiteUrl || "https://your-domain.com";
+  const baseUrl = env.websiteUrl;
   return {
     rules: {
       userAgent: "*",

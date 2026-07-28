@@ -113,7 +113,7 @@ export const fr = {
 
   // Projects
   "projects.eyebrow": "Portfolio",
-  "projects.title": "Projets phares & open source.",
+  "projects.title": "Projets phares",
   "projects.description": "Une sélection de mes projets principaux, conçus avec des architectures et standards modernes.",
   "projects.viewCode": "Voir le code",
   "projects.viewLive": "Live preview",

@@ -18,7 +18,7 @@ const geistMono = Geist_Mono({
   display: "swap",
 });
 
-const siteUrl = env.websiteUrl || "https://your-domain.com";
+const siteUrl = env.websiteUrl;
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -47,7 +47,8 @@ export const metadata: Metadata = {
   authors: [{ name: "Adama Komi" }],
   creator: "Adama Komi",
   icons: {
-    icon: "/logo.svg",
+    icon: "/icon.svg",
+    apple: "/icon.svg",
   },
   openGraph: {
     title: "Adama Komi — Software Engineer & Full-Stack Developer",
@@ -57,12 +58,21 @@ export const metadata: Metadata = {
     siteName: "Adama Komi",
     locale: "fr_FR",
     type: "website",
+    images: [
+      {
+        url: `${siteUrl}/opengraph-image.png`,
+        width: 1200,
+        height: 630,
+        alt: "Adama Komi Portfolio",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Adama Komi — Software Engineer & Full-Stack Developer",
     description:
       "Ingénieur logiciel full-stack. Architecture, systèmes distribués, applications temps réel.",
+    images: [`${siteUrl}/opengraph-image.png`],
   },
   robots: {
     index: true,
