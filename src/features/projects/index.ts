@@ -1,5 +1,2 @@
 export { Projects } from "./components/projects-section";
-export type {
-  Project,
-  ProjectTimelineItemI18n,
-} from "./data/projects";
+export { projects, type Project, type ProjectWorkItem } from "./data/projects";

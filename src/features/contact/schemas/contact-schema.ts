@@ -35,6 +35,7 @@ export function makeContactSchema(
   return z.object({
     name: z.string().min(2, messages.nameMin).max(80, messages.nameMax),
     email: z.string().email(messages.email),
+    // Champs facultatifs conservés pour la compatibilité de l'API.
     company: z.string().max(100).optional().or(z.literal("")),
     budget: z.string().max(50).optional().or(z.literal("")),
     message: z
@@ -47,12 +48,3 @@ export function makeContactSchema(
 export const contactSchema = makeContactSchema(defaultContactSchemaMessages);
 
 export type ContactFormValues = z.infer<typeof contactSchema>;
-
-export const budgetOptions = [
-  { value: "< 5k€", labelKey: "contact.budget.lt5k" },
-  { value: "5k — 15k€", labelKey: "contact.budget.5k15k" },
-  { value: "15k — 30k€", labelKey: "contact.budget.15k30k" },
-  { value: "30k€+", labelKey: "contact.budget.30kPlus" },
-  { value: "CDI / Recrutement", labelKey: "contact.budget.cdi" },
-  { value: "Autre", labelKey: "contact.budget.other" },
-] as const;

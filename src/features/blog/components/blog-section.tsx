@@ -1,134 +1,54 @@
 "use client";
 
-import * as React from "react";
-import { useCallback, useEffect, useRef, useState } from "react";
-import {
-  AuroraBackground,
-  Reveal,
-  Section,
-  SectionHeading,
-} from "@/shared/ui";
-import { useT } from "@/shared/i18n";
-import { getPost, posts } from "../data/posts";
-import { BlogCard } from "./blog-card";
-import { BlogReaderOverlay } from "./blog-reader-overlay";
+import { Container, SectionHead } from "@/shared/ui";
+import { useLanguage } from "@/shared/i18n";
+import { useHashRoute } from "@/shared/hooks/use-hash-route";
+import { formatPostDate, isPostSlug, posts } from "../data/posts";
+import { BlogReader } from "./blog-reader";
 
-const BLOG_HASH_RE = /^#\/blog\/([\w-]+)$/;
-
+/** Les articles présentés comme une table des matières, avec points de conduite. */
 export function Blog() {
-  const t = useT();
-  const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
-  const hasSyncedRef = useRef(false);
-
-  /* ---------- Hash routing sync ---------- */
-  useEffect(() => {
-    const syncFromHash = () => {
-      const hash = window.location.hash;
-      const match = hash.match(BLOG_HASH_RE);
-      if (match) {
-        const slug = match[1];
-        if (getPost(slug)) {
-          setSelectedSlug(slug);
-          return;
-        }
-      }
-      setSelectedSlug(null);
-    };
-
-    // Initial sync (deep-link support)
-    if (!hasSyncedRef.current) {
-      syncFromHash();
-      hasSyncedRef.current = true;
-    }
-
-    window.addEventListener("popstate", syncFromHash);
-    window.addEventListener("hashchange", syncFromHash);
-    return () => {
-      window.removeEventListener("popstate", syncFromHash);
-      window.removeEventListener("hashchange", syncFromHash);
-    };
-  }, []);
-
-  /* ---------- Actions ---------- */
-  const openPost = useCallback((slug: string) => {
-    if (typeof window !== "undefined") {
-      window.history.pushState({}, "", `#/blog/${slug}`);
-    }
-    setSelectedSlug(slug);
-  }, []);
-
-  const closePost = useCallback(() => {
-    if (
-      typeof window !== "undefined" &&
-      window.location.hash.startsWith("#/blog/")
-    ) {
-      // popstate listener will sync selectedSlug to null
-      window.history.back();
-    } else {
-      setSelectedSlug(null);
-    }
-  }, []);
-
-  const navigatePost = useCallback((slug: string) => {
-    // replaceState (not push) → history stays a single entry for the overlay
-    if (typeof window !== "undefined") {
-      window.history.replaceState({}, "", `#/blog/${slug}`);
-    }
-    setSelectedSlug(slug);
-  }, []);
-
-  const handleContact = useCallback(() => {
-    closePost();
-    // Wait for overlay exit + body scroll unlock, then smooth-scroll to #contact
-    window.setTimeout(() => {
-      document
-        .getElementById("contact")
-        ?.scrollIntoView({ behavior: "smooth" });
-    }, 400);
-  }, [closePost]);
+  const { t, locale } = useLanguage();
+  const { slug, open, navigate, close } = useHashRoute("blog", isPostSlug);
 
   return (
-    <Section id="blog">
-      <AuroraBackground variant="section" />
-
-      <div className="relative">
-        <SectionHeading
-          eyebrow={t("blog.eyebrow")}
-          title={t("blog.title")}
-          description={t("blog.description")}
-        />
-
-        {/* Header strip */}
-        <div className="mb-6 flex items-center gap-3">
-          <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-            {t("blog.stripLabel")}
-          </span>
-          <div className="h-px flex-1 bg-gradient-to-r from-border to-transparent" />
-        </div>
-
-        {/* Cards grid */}
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:gap-6 lg:grid-cols-3">
-          {posts.map((post, i) => (
-            <Reveal key={post.slug} delay={0.06 * i + 0.05} className="h-full">
-              <BlogCard post={post} onOpen={openPost} className="h-full" />
-            </Reveal>
+    <section id="blog" data-section-id="blog">
+      <Container className="py-20 md:py-28">
+        <SectionHead label={t("blog.title")} />
+        <ol className="mt-8 md:mt-10">
+          {posts.map((post) => (
+            <li key={post.slug} className="border-b border-border">
+              <button
+                type="button"
+                onClick={() => open(post.slug)}
+                className="group block w-full py-6 text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
+              >
+                <span className="flex items-baseline gap-4">
+                  <span className="min-w-0 font-display text-2xl leading-snug group-hover:italic md:text-3xl">
+                    {t(`blog.${post.i18nKey}.title`)}
+                  </span>
+                  <span aria-hidden className="hidden min-w-8 flex-1 border-b-2 border-dotted border-current opacity-30 sm:block" />
+                  <span className="hidden shrink-0 font-mono text-xs text-muted-foreground sm:block">
+                    {t("blog.readingTime", { n: post.readingTime })}
+                  </span>
+                </span>
+                <span className="mt-2 block max-w-2xl text-muted-foreground text-pretty">
+                  <time dateTime={post.date} className="font-mono text-xs text-primary">
+                    {formatPostDate(post.date, locale)}
+                  </time>
+                  <span className="mx-2 sm:hidden">·</span>
+                  <span className="font-mono text-xs sm:hidden">
+                    {t("blog.readingTime", { n: post.readingTime })}
+                  </span>
+                  <span className="mt-1 block">{t(`blog.${post.i18nKey}.excerpt`)}</span>
+                </span>
+              </button>
+            </li>
           ))}
-        </div>
+        </ol>
+      </Container>
 
-        {/* Hint line */}
-        <div className="mt-8 flex items-center justify-center gap-2 text-xs text-muted-foreground">
-          <span className="font-mono">{t("blog.hint")}</span>
-          <span aria-hidden className="text-primary">↗</span>
-        </div>
-      </div>
-
-      {/* ---------- Reader overlay ---------- */}
-      <BlogReaderOverlay
-        slug={selectedSlug}
-        onClose={closePost}
-        onNavigate={navigatePost}
-        onContact={handleContact}
-      />
-    </Section>
+      <BlogReader slug={slug} onClose={close} onNavigate={navigate} />
+    </section>
   );
 }

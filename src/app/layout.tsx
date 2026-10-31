@@ -1,20 +1,31 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Fraunces, IBM_Plex_Mono, IBM_Plex_Sans } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as SonnerToaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/shared/lib/theme-provider";
 import { env } from "@/config/env";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const fraunces = Fraunces({
+  variable: "--font-fraunces",
   subsets: ["latin"],
+  style: ["normal", "italic"],
+  axes: ["opsz", "SOFT", "WONK"],
   display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const plexSans = IBM_Plex_Sans({
+  variable: "--font-plex-sans",
   subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  style: ["normal", "italic"],
+  display: "swap",
+});
+
+const plexMono = IBM_Plex_Mono({
+  variable: "--font-plex-mono",
+  subsets: ["latin"],
+  weight: ["400", "500"],
   display: "swap",
 });
 
@@ -23,11 +34,11 @@ const siteUrl = env.websiteUrl;
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "Adama Komi — Software Engineer & Full-Stack Developer",
+    default: "Adama Komi — Ingénieur logiciel",
     template: "%s — Adama Komi",
   },
   description:
-    "Software Engineer spécialisé en architecture logicielle, systèmes distribués et applications temps réel. Je conçois et déploie des produits web, mobiles et backend complets — de l'analyse métier à la production.",
+    "Ingénieur logiciel basé à Mohammedia. Je conçois et développe des applications web, mobiles et backend.",
   keywords: [
     "Adama Komi",
     "Software Engineer",
@@ -51,9 +62,9 @@ export const metadata: Metadata = {
     apple: "/icon.svg",
   },
   openGraph: {
-    title: "Adama Komi — Software Engineer & Full-Stack Developer",
+    title: "Adama Komi — Ingénieur logiciel",
     description:
-      "Ingénieur logiciel full-stack. Architecture, systèmes distribués, applications temps réel. De l'analyse métier au déploiement production.",
+      "Ingénieur logiciel basé à Mohammedia. Applications web, mobiles et backend.",
     url: siteUrl,
     siteName: "Adama Komi",
     locale: "fr_FR",
@@ -69,9 +80,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Adama Komi — Software Engineer & Full-Stack Developer",
+    title: "Adama Komi — Ingénieur logiciel",
     description:
-      "Ingénieur logiciel full-stack. Architecture, systèmes distribués, applications temps réel.",
+      "Ingénieur logiciel basé à Mohammedia. Applications web, mobiles et backend.",
     images: [`${siteUrl}/opengraph-image.png`],
   },
   robots: {
@@ -92,8 +103,8 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: dark)", color: "#0a0b0d" },
-    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#141d31" },
+    { media: "(prefers-color-scheme: light)", color: "#f4efe5" },
   ],
   width: "device-width",
   initialScale: 1,
@@ -103,7 +114,7 @@ const jsonLd = {
   "@context": "https://schema.org",
   "@type": "Person",
   name: "Adama Komi",
-  jobTitle: "Software Engineer & Full-Stack Developer",
+  jobTitle: "Ingénieur logiciel — Full-stack & mobile",
   url: siteUrl,
   knowsAbout: [
     "Software Architecture",
@@ -132,27 +143,17 @@ export default function RootLayout({
   return (
     <html lang="fr" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground font-sans`}
+        className={`${fraunces.variable} ${plexSans.variable} ${plexMono.variable} antialiased`}
       >
         <ThemeProvider
           attribute="class"
-          defaultTheme="dark"
+          defaultTheme="light"
           enableSystem={false}
           disableTransitionOnChange
         >
           {children}
           <Toaster />
-          <SonnerToaster
-            position="bottom-right"
-            theme="dark"
-            className="toaster group"
-            toastOptions={{
-              classNames: {
-                toast:
-                  "group toast group-[.toaster]:bg-card group-[.toaster]:text-card-foreground group-[.toaster]:border-border group-[.toaster]:shadow-lg",
-              },
-            }}
-          />
+          <SonnerToaster position="bottom-right" />
         </ThemeProvider>
         <script
           type="application/ld+json"

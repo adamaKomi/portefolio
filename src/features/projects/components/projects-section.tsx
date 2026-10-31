@@ -1,142 +1,126 @@
 "use client";
 
 import * as React from "react";
-import { useCallback, useEffect, useRef, useState } from "react";
-import {
-  Section,
-  SectionHeading,
-  Reveal,
-  AuroraBackground,
-} from "@/shared/ui";
+import { Container, SectionHead } from "@/shared/ui";
 import { useT } from "@/shared/i18n";
 import { cn } from "@/lib/utils";
-import { getProject, projects } from "../data/projects";
-import { ProjectCard } from "./project-card";
-import { ProjectDetailOverlay } from "./project-detail-overlay";
+import { isProjectSlug, projects, type Project } from "../data/projects";
 
-const PROJECT_HASH_RE = /^#\/projects\/([\w-]+)$/;
-
+/**
+ * Projets en bloc inversé (encre sur papier ↔ papier sur encre).
+ * Chaque projet est une ligne de titre qui se déplie sur place.
+ */
 export function Projects() {
   const t = useT();
-  const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
-  const hasSyncedRef = useRef(false);
+  const [openSlug, setOpenSlug] = React.useState<string | null>(projects[0].slug);
 
-  /* ---------- Hash routing sync ---------- */
-  useEffect(() => {
-    const syncFromHash = () => {
-      const hash = window.location.hash;
-      const match = hash.match(PROJECT_HASH_RE);
-      if (match) {
-        const slug = match[1];
-        if (getProject(slug)) {
-          setSelectedSlug(slug);
-          return;
-        }
-      }
-      setSelectedSlug(null);
+  // Un lien du sommaire de couverture (#editalis…) ouvre le projet visé.
+  React.useEffect(() => {
+    const sync = () => {
+      const slug = window.location.hash.slice(1);
+      if (isProjectSlug(slug)) setOpenSlug(slug);
     };
-
-    // Initial sync (deep-link support)
-    if (!hasSyncedRef.current) {
-      syncFromHash();
-      hasSyncedRef.current = true;
-    }
-
-    window.addEventListener("popstate", syncFromHash);
-    window.addEventListener("hashchange", syncFromHash);
-    return () => {
-      window.removeEventListener("popstate", syncFromHash);
-      window.removeEventListener("hashchange", syncFromHash);
-    };
+    sync();
+    window.addEventListener("hashchange", sync);
+    return () => window.removeEventListener("hashchange", sync);
   }, []);
-
-  /* ---------- Actions ---------- */
-  const openProject = useCallback((slug: string) => {
-    if (typeof window !== "undefined") {
-      window.history.pushState({}, "", `#/projects/${slug}`);
-    }
-    setSelectedSlug(slug);
-  }, []);
-
-  const closeProject = useCallback(() => {
-    if (
-      typeof window !== "undefined" &&
-      window.location.hash.startsWith("#/projects/")
-    ) {
-      // popstate listener will sync selectedSlug to null
-      window.history.back();
-    } else {
-      setSelectedSlug(null);
-    }
-  }, []);
-
-  const navigateProject = useCallback((slug: string) => {
-    // replaceState (not push) → history stays a single entry for the overlay
-    if (typeof window !== "undefined") {
-      window.history.replaceState({}, "", `#/projects/${slug}`);
-    }
-    setSelectedSlug(slug);
-  }, []);
-
-  const handleContact = useCallback(() => {
-    closeProject();
-    // Wait for overlay exit + body scroll unlock, then smooth-scroll to #contact
-    window.setTimeout(() => {
-      document
-        .getElementById("contact")
-        ?.scrollIntoView({ behavior: "smooth" });
-    }, 400);
-  }, [closeProject]);
-
-  /* ---------- Layout: PayLith (featured) = 2×2, QueueClock + Parkour stacked right ---------- */
-  const [payLith, queueClock, parkour] = projects;
 
   return (
-    <Section id="projects">
-      <AuroraBackground variant="section" />
+    <section id="projects" data-section-id="projects" className="bg-foreground text-background">
+      <Container className="py-20 md:py-28">
+        <SectionHead label={t("projects.title")} aside="2024 — 2026" />
+        <p className="mt-8 max-w-3xl font-display text-2xl leading-snug italic md:text-[2.5rem] md:leading-[1.15]">
+          {t("projects.intro")}
+        </p>
 
-      <div className="relative">
-        <SectionHeading
-          eyebrow={t("projects.eyebrow")}
-          title={t("projects.title")}
-          description={t("projects.description")}
-        />
+        <ol className="mt-14 md:mt-20">
+          {projects.map((project, i) => (
+            <ProjectRow
+              key={project.slug}
+              project={project}
+              index={i}
+              open={openSlug === project.slug}
+              onToggle={() => setOpenSlug((current) => (current === project.slug ? null : project.slug))}
+            />
+          ))}
+        </ol>
+      </Container>
+    </section>
+  );
+}
 
-        {/* Bento grid header strip */}
-        <div className="mb-12 flex items-center gap-4">
-          <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground whitespace-nowrap">
-            {t("projects.stripLabel")}
+interface ProjectRowProps {
+  project: Project;
+  index: number;
+  open: boolean;
+  onToggle: () => void;
+}
+
+function ProjectRow({ project, index, open, onToggle }: ProjectRowProps) {
+  const t = useT();
+  const detailsId = `${project.slug}-details`;
+
+  return (
+    <li id={project.slug} className="scroll-mt-20 border-t border-background/25 last:border-b">
+      <h3>
+        <button
+          type="button"
+          onClick={onToggle}
+          aria-expanded={open}
+          aria-controls={detailsId}
+          className="group grid w-full grid-cols-[2rem_1fr_auto] items-baseline gap-x-3 pt-8 pb-5 text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary md:grid-cols-[4rem_1fr_auto] md:pt-10"
+        >
+          <span className="font-mono text-sm text-primary">{String(index + 1).padStart(2, "0")}</span>
+          <span className="font-display text-5xl leading-[0.95] tracking-[-0.03em] group-hover:italic sm:text-7xl lg:text-8xl">
+            {project.name}
           </span>
-          <div className="h-px flex-1 bg-gradient-to-r from-border via-border/40 to-transparent" />
-        </div>
+          <span
+            aria-hidden
+            className={cn(
+              "font-display text-4xl leading-none transition-transform duration-300 md:text-5xl",
+              open && "rotate-45"
+            )}
+          >
+            +
+          </span>
+        </button>
+      </h3>
 
-        {/* Bento grid */}
-        <div className="grid grid-cols-1 gap-5 md:gap-6 lg:grid-cols-3 lg:auto-rows-[minmax(320px,1fr)]">
-          <Reveal delay={0.05} className="lg:col-span-2 lg:row-span-2 h-full">
-            <ProjectCard project={payLith} onOpen={openProject} className="h-full" />
-          </Reveal>
-          <Reveal delay={0.15} className="lg:col-span-1 h-full">
-            <ProjectCard project={queueClock} onOpen={openProject} className="h-full" />
-          </Reveal>
-          <Reveal delay={0.25} className="lg:col-span-1 h-full">
-            <ProjectCard project={parkour} onOpen={openProject} className="h-full" />
-          </Reveal>
-        </div>
-
-        {/* Hint line */}
-        <div className="mt-8 flex items-center justify-center gap-2 text-xs text-muted-foreground">
-          <span className="font-mono">{t("projects.hint")}</span>
-          <span aria-hidden className="text-primary">↗</span>
-        </div>
+      <div className="grid gap-x-3 gap-y-3 pb-8 md:grid-cols-[4rem_1fr_18rem] md:pb-10">
+        <p className="max-w-2xl text-lg leading-relaxed text-pretty md:col-start-2">{t(project.summaryKey)}</p>
+        <p className="label-caps opacity-70 md:text-right">
+          {t(project.contextKey)}
+          <br />
+          {project.period}
+        </p>
       </div>
 
-      {/* ---------- Detail overlay ---------- */}
-      <ProjectDetailOverlay
-        slug={selectedSlug}
-        onClose={closeProject}
-        onNavigate={navigateProject}
-        onContact={handleContact}
-      />
-    </Section>
+      <div
+        id={detailsId}
+        inert={!open}
+        className={cn(
+          "grid transition-[grid-template-rows] duration-300 ease-out",
+          open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+        )}
+      >
+        <div className="overflow-hidden">
+          <div className="grid gap-x-3 pb-12 md:grid-cols-[4rem_1fr]">
+            <div className="md:col-start-2">
+              <p className="label-caps text-primary">{t("projects.work")}</p>
+              <dl className="mt-5 grid gap-x-12 gap-y-7 sm:grid-cols-2">
+                {project.work.map((item) => (
+                  <div key={item.titleKey} className="border-t border-background/25 pt-4">
+                    <dt className="font-display text-xl">{t(item.titleKey)}</dt>
+                    <dd className="mt-2 leading-relaxed text-pretty opacity-75">{t(item.textKey)}</dd>
+                  </div>
+                ))}
+              </dl>
+              <p className="mt-10 label-caps text-primary">{t("projects.stack")}</p>
+              <p className="mt-2 font-mono text-sm">{project.tech.join("  ·  ")}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </li>
   );
 }

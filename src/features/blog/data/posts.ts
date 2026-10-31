@@ -118,7 +118,7 @@ export interface InvoiceRepository {
     },
     {
       type: "paragraph",
-      text: "La Clean Architecture n'est pas une mode académique — c'est un investissement. Sur PayLith, elle m'a permis d'ajouter un moteur de relances automatiques en deux jours, sans toucher à un seul contrôleur HTTP. Le framework devient un détail, le métier redevient le héros. C'est exactement ce que devrait être un logiciel : durable.",
+      text: "La Clean Architecture n'est pas une mode académique, c'est un investissement : une nouvelle fonctionnalité métier s'ajoute sans toucher aux contrôleurs HTTP, et le framework redevient un détail.",
     },
   ],
 };
@@ -217,7 +217,7 @@ export class QueueGateway {
     },
     {
       type: "paragraph",
-      text: "Sur QueueClock, ce pattern a permis de passer d'une instance mono-processus à un cluster de 4 nœuds sans changer une ligne de code métier. Redis pub/sub n'est pas un messaging system enterprise — pas de persistance, pas de retries — mais pour la diffusion temps réel stateless, c'est l'outil le plus rentable que je connaisse. Pour aller plus loin : Redis Streams si vous avez besoin de replay, ou Kafka si vous êtes à l'échelle d'un data platform.",
+      text: "Sur QueueClock, c'est l'adaptateur Redis de Socket.io qui propage les positions de file entre les instances. Redis pub/sub n'est pas un messaging system enterprise — pas de persistance, pas de retries — mais pour la diffusion temps réel stateless, c'est l'outil le plus rentable que je connaisse. Pour aller plus loin : Redis Streams si vous avez besoin de replay, ou Kafka si vous êtes à l'échelle d'un data platform.",
     },
   ],
 };
@@ -338,10 +338,8 @@ export function getNextPost(slug: string): BlogPost | null {
   return posts[(i + 1) % posts.length];
 }
 
-export function getPrevPost(slug: string): BlogPost | null {
-  const i = posts.findIndex((p) => p.slug === slug);
-  if (i === -1) return null;
-  return posts[(i - 1 + posts.length) % posts.length];
+export function isPostSlug(slug: string): boolean {
+  return posts.some((p) => p.slug === slug);
 }
 
 /**

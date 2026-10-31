@@ -1,196 +1,87 @@
 "use client";
 
-import * as React from "react";
-import Link from "next/link";
-import { motion, useScroll, useTransform } from "framer-motion";
-import { ArrowRight, ArrowUpRight, Sparkles, MapPin } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { profile, socials } from "@/shared/constants/profile";
-import { AuroraBackground } from "@/shared/ui/aurora-background";
-import { Magnetic } from "@/shared/ui/magnetic";
-import { EASE_PREMIUM, fadeUp, staggerContainer } from "@/shared/animations";
-import { useT } from "@/shared/i18n";
-import { TerminalCard } from "./terminal-card";
+import Image from "next/image";
+import { resumeUrls } from "@/shared/constants/profile";
+import { Container } from "@/shared/ui";
+import { useLanguage } from "@/shared/i18n";
+import { projects } from "@/features/projects";
 
+/**
+ * Couverture, composée comme celle d'un magazine : le nom en titre,
+ * le portrait détouré au premier plan entre les deux mots, et les
+ * « lignes de couverture » de part et d'autre de la silhouette.
+ */
 export function Hero() {
-  const t = useT();
-  const sectionRef = React.useRef<HTMLElement>(null);
-
-  // Parallax: content moves up slightly and fades as you scroll past hero
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start start", "end start"],
-  });
-  const contentY = useTransform(scrollYProgress, [0, 1], [0, -80]);
-  const contentOpacity = useTransform(scrollYProgress, [0, 0.6, 1], [1, 0.5, 0]);
+  const { t, locale } = useLanguage();
 
   return (
-    <section
-      ref={sectionRef}
-      id="hero"
-      data-section-id="hero"
-      className="relative min-h-[100svh] flex items-center overflow-hidden pt-28 pb-16"
-    >
-      <AuroraBackground variant="hero" />
+    <section id="hero" data-section-id="hero" className="pt-14">
+      <Container>
+        <div className="relative flex flex-col border-foreground lg:min-h-[min(calc(100svh-3.5rem),62vw)] lg:border-b-2">
+          <div className="mt-4 flex items-center justify-between border-y border-foreground py-2 label-caps">
+            <span>{t("cover.folio")}</span>
+            <span>{t("cover.edition")}</span>
+            <span className="hidden sm:inline">{t("common.location")}</span>
+          </div>
 
-      <motion.div
-        style={{ y: contentY, opacity: contentOpacity }}
-        className="relative mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8"
-      >
-        <div className="grid lg:grid-cols-[1.15fr_0.85fr] gap-10 lg:gap-16 items-center">
-          {/* Left: copy */}
-          <motion.div
-            variants={staggerContainer(0.1, 0.1)}
-            initial="hidden"
-            animate="visible"
-            className="flex flex-col gap-6"
-          >
-            {/* Availability badge */}
-            <motion.div variants={fadeUp}>
-              <div className="inline-flex items-center gap-2.5 rounded-full border border-primary/20 bg-primary/5 px-3 py-1.5 text-xs">
-                <span className="relative flex h-2 w-2">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75" />
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
-                </span>
-                <span className="font-mono text-primary">{t("common.available")}</span>
-                <span className="text-muted-foreground">·</span>
-                <span className="flex items-center gap-1 text-muted-foreground">
-                  <MapPin className="h-3 w-3" />
-                  {t("common.location")}
-                </span>
-              </div>
-            </motion.div>
+          <h1 className="mt-5 flex flex-col font-display text-[25vw] leading-[0.82] font-normal tracking-[-0.045em] lg:flex-row lg:justify-between lg:text-[length:min(14vw,11.5rem)]">
+            <span>Adama</span>
+            <span className="lg:pr-[0.045em]">Komi</span>
+          </h1>
 
-            {/* Title */}
-            <motion.div variants={fadeUp} className="flex flex-col gap-3">
-              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-semibold tracking-tight leading-[1.05] text-balance">
-                <span className="block text-foreground">{t("hero.title")}</span>
-                <span className="block text-gradient mt-1">
-                  {t("hero.titleAccent")}
-                </span>
-              </h1>
-              <p className="font-mono text-sm md:text-base text-muted-foreground tracking-wide">
-                {t("hero.subtitle")}
-              </p>
-            </motion.div>
-
-            {/* Description */}
-            <motion.div
-              variants={fadeUp}
-              className="text-base md:text-lg text-muted-foreground leading-relaxed max-w-xl text-pretty whitespace-pre-line flex flex-col gap-4"
-            >
-              {t("hero.description")}
-            </motion.div>
-
-            {/* CTAs */}
-            <motion.div variants={fadeUp} className="flex flex-wrap items-center gap-3 pt-2">
-              <Magnetic strength={0.25}>
-                <Button
-                  asChild
-                  size="lg"
-                  className="group h-12 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 px-6 shadow-glow"
-                >
-                  <Link href="/#projects" className="gap-2">
-                    {t("hero.ctaProjects")}
-                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-                  </Link>
-                </Button>
-              </Magnetic>
-
-              <Magnetic strength={0.25}>
-                <Button
-                  asChild
-                  size="lg"
-                  variant="outline"
-                  className="group h-12 rounded-xl border-border bg-card/40 backdrop-blur-sm px-6 hover:bg-card"
-                >
-                  <Link href="/#contact" className="gap-2">
-                    {t("hero.ctaContact")}
-                    <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                  </Link>
-                </Button>
-              </Magnetic>
-            </motion.div>
-
-            {/* Socials */}
-            <motion.div variants={fadeUp} className="flex items-center gap-5 pt-3">
-              {socials.map((s) => (
-                <Link
-                  key={s.name}
-                  href={s.href}
-                  target={s.href.startsWith("http") ? "_blank" : undefined}
-                  rel="noreferrer"
-                  className="group flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  {s.name}
-                  <ArrowUpRight className="h-3 w-3 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
-                </Link>
-              ))}
-            </motion.div>
-
-            {/* Now building — live status pill */}
-            <motion.div
-              variants={fadeUp}
-              className="group/now relative inline-flex items-center gap-3 rounded-xl border border-border/60 bg-card/30 backdrop-blur-sm px-3.5 py-2.5 overflow-hidden"
-            >
-              <div
-                aria-hidden
-                className="absolute inset-0 opacity-0 group-hover/now:opacity-100 transition-opacity duration-500"
-                style={{
-                  background:
-                    "radial-gradient(circle at 0% 50%, oklch(0.78 0.17 162 / 0.1), transparent 70%)",
-                }}
-              />
-              <span className="relative flex items-center gap-1.5">
-                <span className="relative flex h-1.5 w-1.5">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-75" />
-                  <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-accent" />
-                </span>
-                <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
-                  {t("hero.now")}
-                </span>
-              </span>
-              <span className="relative h-3.5 w-px bg-border" />
-              <span className="relative text-sm text-foreground/90">
-                {t("hero.nowBuilding")}{" "}
-                <span className="font-semibold text-primary">{t("hero.nowProject")}</span>
-                <span className="text-muted-foreground"> {t("hero.nowDesc")}</span>
-              </span>
-            </motion.div>
-          </motion.div>
-
-          {/* Right: terminal + floating cards */}
-          <motion.div
-            initial={{ opacity: 0, y: 30, scale: 0.97 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ duration: 0.9, delay: 0.3, ease: EASE_PREMIUM }}
-            className="relative"
-          >
-            <TerminalCard />
-
-
-          </motion.div>
-        </div>
-
-        {/* Scroll hint */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.2, duration: 0.8 }}
-          className="absolute bottom-6 left-1/2 -translate-x-1/2 hidden md:flex flex-col items-center gap-2"
-        >
-          <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-            {t("common.scroll")}
-          </span>
-          <div className="h-8 w-px bg-gradient-to-b from-primary/50 to-transparent">
-            <motion.div
-              className="h-2 w-px bg-primary"
-              animate={{ y: [0, 24, 0] }}
-              transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+          {/* Portrait : centré et posé sur le filet du bas en grand écran. */}
+          <div className="relative z-10 -mt-[6vw] ml-auto w-[68%] max-w-sm sm:w-[52%] lg:absolute lg:inset-x-0 lg:bottom-0 lg:top-[calc(3.25rem+min(14vw,11.5rem)*0.3)] lg:m-0 lg:flex lg:w-auto lg:max-w-none lg:justify-center lg:pointer-events-none">
+            <Image
+              src="/portrait-cutout.webp"
+              alt={t("hero.portraitAlt")}
+              width={779}
+              height={1272}
+              priority
+              sizes="(min-width: 1024px) 34vw, 68vw"
+              className="h-auto w-full lg:h-full lg:w-auto"
             />
           </div>
-        </motion.div>
-      </motion.div>
+
+          <div className="relative z-20 grid gap-10 border-t-2 border-foreground pt-6 pb-10 lg:mt-auto lg:grid-cols-2 lg:border-t-0 lg:pt-10 lg:pb-12">
+            <div className="max-w-[22rem]">
+              <p className="label-caps text-primary">{t("hero.role")}</p>
+              <p className="mt-3 font-display text-[1.75rem] leading-[1.12] italic xl:text-[2rem]">
+                {t("hero.lead")}
+              </p>
+              <p className="mt-4 text-sm text-muted-foreground">{t("hero.availability")}</p>
+              <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm font-medium">
+                <a href="#projects" className="link-spot">
+                  {t("hero.ctaProjects")}
+                </a>
+                <a href={resumeUrls[locale]} target="_blank" rel="noopener noreferrer" className="link-spot">
+                  {t("hero.ctaCv")}
+                </a>
+              </div>
+            </div>
+
+            <nav aria-label={t("cover.inThisIssue")} className="w-full max-w-[22rem] lg:justify-self-end">
+              <p className="border-b border-foreground pb-2 label-caps">{t("cover.inThisIssue")}</p>
+              <ol>
+                {projects.map((project, i) => (
+                  <li key={project.slug} className="border-b border-border">
+                    <a href={`#${project.slug}`} className="group grid grid-cols-[1.75rem_1fr] gap-x-2 py-3">
+                      <span className="pt-1.5 font-mono text-xs text-primary">
+                        {String(i + 1).padStart(2, "0")}
+                      </span>
+                      <span>
+                        <span className="font-display text-xl group-hover:italic">{project.name}</span>
+                        <span className="mt-0.5 block text-sm leading-snug text-muted-foreground">
+                          {t(project.taglineKey)}
+                        </span>
+                      </span>
+                    </a>
+                  </li>
+                ))}
+              </ol>
+            </nav>
+          </div>
+        </div>
+      </Container>
     </section>
   );
 }
