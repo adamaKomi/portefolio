@@ -13,18 +13,18 @@ export function Blog() {
 
   return (
     <section id="blog" data-section-id="blog">
-      <Container className="py-20 md:py-28">
+      <Container className="py-section">
         <SectionHead label={t("blog.title")} />
-        <ol className="mt-8 md:mt-10">
+        <ol className="mt-10 md:mt-12">
           {posts.map((post) => (
             <li key={post.slug} className="border-b border-border">
               <button
                 type="button"
                 onClick={() => open(post.slug)}
-                className="group block w-full py-6 text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
+                className="group block w-full py-8 text-left md:py-10 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
               >
                 <span className="flex items-baseline gap-4">
-                  <span className="min-w-0 font-display text-2xl leading-snug group-hover:italic md:text-3xl">
+                  <span className="min-w-0 font-display text-statement group-hover:italic">
                     {t(`blog.${post.i18nKey}.title`)}
                   </span>
                   <span aria-hidden className="hidden min-w-8 flex-1 border-b-2 border-dotted border-current opacity-30 sm:block" />
@@ -32,7 +32,7 @@ export function Blog() {
                     {t("blog.readingTime", { n: post.readingTime })}
                   </span>
                 </span>
-                <span className="mt-2 block max-w-2xl text-muted-foreground text-pretty">
+                <span className="mt-3 block max-w-2xl text-muted-foreground text-pretty">
                   <time dateTime={post.date} className="font-mono text-xs text-primary">
                     {formatPostDate(post.date, locale)}
                   </time>
@@ -40,7 +40,7 @@ export function Blog() {
                   <span className="font-mono text-xs sm:hidden">
                     {t("blog.readingTime", { n: post.readingTime })}
                   </span>
-                  <span className="mt-1 block">{t(`blog.${post.i18nKey}.excerpt`)}</span>
+                  <span className="mt-2 block leading-relaxed">{t(`blog.${post.i18nKey}.excerpt`)}</span>
                 </span>
               </button>
             </li>

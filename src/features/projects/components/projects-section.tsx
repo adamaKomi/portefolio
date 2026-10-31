@@ -27,13 +27,13 @@ export function Projects() {
 
   return (
     <section id="projects" data-section-id="projects" className="bg-foreground text-background">
-      <Container className="py-20 md:py-28">
+      <Container className="py-section">
         <SectionHead label={t("projects.title")} aside="2024 — 2026" />
-        <p className="mt-8 max-w-3xl font-display text-2xl leading-snug italic md:text-[2.5rem] md:leading-[1.15]">
+        <p className="mt-12 max-w-3xl font-display text-lead italic">
           {t("projects.intro")}
         </p>
 
-        <ol className="mt-14 md:mt-20">
+        <ol className="mt-16 md:mt-24">
           {projects.map((project, i) => (
             <ProjectRow
               key={project.slug}
@@ -68,16 +68,16 @@ function ProjectRow({ project, index, open, onToggle }: ProjectRowProps) {
           onClick={onToggle}
           aria-expanded={open}
           aria-controls={detailsId}
-          className="group grid w-full grid-cols-[2rem_1fr_auto] items-baseline gap-x-3 pt-8 pb-5 text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary md:grid-cols-[4rem_1fr_auto] md:pt-10"
+          className="group grid w-full grid-cols-[2rem_1fr_auto] items-baseline gap-x-3 pt-10 pb-6 text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary md:grid-cols-[4rem_1fr_auto] md:pt-14 md:pb-8"
         >
           <span className="font-mono text-sm text-primary">{String(index + 1).padStart(2, "0")}</span>
-          <span className="font-display text-5xl leading-[0.95] tracking-[-0.03em] group-hover:italic sm:text-7xl lg:text-8xl">
+          <span className="font-display text-title tracking-[-0.03em] group-hover:italic">
             {project.name}
           </span>
           <span
             aria-hidden
             className={cn(
-              "font-display text-4xl leading-none transition-transform duration-300 md:text-5xl",
+              "font-display text-[clamp(2rem,1.5rem+2vw,3rem)] leading-none transition-transform duration-300",
               open && "rotate-45"
             )}
           >
@@ -86,9 +86,9 @@ function ProjectRow({ project, index, open, onToggle }: ProjectRowProps) {
         </button>
       </h3>
 
-      <div className="grid gap-x-3 gap-y-3 pb-8 md:grid-cols-[4rem_1fr_18rem] md:pb-10">
+      <div className="grid gap-x-3 gap-y-5 pb-10 md:grid-cols-[4rem_1fr] md:pb-14 lg:grid-cols-[4rem_1fr_18rem]">
         <p className="max-w-2xl text-lg leading-relaxed text-pretty md:col-start-2">{t(project.summaryKey)}</p>
-        <p className="label-caps opacity-70 md:text-right">
+        <p className="label-caps leading-relaxed opacity-70 md:col-start-2 lg:col-start-auto lg:text-right">
           {t(project.contextKey)}
           <br />
           {project.period}
@@ -104,19 +104,19 @@ function ProjectRow({ project, index, open, onToggle }: ProjectRowProps) {
         )}
       >
         <div className="overflow-hidden">
-          <div className="grid gap-x-3 pb-12 md:grid-cols-[4rem_1fr]">
+          <div className="grid gap-x-3 pb-14 md:grid-cols-[4rem_1fr] md:pb-16">
             <div className="md:col-start-2">
               <p className="label-caps text-primary">{t("projects.work")}</p>
-              <dl className="mt-5 grid gap-x-12 gap-y-7 sm:grid-cols-2">
+              <dl className="mt-6 grid gap-x-16 gap-y-10 md:grid-cols-2">
                 {project.work.map((item) => (
-                  <div key={item.titleKey} className="border-t border-background/25 pt-4">
+                  <div key={item.titleKey} className="border-t border-background/25 pt-5">
                     <dt className="font-display text-xl">{t(item.titleKey)}</dt>
-                    <dd className="mt-2 leading-relaxed text-pretty opacity-75">{t(item.textKey)}</dd>
+                    <dd className="mt-3 leading-relaxed text-pretty opacity-75">{t(item.textKey)}</dd>
                   </div>
                 ))}
               </dl>
-              <p className="mt-10 label-caps text-primary">{t("projects.stack")}</p>
-              <p className="mt-2 font-mono text-sm">{project.tech.join("  ·  ")}</p>
+              <p className="mt-12 label-caps text-primary">{t("projects.stack")}</p>
+              <p className="mt-3 font-mono text-sm leading-relaxed">{project.tech.join("  ·  ")}</p>
             </div>
           </div>
         </div>

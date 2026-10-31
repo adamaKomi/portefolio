@@ -14,7 +14,6 @@ export interface Project {
   slug: string;
   name: string;
   period: string;
-  taglineKey: TranslationKey;
   contextKey: TranslationKey;
   summaryKey: TranslationKey;
   tech: string[];
@@ -26,7 +25,6 @@ export const projects: Project[] = [
     slug: "editalis",
     name: "Editalis",
     period: "2026",
-    taglineKey: "projects.editalis.tagline",
     contextKey: "projects.editalis.context",
     summaryKey: "projects.editalis.summary",
     tech: ["FastAPI", "Celery", "Redis", "Qdrant", "React", "TypeScript"],
@@ -41,7 +39,6 @@ export const projects: Project[] = [
     slug: "parkour",
     name: "Parkour",
     period: "2025 – 2026",
-    taglineKey: "projects.parkour.tagline",
     contextKey: "projects.parkour.context",
     summaryKey: "projects.parkour.summary",
     tech: ["React Native", "Expo", "NestJS", "PostgreSQL", "WebSockets", "Redux Toolkit"],
@@ -56,7 +53,6 @@ export const projects: Project[] = [
     slug: "queueclock",
     name: "QueueClock",
     period: "2024 – 2025",
-    taglineKey: "projects.queueclock.tagline",
     contextKey: "projects.queueclock.context",
     summaryKey: "projects.queueclock.summary",
     tech: ["NestJS", "Prisma", "PostgreSQL", "Socket.io", "BullMQ", "React Native"],

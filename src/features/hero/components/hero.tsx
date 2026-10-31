@@ -4,12 +4,15 @@ import Image from "next/image";
 import { resumeUrls } from "@/shared/constants/profile";
 import { Container } from "@/shared/ui";
 import { useLanguage } from "@/shared/i18n";
-import { projects } from "@/features/projects";
 
 /**
  * Couverture, composée comme celle d'un magazine : le nom en titre,
  * le portrait détouré au premier plan entre les deux mots, et les
  * « lignes de couverture » de part et d'autre de la silhouette.
+ *
+ * En grand écran, une grille [texte | portrait | texte] : le portrait
+ * remonte dans le titre par une marge négative, et les colonnes de texte
+ * ne prennent que la place restante, sans jamais passer dessous.
  */
 export function Hero() {
   const { t, locale } = useLanguage();
@@ -17,39 +20,34 @@ export function Hero() {
   return (
     <section id="hero" data-section-id="hero" className="pt-14">
       <Container>
-        <div className="relative flex flex-col border-foreground lg:min-h-[min(calc(100svh-3.5rem),62vw)] lg:border-b-2">
-          <div className="mt-4 flex items-center justify-between border-y border-foreground py-2 label-caps">
-            <span>{t("cover.folio")}</span>
-            <span>{t("cover.edition")}</span>
-            <span className="hidden sm:inline">{t("common.location")}</span>
-          </div>
-
-          <h1 className="mt-5 flex flex-col font-display text-[25vw] leading-[0.82] font-normal tracking-[-0.045em] lg:flex-row lg:justify-between lg:text-[length:min(14vw,11.5rem)]">
+        <div className="lg:border-b-2 lg:border-foreground">
+          <h1 className="relative mt-8 flex flex-col font-display text-[25vw] leading-[0.82] font-normal tracking-[-0.045em] lg:flex-row lg:justify-between lg:text-[length:min(14vw,11.5rem)]">
             <span>Adama</span>
             <span className="lg:pr-[0.045em]">Komi</span>
           </h1>
 
-          {/* Portrait : centré et posé sur le filet du bas en grand écran. */}
-          <div className="relative z-10 -mt-[6vw] ml-auto w-[68%] max-w-sm sm:w-[52%] lg:absolute lg:inset-x-0 lg:bottom-0 lg:top-[calc(3.25rem+min(14vw,11.5rem)*0.3)] lg:m-0 lg:flex lg:w-auto lg:max-w-none lg:justify-center lg:pointer-events-none">
-            <Image
-              src="/portrait-cutout.webp"
-              alt={t("hero.portraitAlt")}
-              width={779}
-              height={1272}
-              priority
-              sizes="(min-width: 1024px) 34vw, 68vw"
-              className="h-auto w-full lg:h-full lg:w-auto"
-            />
-          </div>
+          <div className="grid md:grid-cols-2 md:gap-x-10 lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] lg:items-end">
+            <div className="relative z-10 border-b-2 border-foreground md:col-span-2 lg:order-2 lg:col-span-1 lg:-mt-[calc(min(14vw,11.5rem)*0.6)] lg:border-b-0">
+              <Image
+                src="/portrait-cutout.webp"
+                alt={t("hero.portraitAlt")}
+                width={779}
+                height={1272}
+                priority
+                sizes="(min-width: 1024px) 30vw, 68vw"
+                className="-mt-[6vw] ml-auto block h-auto w-[68%] max-w-sm sm:w-[52%] lg:m-0 lg:h-[clamp(26rem,calc(100svh-13rem),46rem)] lg:w-auto lg:max-w-none"
+              />
+            </div>
 
-          <div className="relative z-20 grid gap-10 border-t-2 border-foreground pt-6 pb-10 lg:mt-auto lg:grid-cols-2 lg:border-t-0 lg:pt-10 lg:pb-12">
-            <div className="max-w-[22rem]">
+            <div className="max-w-[22rem] pt-10 lg:order-1 lg:pt-0 lg:pb-14">
               <p className="label-caps text-primary">{t("hero.role")}</p>
-              <p className="mt-3 font-display text-[1.75rem] leading-[1.12] italic xl:text-[2rem]">
-                {t("hero.lead")}
-              </p>
-              <p className="mt-4 text-sm text-muted-foreground">{t("hero.availability")}</p>
-              <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm font-medium">
+              <p className="mt-4 font-display text-deck italic">{t("hero.lead")}</p>
+            </div>
+
+            <div className="max-w-[22rem] pt-12 pb-16 md:justify-self-end md:pt-10 md:text-right lg:order-3 lg:pt-0 lg:pb-14">
+              <p className="label-caps">{t("common.location")}</p>
+              <p className="mt-4 text-sm leading-relaxed text-muted-foreground">{t("hero.availability")}</p>
+              <div className="mt-8 flex flex-wrap gap-x-8 gap-y-3 text-sm font-medium md:justify-end">
                 <a href="#projects" className="link-spot">
                   {t("hero.ctaProjects")}
                 </a>
@@ -58,27 +56,6 @@ export function Hero() {
                 </a>
               </div>
             </div>
-
-            <nav aria-label={t("cover.inThisIssue")} className="w-full max-w-[22rem] lg:justify-self-end">
-              <p className="border-b border-foreground pb-2 label-caps">{t("cover.inThisIssue")}</p>
-              <ol>
-                {projects.map((project, i) => (
-                  <li key={project.slug} className="border-b border-border">
-                    <a href={`#${project.slug}`} className="group grid grid-cols-[1.75rem_1fr] gap-x-2 py-3">
-                      <span className="pt-1.5 font-mono text-xs text-primary">
-                        {String(i + 1).padStart(2, "0")}
-                      </span>
-                      <span>
-                        <span className="font-display text-xl group-hover:italic">{project.name}</span>
-                        <span className="mt-0.5 block text-sm leading-snug text-muted-foreground">
-                          {t(project.taglineKey)}
-                        </span>
-                      </span>
-                    </a>
-                  </li>
-                ))}
-              </ol>
-            </nav>
           </div>
         </div>
       </Container>

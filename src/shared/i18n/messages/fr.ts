@@ -21,9 +21,6 @@ export const fr = {
   "hero.ctaProjects": "Voir les projets",
   "hero.ctaCv": "Télécharger le CV",
   "hero.portraitAlt": "Portrait d'Adama Komi",
-  "cover.folio": "Portfolio",
-  "cover.edition": "Édition 2026",
-  "cover.inThisIssue": "Dans ce numéro",
 
   // About
   "about.title": "À propos",
@@ -49,7 +46,6 @@ export const fr = {
   "projects.stack": "Technologies",
 
   "projects.editalis.context": "Stage de fin d'études · Atrait Technologies",
-  "projects.editalis.tagline": "Automatiser la mise en forme des articles scientifiques",
   "projects.editalis.summary": "Plateforme SaaS qui analyse et met en forme automatiquement les manuscrits (.docx) et les figures selon les consignes des revues scientifiques.",
   "projects.editalis.work.0.title": "Backend et traitements asynchrones",
   "projects.editalis.work.0.text": "Architecture backend et API REST avec FastAPI. Ingestion, parsing et validation des fichiers en tâches de fond avec Celery et Redis.",
@@ -61,7 +57,6 @@ export const fr = {
   "projects.editalis.work.3.text": "Parcours utilisateur par étapes avec React 19, Vite, TypeScript et TanStack Query.",
 
   "projects.parkour.context": "Projet académique · FST Mohammedia",
-  "projects.parkour.tagline": "La course à pied, suivie par GPS et transformée en jeu",
   "projects.parkour.summary": "Application mobile cross-platform qui suit les activités physiques par GPS et les transforme en défis, classements et badges.",
   "projects.parkour.work.0.title": "Suivi GPS et capteurs",
   "projects.parkour.work.0.text": "Géolocalisation en arrière-plan (Expo Location, Task Manager), tracé de l'itinéraire en direct avec MapLibre, comptage des pas via l'accéléromètre.",
@@ -73,7 +68,6 @@ export const fr = {
   "projects.parkour.work.3.text": "Podium dynamique, classement hebdomadaire et badges. État de l'application géré avec Redux Toolkit.",
 
   "projects.queueclock.context": "Projet académique · FST Mohammedia",
-  "projects.queueclock.tagline": "Des files d'attente virtuelles, synchronisées en temps réel",
   "projects.queueclock.summary": "Système de files d'attente virtuelles en temps réel : une application mobile pour les clients, des portails web d'administration et une API modulaire, réunis dans un monorepo.",
   "projects.queueclock.work.0.title": "Backend et concurrence",
   "projects.queueclock.work.0.text": "API NestJS, PostgreSQL via Prisma. Verrous transactionnels et contraintes d'index SQL pour sécuriser les sessions de guichet.",

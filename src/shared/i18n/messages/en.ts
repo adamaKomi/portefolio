@@ -21,9 +21,6 @@ export const en = {
   "hero.ctaProjects": "See projects",
   "hero.ctaCv": "Download CV",
   "hero.portraitAlt": "Portrait of Adama Komi",
-  "cover.folio": "Portfolio",
-  "cover.edition": "2026 edition",
-  "cover.inThisIssue": "In this issue",
 
   // About
   "about.title": "About",
@@ -49,7 +46,6 @@ export const en = {
   "projects.stack": "Technologies",
 
   "projects.editalis.context": "Final-year internship · Atrait Technologies",
-  "projects.editalis.tagline": "Automating the formatting of scientific papers",
   "projects.editalis.summary": "SaaS platform that automatically analyses and formats manuscripts (.docx) and figures according to scientific journal guidelines.",
   "projects.editalis.work.0.title": "Backend and background processing",
   "projects.editalis.work.0.text": "Backend architecture and REST API with FastAPI. File ingestion, parsing and validation as background tasks with Celery and Redis.",
@@ -61,7 +57,6 @@ export const en = {
   "projects.editalis.work.3.text": "Step-by-step workflow UI with React 19, Vite, TypeScript and TanStack Query.",
 
   "projects.parkour.context": "Academic project · FST Mohammedia",
-  "projects.parkour.tagline": "Running, tracked by GPS and turned into a game",
   "projects.parkour.summary": "Cross-platform mobile app that tracks physical activity by GPS and turns it into challenges, leaderboards and badges.",
   "projects.parkour.work.0.title": "GPS tracking and sensors",
   "projects.parkour.work.0.text": "Background geolocation (Expo Location, Task Manager), live route drawing with MapLibre, step counting from the accelerometer.",
@@ -73,7 +68,6 @@ export const en = {
   "projects.parkour.work.3.text": "Dynamic podium, weekly leaderboard and badges. App state managed with Redux Toolkit.",
 
   "projects.queueclock.context": "Academic project · FST Mohammedia",
-  "projects.queueclock.tagline": "Virtual queues, synced in real time",
   "projects.queueclock.summary": "Real-time virtual queue system: a mobile app for customers, web admin portals and a modular API, in a single monorepo.",
   "projects.queueclock.work.0.title": "Backend and concurrency",
   "projects.queueclock.work.0.text": "NestJS API, PostgreSQL through Prisma. Transactional locks and SQL index constraints to secure counter sessions.",

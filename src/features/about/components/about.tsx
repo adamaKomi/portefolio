@@ -9,10 +9,10 @@ export function About() {
 
   return (
     <section id="about" data-section-id="about">
-      <Container className="py-20 md:py-28">
-        <SectionHead label={t("about.title")} aside={t("common.location")} />
-        <div className="mt-10 grid gap-10 md:mt-14 lg:grid-cols-12">
-          <p className="dropcap font-display text-[1.85rem] leading-[1.18] tracking-[-0.01em] text-pretty md:text-[2.75rem] lg:col-span-11">
+      <Container className="py-section">
+        <SectionHead label={t("about.title")} />
+        <div className="mt-12 grid gap-y-12 md:mt-16 md:gap-y-16 lg:grid-cols-12">
+          <p className="dropcap font-display text-lead tracking-[-0.01em] text-pretty lg:col-span-11">
             {t("about.p1")}
           </p>
           <p className="max-w-xl text-lg leading-relaxed text-muted-foreground text-pretty lg:col-span-5 lg:col-start-7">

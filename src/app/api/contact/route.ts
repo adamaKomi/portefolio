@@ -10,8 +10,11 @@ import { env } from "@/config/env";
  *
  * Réponses:
  *  - 200 { ok: true }
- *  - 400 { ok: false, errors: Record<string, string> }  (validation / JSON invalide)
- *  - 500 { ok: false, error: string }                    (erreur de configuration / Resend / interne)
+ *  - 400 { ok: false, errors?: Record<string, string> }  (validation / JSON invalide)
+ *  - 500 / 502 { ok: false }                             (configuration / Resend / interne)
+ *
+ * Le détail des erreurs serveur n'est jamais renvoyé au visiteur :
+ * il est écrit dans les logs (préfixe « [contact] »).
  */
 export async function POST(req: Request) {
   // 1. Lecture du corps JSON — tolérant au JSON malformé.
@@ -19,10 +22,7 @@ export async function POST(req: Request) {
   try {
     body = await req.json();
   } catch {
-    return NextResponse.json(
-      { ok: false, errors: { _root: "Requête invalide (JSON malformé)." } },
-      { status: 400 }
-    );
+    return NextResponse.json({ ok: false }, { status: 400 });
   }
 
   // 2. Validation Zod (server-side, source de vérité).
@@ -31,84 +31,52 @@ export async function POST(req: Request) {
     const errors: Record<string, string> = {};
     for (const issue of parsed.error.issues) {
       const key = issue.path[0];
-      const fieldKey = typeof key === "string" ? key : "_root";
       // On ne garde que le premier message par champ pour éviter le bruit.
-      if (!errors[fieldKey]) {
-        errors[fieldKey] = issue.message;
+      if (typeof key === "string" && !errors[key]) {
+        errors[key] = issue.message;
       }
     }
     return NextResponse.json({ ok: false, errors }, { status: 400 });
   }
 
-  // 3. Envoi via l'API REST de Resend.
-  const apiKey = env.resendApiKey;
-  if (!apiKey || apiKey === "your_resend_api_key_here") {
-    console.error("[contact] RESEND_API_KEY n'est pas configurée dans .env. Échec d'envoi.");
-    return NextResponse.json(
-      { ok: false, errors: { _root: "Le service d'envoi d'e-mails n'est pas configuré. Veuillez définir RESEND_API_KEY dans votre environnement." } },
-      { status: 500 }
-    );
+  // 3. Configuration requise pour l'envoi.
+  const { resendApiKey, contactEmailFrom, contactEmailTo } = env;
+  const missing = [
+    !resendApiKey && "RESEND_API_KEY",
+    !contactEmailFrom && "CONTACT_EMAIL_FROM",
+    !contactEmailTo && "CONTACT_EMAIL_TO",
+  ].filter(Boolean);
+  if (missing.length > 0) {
+    console.error(`[contact] Variables manquantes : ${missing.join(", ")}.`);
+    return NextResponse.json({ ok: false }, { status: 500 });
   }
 
+  // 4. Envoi via l'API REST de Resend.
+  const { name, email, message } = parsed.data;
   try {
-    const { name, email, company, budget, message } = parsed.data;
-    const emailRes = await fetch("https://api.resend.com/emails", {
+    const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${apiKey}`,
+        Authorization: `Bearer ${resendApiKey}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: env.contactEmailFrom,
-        to: env.contactEmailTo,
-        subject: `Portfolio : Message de ${name}`,
-        html: `
-          <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px;">
-            <h2 style="color: #0f172a; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px; margin-top: 0;">Nouveau Message de Contact</h2>
-            <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
-              <tr>
-                <td style="padding: 8px 0; font-weight: bold; color: #475569; width: 120px;">Nom :</td>
-                <td style="padding: 8px 0; color: #0f172a;">${name}</td>
-              </tr>
-              <tr>
-                <td style="padding: 8px 0; font-weight: bold; color: #475569;">Email :</td>
-                <td style="padding: 8px 0; color: #0f172a;"><a href="mailto:${email}" style="color: #059669; text-decoration: none;">${email}</a></td>
-              </tr>
-              <tr>
-                <td style="padding: 8px 0; font-weight: bold; color: #475569;">Entreprise :</td>
-                <td style="padding: 8px 0; color: #0f172a;">${company || "Non spécifié"}</td>
-              </tr>
-              <tr>
-                <td style="padding: 8px 0; font-weight: bold; color: #475569;">Budget :</td>
-                <td style="padding: 8px 0; color: #0f172a;">${budget || "Non spécifié"}</td>
-              </tr>
-            </table>
-            <div style="background-color: #f8fafc; border-radius: 6px; padding: 15px; border-left: 4px solid #059669;">
-              <p style="margin: 0; font-weight: bold; color: #475569; margin-bottom: 8px;">Message :</p>
-              <p style="margin: 0; color: #334155; white-space: pre-wrap; line-height: 1.6;">${message}</p>
-            </div>
-            <p style="font-size: 11px; color: #94a3b8; text-align: center; margin-top: 30px; border-top: 1px solid #e2e8f0; padding-top: 15px;">
-              Cet e-mail a été envoyé depuis le formulaire de contact de ${env.websiteUrl}
-            </p>
-          </div>
-        `,
+        from: contactEmailFrom,
+        to: contactEmailTo,
+        reply_to: email,
+        subject: `Portfolio : message de ${name}`,
+        html: renderEmail({ name, email, message }),
       }),
     });
 
-    if (!emailRes.ok) {
-      const errText = await emailRes.text();
-      console.error("[contact] Erreur lors de l'envoi via Resend :", errText);
-      return NextResponse.json(
-        { ok: false, errors: { _root: "Impossible d'envoyer l'e-mail. Veuillez vérifier la configuration de l'API Resend." } },
-        { status: 500 }
-      );
+    if (!res.ok) {
+      // Ex. : domaine d'expédition non vérifié, clé invalide, destinataire non autorisé.
+      console.error(`[contact] Resend a refusé l'envoi (HTTP ${res.status}) :`, await res.text());
+      return NextResponse.json({ ok: false }, { status: 502 });
     }
   } catch (err) {
-    console.error("[contact] Exception inattendue lors de l'envoi d'e-mail :", err);
-    return NextResponse.json(
-      { ok: false, errors: { _root: "Une erreur interne s'est produite lors de l'envoi." } },
-      { status: 500 }
-    );
+    console.error("[contact] Exception lors de l'appel à Resend :", err);
+    return NextResponse.json({ ok: false }, { status: 500 });
   }
 
   return NextResponse.json({ ok: true }, { status: 200 });
@@ -122,4 +90,32 @@ export async function GET() {
     { ok: false, error: "Méthode non autorisée. Utilisez POST." },
     { status: 405 }
   );
+}
+
+/** Échappe le texte saisi par le visiteur avant de l'insérer dans le HTML. */
+function escapeHtml(value: string): string {
+  const entities: Record<string, string> = {
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;",
+  };
+  return value.replace(/[&<>"']/g, (c) => entities[c]);
+}
+
+function renderEmail({ name, email, message }: { name: string; email: string; message: string }) {
+  const safeName = escapeHtml(name);
+  const safeEmail = escapeHtml(email);
+  const safeMessage = escapeHtml(message);
+
+  return `
+    <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; color: #1b2540;">
+      <h2 style="margin: 0 0 16px; font-weight: 600;">Nouveau message depuis le portfolio</h2>
+      <p style="margin: 0 0 4px;"><strong>Nom :</strong> ${safeName}</p>
+      <p style="margin: 0 0 16px;"><strong>Email :</strong> <a href="mailto:${safeEmail}" style="color: #d9502e;">${safeEmail}</a></p>
+      <div style="border-left: 3px solid #d9502e; padding: 4px 0 4px 14px; white-space: pre-wrap; line-height: 1.6;">${safeMessage}</div>
+      <p style="margin-top: 28px; font-size: 12px; color: #6b7280;">Envoyé depuis le formulaire de contact de ${escapeHtml(env.websiteUrl)}. Répondez directement à cet e-mail pour écrire à ${safeName}.</p>
+    </div>
+  `;
 }

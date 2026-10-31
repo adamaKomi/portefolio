@@ -35,9 +35,6 @@ export function makeContactSchema(
   return z.object({
     name: z.string().min(2, messages.nameMin).max(80, messages.nameMax),
     email: z.string().email(messages.email),
-    // Champs facultatifs conservés pour la compatibilité de l'API.
-    company: z.string().max(100).optional().or(z.literal("")),
-    budget: z.string().max(50).optional().or(z.literal("")),
     message: z
       .string()
       .min(10, messages.messageMin)

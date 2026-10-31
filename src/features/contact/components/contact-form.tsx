@@ -88,9 +88,6 @@ export function ContactForm({ className }: { className?: string }) {
         if ((FIELDS as readonly string[]).includes(key)) {
           setError(key as (typeof FIELDS)[number], { type: "server", message });
           hasFieldError = true;
-        } else if (key === "_root") {
-          toast.error(message);
-          return;
         }
       }
       toast.error(hasFieldError ? t("contact.form.toastValidation") : t("contact.error"));
@@ -101,8 +98,8 @@ export function ContactForm({ className }: { className?: string }) {
 
   return (
     <Form {...form}>
-      <form onSubmit={handleSubmit(onSubmit)} noValidate className={cn("flex flex-col gap-7", className)}>
-        <div className="grid gap-7 sm:grid-cols-2">
+      <form onSubmit={handleSubmit(onSubmit)} noValidate className={cn("flex flex-col gap-9", className)}>
+        <div className="grid gap-9 sm:grid-cols-2 sm:gap-x-10">
           <FormField
             control={control}
             name="name"
@@ -145,7 +142,7 @@ export function ContactForm({ className }: { className?: string }) {
           )}
         />
 
-        <Button type="submit" size="lg" disabled={isSubmitting} className="mt-2 self-start rounded-none px-8">
+        <Button type="submit" size="lg" disabled={isSubmitting} className="mt-1 self-start rounded-none px-10">
           {isSubmitting && <Loader2 className="animate-spin" />}
           {isSubmitting ? t("contact.sending") : t("contact.submit")}
         </Button>

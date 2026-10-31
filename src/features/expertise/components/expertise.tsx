@@ -19,13 +19,13 @@ export function Expertise() {
 
   return (
     <section id="skills" data-section-id="skills">
-      <Container className="py-20 md:py-28">
+      <Container className="py-section">
         <SectionHead label={t("skills.title")} />
-        <div className="mt-10 gap-16 md:mt-14 md:columns-2">
+        <div className="mt-12 gap-16 md:mt-16 md:columns-2 lg:gap-24">
           {skills.map((row) => (
-            <div key={row.labelKey} className="mb-9 break-inside-avoid">
+            <div key={row.labelKey} className="mb-12 break-inside-avoid md:mb-14">
               <p className="label-caps text-primary">{t(row.labelKey)}</p>
-              <p className="mt-2 font-display text-2xl leading-snug md:text-[1.9rem]">{row.items}.</p>
+              <p className="mt-3 font-display text-statement">{row.items}.</p>
             </div>
           ))}
         </div>

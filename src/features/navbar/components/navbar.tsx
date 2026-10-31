@@ -41,7 +41,7 @@ export function Navbar() {
         </a>
 
         <div className="flex items-center gap-7">
-          <nav className="hidden items-center gap-7 md:flex">
+          <nav className="hidden items-center gap-7 lg:flex">
             {navSections.map((item) => (
               <a
                 key={item.id}
@@ -64,11 +64,11 @@ export function Navbar() {
 
             <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="md:hidden" aria-label={t("common.openMenu")}>
+                <Button variant="ghost" size="icon" className="lg:hidden" aria-label={t("common.openMenu")}>
                   <Menu />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="top" className="px-5 pt-14 pb-8">
+              <SheetContent side="top" className="px-6 pt-16 pb-10 sm:px-10">
                 <SheetTitle className="sr-only">{t("common.openMenu")}</SheetTitle>
                 <nav className="flex flex-col">
                   {navSections.map((item) => (
@@ -79,7 +79,7 @@ export function Navbar() {
                         setMobileOpen(false);
                         scrollToSection(e, item.id);
                       }}
-                      className="border-b border-border py-3 font-display text-3xl tracking-tight last:border-b-0"
+                      className="border-b border-border py-4 font-display text-3xl tracking-tight last:border-b-0"
                     >
                       {t(item.labelKey)}
                     </a>

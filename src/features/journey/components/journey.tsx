@@ -37,14 +37,14 @@ export function Journey() {
 
   return (
     <section id="journey" data-section-id="journey">
-      <Container className="py-20 md:py-28">
+      <Container className="py-section">
         <SectionHead label={t("journey.title")} />
-        <div className="mt-10 grid gap-14 md:mt-14 md:grid-cols-2 md:gap-0">
-          <Column heading={t("journey.experience")} entries={experience} className="md:pr-12" />
+        <div className="mt-12 grid gap-16 md:mt-16 md:grid-cols-2 md:gap-0">
+          <Column heading={t("journey.experience")} entries={experience} className="md:pr-10 lg:pr-16" />
           <Column
             heading={t("journey.education")}
             entries={education}
-            className="md:border-l md:border-border md:pl-12"
+            className="md:border-l md:border-border md:pl-10 lg:pl-16"
           />
         </div>
       </Container>
@@ -66,14 +66,14 @@ function Column({
   return (
     <div className={className}>
       <h3 className="font-display text-3xl italic">{heading}</h3>
-      <ol className="mt-6">
+      <ol className="mt-8">
         {entries.map((entry) => (
-          <li key={entry.titleKey} className="border-t border-border py-6 last:pb-0">
+          <li key={entry.titleKey} className="border-t border-border py-8 last:pb-0">
             <p className="font-mono text-xs text-primary">{t(entry.dateKey)}</p>
-            <p className="mt-2 font-display text-xl leading-snug md:text-2xl">{t(entry.titleKey)}</p>
-            <p className="mt-1.5 label-caps opacity-70">{t(entry.placeKey)}</p>
+            <p className="mt-3 font-display text-[clamp(1.25rem,1.1rem+0.5vw,1.5rem)] leading-snug">{t(entry.titleKey)}</p>
+            <p className="mt-2 label-caps leading-relaxed opacity-70">{t(entry.placeKey)}</p>
             {entry.descKey && (
-              <p className="mt-3 leading-relaxed text-muted-foreground text-pretty">{t(entry.descKey)}</p>
+              <p className="mt-4 leading-relaxed text-muted-foreground text-pretty">{t(entry.descKey)}</p>
             )}
           </li>
         ))}

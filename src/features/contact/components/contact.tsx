@@ -15,25 +15,25 @@ export function Contact({ email }: { email: string }) {
 
   return (
     <section id="contact" data-section-id="contact">
-      <Container className="py-20 md:py-28">
+      <Container className="py-section">
         <SectionHead label={t("contact.title")} aside={t("contact.response")} />
 
-        <p className="mt-8 font-display text-[14vw] leading-[0.85] tracking-[-0.04em] md:mt-12 md:text-[9.5rem]">
+        <p className="mt-12 font-display text-shout tracking-[-0.04em] md:mt-16">
           {t("contact.headline")}
         </p>
 
-        <div className="mt-12 grid gap-16 md:mt-16 lg:grid-cols-12">
+        <div className="mt-14 grid gap-16 md:mt-20 lg:grid-cols-12 lg:gap-x-12">
           <div className="lg:col-span-5">
             <p className="text-lg leading-relaxed">{t("contact.lead")}</p>
             {email && (
               <a
                 href={`mailto:${email}`}
-                className="link-spot mt-3 inline-block font-display text-2xl break-all md:text-[2.1rem]"
+                className="link-spot mt-4 inline-block font-display text-statement break-all"
               >
                 {email}
               </a>
             )}
-            <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-sm font-medium">
+            <ul className="mt-10 flex flex-wrap gap-x-8 gap-y-3 text-sm font-medium">
               {links.map((link) => (
                 <li key={link.href}>
                   <a href={link.href} target="_blank" rel="noopener noreferrer" className="link-spot">
@@ -46,7 +46,7 @@ export function Contact({ email }: { email: string }) {
 
           <div className="lg:col-span-6 lg:col-start-7">
             <p className="label-caps">{t("contact.formTitle")}</p>
-            <ContactForm className="mt-6" />
+            <ContactForm className="mt-8" />
           </div>
         </div>
       </Container>

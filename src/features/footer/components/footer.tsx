@@ -16,13 +16,13 @@ export function Footer({ email }: { email: string }) {
   return (
     <footer>
       <Container>
-        <p aria-hidden className="pb-6 text-center font-display text-2xl text-primary">
+        <p aria-hidden className="pb-10 text-center font-display text-2xl text-primary">
           ⁂
         </p>
-        <div className="grid gap-8 border-t-2 border-foreground py-10 md:grid-cols-3 md:items-baseline">
+        <div className="grid gap-10 border-t-2 border-foreground py-12 md:grid-cols-3 md:items-baseline md:gap-8">
           <p className="font-display text-2xl tracking-tight">{profile.name}</p>
           <p className="max-w-xs text-sm leading-relaxed text-muted-foreground">{t("footer.colophon")}</p>
-          <ul className="flex flex-wrap gap-x-6 gap-y-2 label-caps md:justify-end">
+          <ul className="flex flex-wrap gap-x-8 gap-y-3 label-caps md:justify-end">
             {links.map((link) => (
               <li key={link.href}>
                 <a
@@ -42,7 +42,7 @@ export function Footer({ email }: { email: string }) {
             </li>
           </ul>
         </div>
-        <p className="pb-8 label-caps opacity-60">
+        <p className="pb-10 label-caps opacity-60">
           © {new Date().getFullYear()} · {t("common.location")}
         </p>
       </Container>
